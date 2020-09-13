@@ -1,39 +1,53 @@
 <template>
   <v-app>
     <v-app-bar
-      app
-      color="primary"
-      dark
+        app
+        color="primary"
+        dark
     >
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
+            alt="Vuetify Logo"
+            class="shrink mr-2"
+            contain
+            src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+            transition="scale-transition"
+            width="40"
         />
 
         <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
+            alt="Vuetify Name"
+            class="shrink mt-1 hidden-sm-and-down"
+            contain
+            min-width="100"
+            src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+            width="100"
         />
       </div>
-
       <v-spacer></v-spacer>
 
+      <v-avatar v-if="isAuthenticated">
+        <img
+            :src="this.$gapi.getUserData().imageUrl"
+            alt="Profile Picture"
+        >
+      </v-avatar>
+
       <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
+          v-if="isAuthenticated"
+          @click="signOut"
+          text
       >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+        <span class="mr-2">Logout</span>
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
+      <v-btn
+          v-else
+          @click="signIn"
+          text
+      >
+        <span class="mr-2">Login</span>
+        <v-icon>mdi-login</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -54,15 +68,54 @@ export default {
   },
 
   data: () => ({
-    //
+    currentUser: null
   }),
   created() {
+    if (this.$gapi.isAuthenticated()) {
+      this.$store.commit('setAuthenticated', true)
+      this.currentUser = this.$gapi.getUserData()
+    }
+
     try {
       // NOTE: Google recommends 45 min refresh policy
       window.setInterval(this.$gapi.refreshToken(), 1000 * 60 * 45);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
+    }
+  },
+  methods: {
+    signIn() {
+      if (!this.$gapi.isAuthenticated()) {
+        this.$gapi
+            .login(
+                () => {
+                  this.$store.commit('setAuthenticated', true)
+                  this.currentUser = this.$gapi.getUserData()
+                  console.log("User logged in:", this.currentUser)
+                },
+                (err) => {
+                  console.error(err)
+                })
+      }
+    },
+    signOut() {
+      if (this.$gapi.isAuthenticated()) {
+        this.$gapi.logout(
+            () => {
+              this.$store.commit('setAuthenticated', false)
+              this.currentUser = null
+              console.log("User disconnected.")
+            },
+            (err) => {
+              console.error(err.message)
+            })
+      }
+    }
+  },
+  computed: {
+    isAuthenticated () {
+      return this.$store.state.authenticated
     }
   }
 };
