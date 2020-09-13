@@ -10,7 +10,7 @@
 
     <template v-if="isAuthenticated">
       <p>{{currentUser.email}}</p>
-      <p>{{currentUser.name}}</p>
+      <p>{{currentUser.fullName}}</p>
       <button @click="listEvents">List Events</button>
     </template>
   </div>
@@ -27,31 +27,29 @@ export default {
     isAuthenticated: false,
   }),
   methods: {
-
     signIn() {
       if (! this.$gapi.isAuthenticated()) {
         this.$gapi
-            .login()
-            .then(() => {
-              console.log("User logged in")
-              this.isAuthenticated = true
-              this.currentUser = this.$gapi.getUserData()
-            })
-            .catch(err => {
-              this.isAuthenticated = false
-              console.error(err.message)
-            })
+            .login(
+                () => {
+                  console.log("User logged in")
+                  this.isAuthenticated = true
+                  this.currentUser = this.$gapi.getUserData()
+                },
+                (err) => {
+                  console.error(err)
+                })
       }
     },
     signOut() {
       if (this.$gapi.isAuthenticated()) {
-        this.$gapi.logout()
-            .then(() => {
+        this.$gapi.logout(
+            () => {
               this.isAuthenticated = false
               this.currentUser = null
               console.log("User disconnected.")
-            })
-            .catch(err => {
+            },
+            (err) => {
               console.error(err.message)
             })
       }
