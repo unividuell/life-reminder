@@ -2,8 +2,6 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h3>Agira - no more noooi</h3>
-    <p>Authenticated: {{isAuthenticated}}</p>
-    <p>Current User: {{currentUser}}</p>
 
     <button v-if="! isAuthenticated" @click="signIn">Sign In</button>
     <button v-else @click="signOut">Sign Out</button>
@@ -32,9 +30,9 @@ export default {
         this.$gapi
             .login(
                 () => {
-                  console.log("User logged in")
                   this.isAuthenticated = true
                   this.currentUser = this.$gapi.getUserData()
+                  console.log("User logged in:", this.currentUser)
                 },
                 (err) => {
                   console.error(err)
