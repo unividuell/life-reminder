@@ -2,12 +2,16 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h3>Agira - no more noooi</h3>
-    <google-signin-btn v-if="!isSignIn" @click="signIn"></google-signin-btn>
-    <google-signin-btn v-else label="Sign Out" @click="signOut"></google-signin-btn>
+    <p>Authenticated: {{isAuthenticated}}</p>
+    <p>Current User: {{currentUser}}</p>
 
-    <template v-if="isSignIn">
+    <button v-if="! isAuthenticated" @click="signIn">Sign In</button>
+    <button v-else @click="signOut">Sign Out</button>
+
+    <template v-if="isAuthenticated">
       <p>{{currentUser.email}}</p>
       <p>{{currentUser.name}}</p>
+      <button @click="listEvents">List Events</button>
     </template>
   </div>
 </template>
@@ -18,31 +22,57 @@ export default {
   props: {
     msg: String
   },
-  data() {
-    return {
-      isSignIn: false,
-      currentUser: null
-    }
-  },
+  data: () => ({
+    currentUser: null,
+    isAuthenticated: false,
+  }),
   methods: {
+
     signIn() {
-      this.$gapi.signIn()
-        .then(user => {
-          this.isSignIn = true
-          this.currentUser = user
-          console.log(user)
-        })
-        .catch(err => {
-          console.error(err.error)
-        })
+      if (! this.$gapi.isAuthenticated()) {
+        this.$gapi
+            .login()
+            .then(() => {
+              console.log("User logged in")
+              this.isAuthenticated = true
+              this.currentUser = this.$gapi.getUserData()
+            })
+            .catch(err => {
+              this.isAuthenticated = false
+              console.error(err.message)
+            })
+      }
     },
     signOut() {
-      this.$gapi.signOut()
-        .then(() => {
-          this.isSignIn = false
-          this.currentUser = null
-          console.log("User disconnected.")
-        })
+      if (this.$gapi.isAuthenticated()) {
+        this.$gapi.logout()
+            .then(() => {
+              this.isAuthenticated = false
+              this.currentUser = null
+              console.log("User disconnected.")
+            })
+            .catch(err => {
+              console.error(err.message)
+            })
+      }
+    },
+    listEvents() {
+      // this.$gapi.request({
+      //   path: 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+      //   method: 'GET'
+      // }).then(json => {
+      //   json = JSON.stringify(json, undefined, 2);
+      //   console.log(json)
+      // })
+      // .catch(err => {
+      //   console.error(err.error)
+      // })
+    }
+  },
+  created() {
+    this.isAuthenticated = this.$gapi.isAuthenticated()
+    if (this.isAuthenticated) {
+      this.currentUser = this.$gapi.getUserData()
     }
   }
 }
