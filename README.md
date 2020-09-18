@@ -1,7 +1,9 @@
-# agira
+# Life Reminder
 
 ## Project setup
 ```
+cp .env.template .env
+# edit and fill `.env` with valid values
 npm install
 ```
 

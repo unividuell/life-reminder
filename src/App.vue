@@ -7,7 +7,7 @@
     >
       <div class="d-flex align-center">
         <v-img
-            alt="Our Logo"
+            alt="Life Reminder Logo"
             class="shrink mr-2"
             contain
             src="./assets/logo.png"
@@ -15,7 +15,7 @@
             width="40"
         />
 
-        <h1 class="hidden-sm-and-down">No More Noooi</h1>
+        <h1 class="hidden-sm-and-down">Life Reminder</h1>
       </div>
       <v-spacer></v-spacer>
 
