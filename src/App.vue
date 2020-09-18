@@ -15,7 +15,7 @@
             width="40"
         />
 
-        <h1>No More Noooi</h1>
+        <h1 class="hidden-sm-and-down">No More Noooi</h1>
       </div>
       <v-spacer></v-spacer>
 
