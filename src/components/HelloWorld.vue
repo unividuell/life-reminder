@@ -13,7 +13,7 @@
             color="primary"
             v-for="calendar in calendars" :key="calendar.id"
         >
-          {{ calendar.name }}
+          {{ calendar.summary }}
         </v-chip>
 
       </v-col>
@@ -23,9 +23,6 @@
 </template>
 
 <script>
-import GoogleCalendarApi from "@/api/GoogleCalendarApi";
-import { handlePromise } from "@/libs/common";
-
   export default {
     name: 'HelloWorld',
     props: {
@@ -44,8 +41,7 @@ import { handlePromise } from "@/libs/common";
     async created() {
       if (this.isAuthenticated) {
         this.currentUser = this.$gapi.getUserData()
-        await this.initGoogleCalendarApi()
-        await this.retrieveCalendars()
+        this.calendars = await this.retrieveCalendars()
       }
     },
     computed: {
@@ -53,43 +49,27 @@ import { handlePromise } from "@/libs/common";
         return this.$store.state.authenticated
       }
     },
+    watch: {
+      async isAuthenticated(newValue, oldValue) {
+        if (!oldValue && newValue) {
+          this.calendars = await this.retrieveCalendars()
+        }
+      }
+    },
     methods: {
-      async initGoogleCalendarApi() {
-        let response = await handlePromise(this.$gapi.getGapiClient());
-        if (response.success) {
-          const client = response.data.client;
-          this.googleCalendarApi = new GoogleCalendarApi(client);
-        } else {
-          // eslint-disable-next-line no-console
-          console.error("Failed to get gapi client", response.err);
-        }
-      },
       async retrieveCalendars() {
-        const calendar = this.googleCalendarApi;
-        if (calendar) {
-          try {
-            const items = await calendar.retrieveCalendars();
-            let calendars = [];
-            // let primaryId = null;
-            items.forEach(item => {
-              let name = item.summary + (item.primary ? " (primary)" : "");
-              calendars.push({
-                id: item.id,
-                name,
-                primary: item.primary
-              });
-              // if (item.primary) primaryId = item.id;
-            });
-            // this.selectedCalendarId = this.calendarId || primaryId;
-            this.calendars = calendars;
-            console.log(calendars)
-            // If we do not have a calendarId we need to emit an event to retrieve the calendar events
-            // if (!this.calendarId) this.calendarChanged();
-          } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error("Failed to retrieve calendars", err);
-          }
-        }
+        this.$gapi.getGapiClient().then((gapi) => {
+          let maxResults = 10
+          gapi.client.calendar.calendarList.list({
+            maxResults
+          }).execute((resp) => {
+            console.log(resp.items)
+            this.calendars = resp.items.map(it => ({
+              id: it.id,
+              summary: it.summary
+            }))
+          })
+        })
       }
     }
   }
