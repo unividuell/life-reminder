@@ -45,19 +45,19 @@
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
+      <Main/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import Main from './components/Main';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    Main,
   },
 
   data: () => ({
@@ -85,7 +85,6 @@ export default {
                 () => {
                   this.$store.commit('setAuthenticated', true)
                   this.currentUser = this.$gapi.getUserData()
-                  console.log("User logged in:", this.currentUser)
                 },
                 (err) => {
                   console.error(err)
@@ -98,7 +97,6 @@ export default {
             () => {
               this.$store.commit('setAuthenticated', false)
               this.currentUser = null
-              console.log("User disconnected.")
             },
             (err) => {
               console.error(err.message)

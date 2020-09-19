@@ -6,10 +6,9 @@ const clientId = process.env.VUE_APP_GAPI_CLIENT_ID;
 
 if (!apiKey || !clientId) {
     throw new Error(
-        "Has the .env.local file been setup? One or both variables are not set: VUE_APP_GAPI_API_KEY=" +
-        apiKey +
-        ", VUE_APP_GAPI_CLIENT_ID=" +
-        clientId
+        "Has the .env file been setup? One or both variables are not set: " +
+        "VUE_APP_GAPI_API_KEY=" + apiKey +
+        ", VUE_APP_GAPI_CLIENT_ID=" + clientId
     );
 }
 
