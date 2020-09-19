@@ -69,7 +69,7 @@ export default {
       this.$gapi.getGapiClient().then((gapi) => {
         let maxResults = 10
         gapi.client.calendar.calendarList.list({
-          maxResults
+          maxResults: maxResults
         }).execute((resp) => {
           this.calendars = resp.items.map(it => ({
             id: it.id,
@@ -82,14 +82,23 @@ export default {
       this.$gapi.getGapiClient().then((gapi) => {
         let calendarId = 'Live Reminder by unividuell.org'
         gapi.client.calendar.calendars.get({
-          calendarId
+          calendarId: calendarId
         }).then(
             () => {
               console.log("all fine - calendar exists")
             },
             (err) => {
               if (err.status === 404) {
-                console.log("lets create it")
+                gapi.client.calendar.calendars.insert({
+                  summary: calendarId
+                }).then(
+                    () => {
+                      console.log("created life-reminder calendar-backend")
+                    },
+                    (err) => {
+                      console.warn("could not create life-reminder calender-backend:", err)
+                    }
+                )
               }
             }
         )
