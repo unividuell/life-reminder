@@ -85,7 +85,6 @@ export default {
                 () => {
                   this.$store.commit('setAuthenticated', true)
                   this.currentUser = this.$gapi.getUserData()
-                  console.log("User logged in:", this.currentUser)
                 },
                 (err) => {
                   console.error(err)
@@ -98,7 +97,6 @@ export default {
             () => {
               this.$store.commit('setAuthenticated', false)
               this.currentUser = null
-              console.log("User disconnected.")
             },
             (err) => {
               console.error(err.message)
