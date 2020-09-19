@@ -100,6 +100,7 @@ export default {
             (resp) => {
               let present = resp.result.items.some((candidate) => {
                 if (candidate.summary === calendarId) {
+                  this.$store.commit('setCalendarBackendId', candidate.id)
                   console.log(`Calendar with summary ${calendarId} is present: ${candidate.id}`)
                   return true
                 }
@@ -110,7 +111,8 @@ export default {
                 gapi.client.calendar.calendars.insert({
                   summary: calendarId
                 }).then(
-                    () => {
+                    (resp) => {
+                      this.$store.commit('setCalendarBackendId', resp.result.id)
                       console.log("created life-reminder calendar-backend")
                     },
                     (err) => {
