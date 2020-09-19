@@ -84,8 +84,8 @@ export default {
         let maxResults = 10
         gapi.client.calendar.calendarList.list({
           maxResults: maxResults
-        }).execute((resp) => {
-          this.calendars = resp.items.map(it => ({
+        }).then((resp) => {
+          this.calendars = resp.result.items.map(it => ({
             id: it.id,
             summary: it.summary
           }))
@@ -93,12 +93,15 @@ export default {
       })
     },
     async createCalendarBackend() {
-      this.$gapi.getGapiClient().then((gapi) => {
-        let calendarId = 'Live Reminder by unividuell.org'
-        gapi.client.calendar.calendarList.list()
+      let calendarId = 'Live Reminder by unividuell.org'
+      await this.$gapi.getGapiClient()
+          .then((gapi) => {
+            return gapi.client.calendar.calendarList.list()
+            }
+          )
           .then(
             (resp) => {
-              let present = resp.result.items.some((candidate) => {
+              return resp.result.items.some((candidate) => {
                 if (candidate.summary === calendarId) {
                   this.$store.commit('setCalendarBackendId', candidate.id)
                   console.log(`Calendar with summary ${calendarId} is present: ${candidate.id}`)
@@ -106,27 +109,39 @@ export default {
                 }
                 return false
               })
-              if (!present) {
-                console.log("Did not found our calendar-backend - will create it..")
-                gapi.client.calendar.calendars.insert({
-                  summary: calendarId
-                }).then(
-                    (resp) => {
-                      this.$store.commit('setCalendarBackendId', resp.result.id)
-                      console.log("created life-reminder calendar-backend")
-                    },
-                    (err) => {
-                      console.warn("could not create life-reminder calender-backend:", err)
-                    }
-                )
-              }
-            },
-            (err) => {
-              console.warn("could not list all calendars:", err)
             }
-        )
-      })
-    },
+          )
+          .then(
+            (present) => {
+              if (! present) {
+                console.log("Did not found our calendar-backend - will create it..")
+                return this.$gapi.getGapiClient()
+              } else {
+                // sooo ugly :/ don't know how to better break a promise chain
+                throw new Error("expected")
+              }
+            }
+          )
+          .then((gapi) => {
+            return gapi.client.calendar.calendars.insert({
+              summary: calendarId
+            })
+            }
+          )
+          .then(
+            (resp) => {
+              this.$store.commit('setCalendarBackendId', resp.result.id)
+              console.log("created life-reminder calendar-backend")
+              return true
+            }
+          )
+          .then(() => console.log("last then"))
+          .catch(
+              (err) => (err.message !== "expected")
+                  ? console.warn("could not create life-reminder calender-backend:", err)
+                  : console.log("all done.")
+          )
+      }
   }
 }
 </script>
