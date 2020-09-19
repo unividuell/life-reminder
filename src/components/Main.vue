@@ -1,5 +1,17 @@
 <template>
   <v-container>
+    <template v-if="isLoading">
+      <v-container>
+        <v-layout justify-center align-center>
+          <v-progress-circular
+              indeterminate
+              color="primary"
+              :size="70">
+          </v-progress-circular>
+        </v-layout>
+      </v-container>
+    </template>
+
     <v-row class="text-center">
       <v-col class="mb-4" v-if="isAuthenticated">
         <h1 class="display-2 font-weight-bold mb-3">
@@ -13,7 +25,7 @@
             color="primary"
             v-for="calendar in calendars" :key="calendar.id"
         >
-          {{ calendar.summary }}
+          {{ calendar.summary }} [{{ calendar.id }}]
         </v-chip>
 
       </v-col>
@@ -24,7 +36,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Main',
   props: {
     calendarId: {
       type: String,
@@ -35,12 +47,12 @@ export default {
 
   data: () => ({
     currentUser: null,
-    googleCalendarApi: null,
-    calendars: null
+    calendars: null,
+    isLoading: false
   }),
-  async created() {
+  async mounted() {
     if (this.isAuthenticated) {
-      this.initBackend()
+      await this.initBackend()
     }
   },
   computed: {
@@ -51,21 +63,23 @@ export default {
   watch: {
     async isAuthenticated(newValue, oldValue) {
       if (!oldValue && newValue) {
-        this.initBackend()
+        await this.initBackend()
       } else {
         this.calendars = null
       }
     }
   },
   methods: {
-    initBackend() {
+    async initBackend() {
+      this.isLoading = true
       if (this.isAuthenticated) {
-        this.currentUser = this.$gapi.getUserData()
-        this.createCalendarBackend()
+        await this.createCalendarBackend()
         this.calendars = this.retrieveCalendars()
+        this.currentUser = this.$gapi.getUserData()
       }
+      this.isLoading = false
     },
-    retrieveCalendars() {
+    async retrieveCalendars() {
       this.$gapi.getGapiClient().then((gapi) => {
         let maxResults = 10
         gapi.client.calendar.calendarList.list({
@@ -78,17 +92,21 @@ export default {
         })
       })
     },
-    createCalendarBackend() {
+    async createCalendarBackend() {
       this.$gapi.getGapiClient().then((gapi) => {
         let calendarId = 'Live Reminder by unividuell.org'
-        gapi.client.calendar.calendars.get({
-          calendarId: calendarId
-        }).then(
-            () => {
-              console.log("all fine - calendar exists")
-            },
-            (err) => {
-              if (err.status === 404) {
+        gapi.client.calendar.calendarList.list()
+          .then(
+            (resp) => {
+              let present = resp.result.items.some((candidate) => {
+                if (candidate.summary === calendarId) {
+                  console.log(`Calendar with summary ${calendarId} is present: ${candidate.id}`)
+                  return true
+                }
+                return false
+              })
+              if (!present) {
+                console.log("Did not found our calendar-backend - will create it..")
                 gapi.client.calendar.calendars.insert({
                   summary: calendarId
                 }).then(
@@ -100,6 +118,9 @@ export default {
                     }
                 )
               }
+            },
+            (err) => {
+              console.warn("could not list all calendars:", err)
             }
         )
       })
