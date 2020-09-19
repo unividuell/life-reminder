@@ -23,54 +23,78 @@
 </template>
 
 <script>
-  export default {
-    name: 'HelloWorld',
-    props: {
-      calendarId: {
-        type: String,
-        required: false,
-        default: "primary"
-      }
-    },
+export default {
+  name: 'HelloWorld',
+  props: {
+    calendarId: {
+      type: String,
+      required: false,
+      default: "primary"
+    }
+  },
 
-    data: () => ({
-      currentUser: null,
-      googleCalendarApi: null,
-      calendars: null
-    }),
-    async created() {
-      if (this.isAuthenticated) {
-        this.currentUser = this.$gapi.getUserData()
-        this.calendars = await this.retrieveCalendars()
-      }
-    },
-    computed: {
-      isAuthenticated() {
-        return this.$store.state.authenticated
-      }
-    },
-    watch: {
-      async isAuthenticated(newValue, oldValue) {
-        if (!oldValue && newValue) {
-          this.calendars = await this.retrieveCalendars()
-        }
-      }
-    },
-    methods: {
-      async retrieveCalendars() {
-        this.$gapi.getGapiClient().then((gapi) => {
-          let maxResults = 10
-          gapi.client.calendar.calendarList.list({
-            maxResults
-          }).execute((resp) => {
-            console.log(resp.items)
-            this.calendars = resp.items.map(it => ({
-              id: it.id,
-              summary: it.summary
-            }))
-          })
-        })
+  data: () => ({
+    currentUser: null,
+    googleCalendarApi: null,
+    calendars: null
+  }),
+  async created() {
+    if (this.isAuthenticated) {
+      this.initBackend()
+    }
+  },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.authenticated
+    }
+  },
+  watch: {
+    async isAuthenticated(newValue, oldValue) {
+      if (!oldValue && newValue) {
+        this.initBackend()
+      } else {
+        this.calendars = null
       }
     }
+  },
+  methods: {
+    initBackend() {
+      if (this.isAuthenticated) {
+        this.currentUser = this.$gapi.getUserData()
+        this.createCalendarBackend()
+        this.calendars = this.retrieveCalendars()
+      }
+    },
+    retrieveCalendars() {
+      this.$gapi.getGapiClient().then((gapi) => {
+        let maxResults = 10
+        gapi.client.calendar.calendarList.list({
+          maxResults
+        }).execute((resp) => {
+          this.calendars = resp.items.map(it => ({
+            id: it.id,
+            summary: it.summary
+          }))
+        })
+      })
+    },
+    createCalendarBackend() {
+      this.$gapi.getGapiClient().then((gapi) => {
+        let calendarId = 'Live Reminder by unividuell.org'
+        gapi.client.calendar.calendars.get({
+          calendarId
+        }).then(
+            () => {
+              console.log("all fine - calendar exists")
+            },
+            (err) => {
+              if (err.status === 404) {
+                console.log("lets create it")
+              }
+            }
+        )
+      })
+    },
   }
+}
 </script>
