@@ -11,23 +11,28 @@
         </v-layout>
       </v-container>
     </template>
-
-    <v-row>
-      <v-col class="mb-4" v-if="isAuthenticated">
-        <h1 class="display-2 font-weight-bold mb-3 text-center">
-          Welcome
-        </h1>
-        <LifeEventsListView :events="events"></LifeEventsListView>
-      </v-col>
-      <v-col cols="12" v-else>
-        <p class="text-center">Please log in.</p>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
-        <AddSoftEvent v-on:softEventAdded="onEventAdded"></AddSoftEvent>
-      </v-col>
-    </v-row>
+    <v-container v-if="isAuthenticated">
+      <v-row>
+        <v-col class="mb-4">
+          <h1 class="display-2 font-weight-bold mb-3 text-center">
+            Welcome
+          </h1>
+          <LifeEventsListView :events="events"></LifeEventsListView>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <AddSoftEvent v-on:softEventAdded="onEventAdded"></AddSoftEvent>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container v-else>
+      <v-row>
+        <v-col cols="12">
+          <p class="text-center">Please log in.</p>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
@@ -60,7 +65,7 @@ export default {
       if (!oldValue && newValue) {
         await this.init()
       } else {
-        this.calendars = null
+        this.events = []
       }
     }
   },

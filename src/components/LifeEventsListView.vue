@@ -25,9 +25,6 @@ export default {
   data: () => ({
 
   }),
-  async created() {
-
-  },
   computed: {
     calendarId() {
       return this.$store.state.calendarBackendId

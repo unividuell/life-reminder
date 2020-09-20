@@ -108,6 +108,7 @@ export default {
             this.summary = null
             this.redZone = []
             this.notes = ''
+            this.valid = true
         }).catch((err) => {
             console.warn(err)
         })
