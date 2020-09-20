@@ -5,65 +5,35 @@
        <v-col cols="12">
          <v-text-field v-model="summary" label="Summary" required></v-text-field>
        </v-col>
-       <v-col cols="12" xs="12" sm="3">
+     </v-row>
+     <v-row>
+       <v-col cols="12" xs="8" sm="8">
+         <p>Select the period you plan to solve this life event:</p>
+       </v-col>
+       <v-col cols="12" xs="4" sm="4">
          <v-menu
              ref="redZoneStartPicker"
-             v-model="showRedZoneStartPicker"
+             v-model="showRedZonePicker"
              :close-on-content-click="false"
-             :return-value.sync="redZoneStartDate"
+             :return-value.sync="redZone"
              transition="scale-transition"
              offset-y
              min-width="290px">
            <template v-slot:activator="{ on, attrs }">
              <v-text-field
-                 v-model="redZoneStartDate"
-                 label="Start date"
+                 v-model="redZoneText"
+                 label="Period"
                  readonly
                  v-bind="attrs"
                  v-on="on"
              ></v-text-field>
            </template>
-           <v-date-picker v-model="redZoneStartDate" no-title scrollable>
+           <v-date-picker v-model="redZone" no-title scrollable range>
              <v-spacer></v-spacer>
-             <v-btn text color="primary" @click="showRedZoneStartPicker = false">Cancel</v-btn>
-             <v-btn text color="primary" @click="$refs.redZoneStartPicker.save(redZoneStartDate)">OK</v-btn>
+             <v-btn text color="primary" @click="showRedZonePicker = false">Cancel</v-btn>
+             <v-btn text color="primary" @click="$refs.redZoneStartPicker.save(redZone)">OK</v-btn>
            </v-date-picker>
          </v-menu>
-       </v-col>
-       <v-col cols="12" xs="12" sm="9">
-<!--         <v-menu-->
-<!--             ref="redZoneEndPicker"-->
-<!--             v-model="showRedZoneEndPicker"-->
-<!--             :close-on-content-click="false"-->
-<!--             :return-value.sync="redZoneEndDate"-->
-<!--             transition="scale-transition"-->
-<!--             offset-y-->
-<!--             min-width="290px">-->
-<!--           <template v-slot:activator="{ on, attrs }">-->
-<!--             <v-text-field-->
-<!--                 v-model="redZoneEndDate"-->
-<!--                 label="End date"-->
-<!--                 readonly-->
-<!--                 v-bind="attrs"-->
-<!--                 v-on="on"-->
-<!--             ></v-text-field>-->
-<!--           </template>-->
-<!--           <v-date-picker v-model="redZoneEndDate" no-title scrollable>-->
-<!--             <v-spacer></v-spacer>-->
-<!--             <v-btn text color="primary" @click="showRedZoneEndPicker = false">Cancel</v-btn>-->
-<!--             <v-btn text color="primary" @click="$refs.redZoneEndPicker.save(redZoneEndDate)">OK</v-btn>-->
-<!--           </v-date-picker>-->
-<!--         </v-menu>-->
-         <v-slider
-             v-model="redZoneEndDate"
-             :tick-labels="redZoneTicksInDays"
-              min="0"
-              :max="redZoneTicksInDays.length"
-              tick-size="4">
-           <template v-slot:thumb-label="{ value }">
-             {{ value }}d
-           </template>
-         </v-slider>
        </v-col>
      </v-row>
      <v-row>
@@ -76,28 +46,23 @@
 </template>
 
 <script>
-import { addWeeks, eachDayOfInterval } from 'date-fns'
-
 export default {
   name: "AddSoftEvent",
   data: () => ({
     valid: false,
     summary: null,
-    redZoneStartDate: new Date().toISOString().substr(0, 10),
-    showRedZoneStartPicker: false,
-    redZoneEndDate: new Date().toISOString().substr(0, 10),
-    showRedZoneEndPicker: false,
-    redZoneTicksInDays: [],
+    redZone: [ ],
+    showRedZonePicker: false,
     notes: ''
   }),
   created() {
-    let maxPeriod = addWeeks(new Date(), 3)
-    this.redZoneTicksInDays = eachDayOfInterval({
-      start: new Date(),
-      end: maxPeriod
-    })
-    console.log(this.redZoneTicksInDays)
-  }
+
+  },
+  computed: {
+    redZoneText () {
+      return this.redZone.join(' ~ ')
+    },
+  },
 }
 </script>
 
