@@ -3,10 +3,19 @@
      <v-card>
        <v-card-title>Add Life Reminder Event</v-card-title>
        <v-card-text>
-         <v-form v-model="valid" id="addSimpleEvent" @submit.stop.prevent="onAddSimpleEvent" >
+         <v-form
+             v-model="valid"
+             id="addSimpleEvent"
+             ref="addSimpleEvent"
+             @submit.stop.prevent="onAddSimpleEvent" >
            <v-row>
              <v-col cols="12">
-               <v-text-field v-model="summary" label="Summary" required></v-text-field>
+               <v-text-field
+                   v-model="summary"
+                   label="Summary"
+                   :rules="[ v=>!!v || 'Please provide a summary (title) for this event.']"
+                   required>
+               </v-text-field>
              </v-col>
            </v-row>
            <v-row>
@@ -29,6 +38,7 @@
                        readonly
                        v-bind="attrs"
                        v-on="on"
+                       :rules="[ v=>!!v || 'Please define the period for this event.']"
                    ></v-text-field>
                  </template>
                  <v-date-picker v-model="redZone" no-title scrollable range>
@@ -65,11 +75,11 @@ export default {
     showRedZonePicker: false,
     notes: ''
   }),
-  created() {
-
-  },
   methods: {
     async onAddSimpleEvent() {
+      if (!this.$refs.addSimpleEvent.validate()) {
+        return
+      }
       this.loading = true
       let event = {
         summary: this.summary,
@@ -89,14 +99,17 @@ export default {
       }
       await this.$gapi.getGapiClient()
         .then((gapi) => {
-          return gapi.client.calendar.events.insert({
-            calendarId: this.calendarId,
-            resource: event
-          })
+            return gapi.client.calendar.events.insert({
+              calendarId: this.calendarId,
+              resource: event
+            })
         }).then((resp) => {
-          console.log(resp)
+            console.log(resp)
+            this.summary = null
+            this.redZone = []
+            this.notes = ''
         }).catch((err) => {
-          console.warn(err)
+            console.warn(err)
         })
       this.loading = false
     }
