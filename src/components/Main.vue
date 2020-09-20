@@ -31,12 +31,19 @@
       </v-col>
       <v-col cols="12" v-else>Please log in.</v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12">
+        <AddSoftEvent></AddSoftEvent>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import AddSoftEvent from "@/components/AddSoftEvent";
 export default {
   name: 'Main',
+  components: {AddSoftEvent},
   props: {
     calendarId: {
       type: String,
