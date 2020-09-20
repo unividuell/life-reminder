@@ -5,7 +5,7 @@
        <v-col cols="12">
          <v-text-field v-model="summary" label="Summary" required></v-text-field>
        </v-col>
-       <v-col cols="12" xs="12" sm="6">
+       <v-col cols="12" xs="12" sm="3">
          <v-menu
              ref="redZoneStartPicker"
              v-model="showRedZoneStartPicker"
@@ -30,30 +30,40 @@
            </v-date-picker>
          </v-menu>
        </v-col>
-       <v-col cols="12" xs="12" sm="6">
-         <v-menu
-             ref="redZoneEndPicker"
-             v-model="showRedZoneEndPicker"
-             :close-on-content-click="false"
-             :return-value.sync="redZoneEndDate"
-             transition="scale-transition"
-             offset-y
-             min-width="290px">
-           <template v-slot:activator="{ on, attrs }">
-             <v-text-field
-                 v-model="redZoneEndDate"
-                 label="End date"
-                 readonly
-                 v-bind="attrs"
-                 v-on="on"
-             ></v-text-field>
+       <v-col cols="12" xs="12" sm="9">
+<!--         <v-menu-->
+<!--             ref="redZoneEndPicker"-->
+<!--             v-model="showRedZoneEndPicker"-->
+<!--             :close-on-content-click="false"-->
+<!--             :return-value.sync="redZoneEndDate"-->
+<!--             transition="scale-transition"-->
+<!--             offset-y-->
+<!--             min-width="290px">-->
+<!--           <template v-slot:activator="{ on, attrs }">-->
+<!--             <v-text-field-->
+<!--                 v-model="redZoneEndDate"-->
+<!--                 label="End date"-->
+<!--                 readonly-->
+<!--                 v-bind="attrs"-->
+<!--                 v-on="on"-->
+<!--             ></v-text-field>-->
+<!--           </template>-->
+<!--           <v-date-picker v-model="redZoneEndDate" no-title scrollable>-->
+<!--             <v-spacer></v-spacer>-->
+<!--             <v-btn text color="primary" @click="showRedZoneEndPicker = false">Cancel</v-btn>-->
+<!--             <v-btn text color="primary" @click="$refs.redZoneEndPicker.save(redZoneEndDate)">OK</v-btn>-->
+<!--           </v-date-picker>-->
+<!--         </v-menu>-->
+         <v-slider
+             v-model="redZoneEndDate"
+             :tick-labels="redZoneTicksInDays"
+              min="0"
+              :max="redZoneTicksInDays.length"
+              tick-size="4">
+           <template v-slot:thumb-label="{ value }">
+             {{ value }}d
            </template>
-           <v-date-picker v-model="redZoneEndDate" no-title scrollable>
-             <v-spacer></v-spacer>
-             <v-btn text color="primary" @click="showRedZoneEndPicker = false">Cancel</v-btn>
-             <v-btn text color="primary" @click="$refs.redZoneEndPicker.save(redZoneEndDate)">OK</v-btn>
-           </v-date-picker>
-         </v-menu>
+         </v-slider>
        </v-col>
      </v-row>
      <v-row>
@@ -66,6 +76,8 @@
 </template>
 
 <script>
+import { addWeeks, eachDayOfInterval } from 'date-fns'
+
 export default {
   name: "AddSoftEvent",
   data: () => ({
@@ -75,11 +87,16 @@ export default {
     showRedZoneStartPicker: false,
     redZoneEndDate: new Date().toISOString().substr(0, 10),
     showRedZoneEndPicker: false,
-    redZoneDuration: [],
+    redZoneTicksInDays: [],
     notes: ''
   }),
   created() {
-
+    let maxPeriod = addWeeks(new Date(), 3)
+    this.redZoneTicksInDays = eachDayOfInterval({
+      start: new Date(),
+      end: maxPeriod
+    })
+    console.log(this.redZoneTicksInDays)
   }
 }
 </script>
