@@ -12,28 +12,20 @@
       </v-container>
     </template>
 
-    <v-row class="text-center">
+    <v-row>
       <v-col class="mb-4" v-if="isAuthenticated">
-        <h1 class="display-2 font-weight-bold mb-3">
+        <h1 class="display-2 font-weight-bold mb-3 text-center">
           Welcome
         </h1>
-
-        <p class="subheading font-weight-regular">Your calendars:</p>
-
-        <v-chip
-            class="ma-2"
-            color="primary"
-            v-for="calendar in calendars" :key="calendar.id"
-        >
-          {{ calendar.summary }} [{{ calendar.id }}]
-        </v-chip>
-
+        <LifeEventsListView :events="events"></LifeEventsListView>
       </v-col>
-      <v-col cols="12" v-else>Please log in.</v-col>
+      <v-col cols="12" v-else>
+        <p class="text-center">Please log in.</p>
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
-        <AddSoftEvent></AddSoftEvent>
+        <AddSoftEvent v-on:softEventAdded="onEventAdded"></AddSoftEvent>
       </v-col>
     </v-row>
   </v-container>
@@ -41,63 +33,61 @@
 
 <script>
 import AddSoftEvent from "@/components/AddSoftEvent";
+import LifeEventsListView from "@/components/LifeEventsListView";
 export default {
   name: 'Main',
-  components: {AddSoftEvent},
-  props: {
-    calendarId: {
-      type: String,
-      required: false,
-      default: "primary"
-    }
-  },
-
+  components: {LifeEventsListView, AddSoftEvent},
   data: () => ({
     currentUser: null,
-    calendars: null,
-    isLoading: false
+    isLoading: false,
+    events: []
   }),
   async mounted() {
     if (this.isAuthenticated) {
-      await this.initBackend()
+      await this.init()
     }
   },
   computed: {
     isAuthenticated() {
       return this.$store.state.authenticated
+    },
+    calendarId() {
+      return this.$store.state.calendarBackendId
     }
   },
   watch: {
     async isAuthenticated(newValue, oldValue) {
       if (!oldValue && newValue) {
-        await this.initBackend()
+        await this.init()
       } else {
         this.calendars = null
       }
     }
   },
   methods: {
-    async initBackend() {
+    async init() {
       this.isLoading = true
       if (this.isAuthenticated) {
         await this.createCalendarBackend()
-        this.calendars = this.retrieveCalendars()
         this.currentUser = this.$gapi.getUserData()
+        await this.loadEvents()
       }
       this.isLoading = false
     },
-    async retrieveCalendars() {
-      this.$gapi.getGapiClient().then((gapi) => {
-        let maxResults = 10
-        gapi.client.calendar.calendarList.list({
-          maxResults: maxResults
-        }).then((resp) => {
-          this.calendars = resp.result.items.map(it => ({
-            id: it.id,
-            summary: it.summary
-          }))
-        })
-      })
+    async loadEvents() {
+      await this.$gapi.getGapiClient()
+          .then((gapi) => {
+            return gapi.client.calendar.events.list({
+              calendarId: this.calendarId
+            })
+          }).then((resp) => {
+            this.events = resp.result.items
+          }).catch((err) => {
+            console.log(err)
+          })
+    },
+    onEventAdded() {
+      this.loadEvents()
     },
     async createCalendarBackend() {
       let calendarId = 'Live Reminder by unividuell.org'
