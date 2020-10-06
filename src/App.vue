@@ -68,7 +68,7 @@ export default {
 
   data: () => ({
     currentUser: null,
-    loading: true
+    loading: false
   }),
   created() {
     if (this.$gapi.isAuthenticated()) {
