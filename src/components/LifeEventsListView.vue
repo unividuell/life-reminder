@@ -11,11 +11,7 @@
                  cols="12" xs="12" md="6"
                  v-for="event in pastEvents"
                  :key="event.id">
-               <v-card class="mx-auto">
-                 <v-card-title class="headline">{{ event.title }}</v-card-title>
-                 <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
-                 <v-card-text>{{ event.description }}</v-card-text>
-               </v-card>
+               <LifeEvent :event="event" />
              </v-col>
            </v-row>
          </v-expansion-panel-content>
@@ -28,11 +24,7 @@
                  cols="12" xs="12" md="6"
                  v-for="event in nextMonthEvents"
                  :key="event.id">
-               <v-card class="mx-auto">
-                 <v-card-title class="headline">{{ event.title }}</v-card-title>
-                 <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
-                 <v-card-text>{{ event.description }}</v-card-text>
-               </v-card>
+               <LifeEvent :event="event" />
              </v-col>
            </v-row>
          </v-expansion-panel-content>
@@ -45,11 +37,7 @@
                  cols="12" xs="12" md="6"
                  v-for="event in futureEvents"
                  :key="event.id">
-               <v-card class="mx-auto">
-                 <v-card-title class="headline">{{ event.title }}</v-card-title>
-                 <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
-                 <v-card-text>{{ event.description }}</v-card-text>
-               </v-card>
+               <LifeEvent :event="event" />
              </v-col>
            </v-row>
          </v-expansion-panel-content>
@@ -61,9 +49,11 @@
 
 <script>
 import { compareAsc, addMonths } from 'date-fns'
+import LifeEvent from "@/components/LifeEvent";
 
 export default {
   name: "LifeEventsListView",
+  components: {LifeEvent},
   props: ["gEvents"],
   data: () => ({
     now: new Date(),
