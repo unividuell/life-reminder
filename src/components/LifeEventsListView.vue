@@ -63,7 +63,14 @@ export default {
         redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
         note: gEvent.description
       }))
-      .sort((a,b) => compareAsc(a.redZone.start, b.redZone.end))
+      .sort((a, b) => {
+        // first criteria: the end date
+        let dateSort = compareAsc(a.redZone.end, b.redZone.end)
+        if (dateSort !== 0) return dateSort
+        // second criteria: the title
+        if (a.title > b.title) return 1;
+        if (a.title < b.title) return -1;
+      })
     },
     pastEvents() {
       return this.events.filter((candidate) => candidate.redZone.end < this.now)
