@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { compareAsc } from 'date-fns'
+
 export default {
   name: "LifeEventsListView",
   props: ["gEvents"],
@@ -61,7 +63,7 @@ export default {
         redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
         note: gEvent.description
       }))
-      .sort((a, b) => a.redZone.start - b.redZone.end)
+      .sort((a,b) => compareAsc(a.redZone.start, b.redZone.end))
     },
     pastEvents() {
       return this.events.filter((candidate) => candidate.redZone.end < this.now)
