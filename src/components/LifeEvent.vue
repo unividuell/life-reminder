@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto">
+  <v-card class="mx-auto" outlined>
     <v-app-bar flat color="deep-purple darken-2" dark>
       <v-icon>mdi-calendar</v-icon>
 
