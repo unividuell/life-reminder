@@ -19,7 +19,7 @@
        <v-expansion-panel-content>
          <v-row dense>
            <v-col
-               cols="12" xs="12" md="6"
+               cols="12" xs="12" md="12"
                v-for="event in nextMonthEvents"
                :key="event.id">
              <LifeEvent :event="event" />
