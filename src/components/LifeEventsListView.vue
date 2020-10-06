@@ -54,7 +54,7 @@ import LifeEvent from "@/components/LifeEvent";
 export default {
   name: "LifeEventsListView",
   components: {LifeEvent},
-  props: ["gEvents"],
+  props: ["events"],
   data: () => ({
     now: new Date(),
     panel: [1]
@@ -66,30 +66,25 @@ export default {
     oneMonthAhead() {
       return addMonths(this.now, 1)
     },
-    events() {
-      return this.gEvents.map((gEvent) => ({
-        id: gEvent.id,
-        title: gEvent.summary,
-        redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
-        note: gEvent.description
-      }))
-      .sort((a, b) => {
-        // first criteria: the end date
-        let dateSort = compareAsc(a.redZone.end, b.redZone.end)
-        if (dateSort !== 0) return dateSort
-        // second criteria: the title
-        if (a.title > b.title) return 1;
-        if (a.title < b.title) return -1;
-      })
+    sortedEvents() {
+      return [...this.events]
+        ?.sort((a, b) => {
+          // first criteria: the end date
+          let dateSort = compareAsc(a.redZone.end, b.redZone.end)
+          if (dateSort !== 0) return dateSort
+          // second criteria: the title
+          if (a.title > b.title) return 1;
+          if (a.title < b.title) return -1;
+        })
     },
     pastEvents() {
-      return this.events.filter((candidate) => candidate.redZone.end < this.now)
+      return this.sortedEvents.filter((candidate) => candidate.redZone.end < this.now)
     },
     nextMonthEvents() {
-      return this.events.filter((candidate) => candidate.redZone.end > this.now && candidate.redZone.end < this.oneMonthAhead)
+      return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.now && candidate.redZone.end < this.oneMonthAhead)
     },
     futureEvents() {
-      return this.events.filter((candidate) => candidate.redZone.end > this.oneMonthAhead)
+      return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.oneMonthAhead)
     }
   }
 }

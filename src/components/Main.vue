@@ -17,7 +17,7 @@
           <h1 class="display-2 font-weight-bold mb-3 text-center">
             Welcome
           </h1>
-          <LifeEventsListView :g-events="events"></LifeEventsListView>
+          <LifeEventsListView :events="events"></LifeEventsListView>
         </v-col>
       </v-row>
       <v-row>
@@ -87,7 +87,12 @@ export default {
               calendarId: this.calendarId
             })
           }).then((resp) => {
-            this.events = resp.result.items
+            this.events = resp.result.items.map((gEvent) => ({
+              id: gEvent.id,
+              title: gEvent.summary,
+              redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
+              note: gEvent.description
+            }))
           }).catch((err) => {
             console.log(err)
           })
