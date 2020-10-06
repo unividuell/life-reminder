@@ -1,22 +1,8 @@
 <template>
   <v-container>
-    <template v-if="isLoading">
-      <v-container>
-        <v-layout justify-center align-center>
-          <v-progress-circular
-              indeterminate
-              color="primary"
-              :size="70">
-          </v-progress-circular>
-        </v-layout>
-      </v-container>
-    </template>
-    <v-container v-if="isAuthenticated">
+    <template v-if="isAuthenticated">
       <v-row>
         <v-col class="mb-4">
-          <h1 class="display-2 font-weight-bold mb-3 text-center">
-            Welcome
-          </h1>
           <LifeEventsListView :events="events"></LifeEventsListView>
         </v-col>
       </v-row>
@@ -26,14 +12,14 @@
           <v-btn @click="addEvent">New Event</v-btn>
         </v-col>
       </v-row>
-    </v-container>
-    <v-container v-else>
+    </template>
+    <template v-else>
       <v-row>
         <v-col cols="12">
           <p class="text-center">Please log in.</p>
         </v-col>
       </v-row>
-    </v-container>
+    </template>
   </v-container>
 </template>
 
@@ -68,6 +54,9 @@ export default {
       } else {
         this.events = []
       }
+    },
+    isLoading(newValue) {
+      this.$emit('loading', newValue)
     }
   },
   methods: {

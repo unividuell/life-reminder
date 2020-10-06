@@ -1,49 +1,46 @@
 <template>
  <v-container>
-   <h2>Your Life Reminder Events</h2>
-   <v-container>
-     <v-expansion-panels accordion multiple v-model="panel">
-       <v-expansion-panel>
-         <v-expansion-panel-header>Past events</v-expansion-panel-header>
-         <v-expansion-panel-content>
-           <v-row dense>
-             <v-col
-                 cols="12" xs="12" md="6"
-                 v-for="event in pastEvents"
-                 :key="event.id">
-               <LifeEvent :event="event" />
-             </v-col>
-           </v-row>
-         </v-expansion-panel-content>
-       </v-expansion-panel>
-       <v-expansion-panel>
-         <v-expansion-panel-header>Next up</v-expansion-panel-header>
-         <v-expansion-panel-content>
-           <v-row dense>
-             <v-col
-                 cols="12" xs="12" md="6"
-                 v-for="event in nextMonthEvents"
-                 :key="event.id">
-               <LifeEvent :event="event" />
-             </v-col>
-           </v-row>
-         </v-expansion-panel-content>
-       </v-expansion-panel>
-       <v-expansion-panel>
-         <v-expansion-panel-header>The future</v-expansion-panel-header>
-         <v-expansion-panel-content>
-           <v-row dense>
-             <v-col
-                 cols="12" xs="12" md="6"
-                 v-for="event in futureEvents"
-                 :key="event.id">
-               <LifeEvent :event="event" />
-             </v-col>
-           </v-row>
-         </v-expansion-panel-content>
-       </v-expansion-panel>
-     </v-expansion-panels>
-   </v-container>
+   <v-expansion-panels accordion multiple v-model="panel">
+     <v-expansion-panel>
+       <v-expansion-panel-header>Past events</v-expansion-panel-header>
+       <v-expansion-panel-content>
+         <v-row dense>
+           <v-col
+               cols="12" xs="12" md="6"
+               v-for="event in pastEvents"
+               :key="event.id">
+             <LifeEvent :event="event" />
+           </v-col>
+         </v-row>
+       </v-expansion-panel-content>
+     </v-expansion-panel>
+     <v-expansion-panel>
+       <v-expansion-panel-header>Next up</v-expansion-panel-header>
+       <v-expansion-panel-content>
+         <v-row dense>
+           <v-col
+               cols="12" xs="12" md="6"
+               v-for="event in nextMonthEvents"
+               :key="event.id">
+             <LifeEvent :event="event" />
+           </v-col>
+         </v-row>
+       </v-expansion-panel-content>
+     </v-expansion-panel>
+     <v-expansion-panel>
+       <v-expansion-panel-header>The future</v-expansion-panel-header>
+       <v-expansion-panel-content>
+         <v-row dense>
+           <v-col
+               cols="12" xs="12" md="6"
+               v-for="event in futureEvents"
+               :key="event.id">
+             <LifeEvent :event="event" />
+           </v-col>
+         </v-row>
+       </v-expansion-panel-content>
+     </v-expansion-panel>
+   </v-expansion-panels>
  </v-container>
 </template>
 

@@ -44,10 +44,19 @@
         <span class="mr-2">Login</span>
         <v-icon>mdi-login</v-icon>
       </v-btn>
+
+      <v-progress-linear
+          :active="loading"
+          :indeterminate="loading"
+          absolute
+          bottom
+          color="deep-orange accent-4"
+          height="4"
+      ></v-progress-linear>
     </v-app-bar>
     <AddSoftEvent ref="addSoftEvent" v-on:softEventAdded="onEventAdded"></AddSoftEvent>
     <v-main>
-      <Main ref="main"/>
+      <Main ref="main" v-on:loading="onLoading"/>
     </v-main>
   </v-app>
 </template>
@@ -65,7 +74,8 @@ export default {
   },
 
   data: () => ({
-    currentUser: null
+    currentUser: null,
+    loading: true
   }),
   created() {
     if (this.$gapi.isAuthenticated()) {
@@ -84,11 +94,13 @@ export default {
   methods: {
     signIn() {
       if (!this.$gapi.isAuthenticated()) {
+        this.loading = true
         this.$gapi
             .login(
                 () => {
                   this.$store.commit('setAuthenticated', true)
                   this.currentUser = this.$gapi.getUserData()
+                  this.loading = false
                 },
                 (err) => {
                   console.error(err)
@@ -112,6 +124,9 @@ export default {
     },
     onEventAdded() {
       this.$refs.main.onEventAdded()
+    },
+    onLoading(value) {
+      this.loading = value
     }
   },
   computed: {
