@@ -12,7 +12,7 @@
       </div>
       <v-spacer></v-spacer>
 
-      <v-btn v-if="isAuthenticated" @click="addEvent" text>New Event</v-btn>
+      <v-btn v-if="isAuthenticated" @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
 
       <v-avatar v-if="isAuthenticated">
         <img
