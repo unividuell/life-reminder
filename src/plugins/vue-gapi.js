@@ -17,7 +17,7 @@ const apiConfig = {
     apiKey,
     clientId,
     discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-    scope: "https://www.googleapis.com/auth/calendar"
+    scope: "https://www.googleapis.com/auth/calendar profile"
 };
 
 if (process.env.NODE_ENV === "development") {
