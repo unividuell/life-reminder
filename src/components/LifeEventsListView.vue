@@ -2,7 +2,7 @@
  <v-container>
    <h2>Your Life Reminder Events</h2>
    <v-container>
-     <v-expansion-panels multiple v-model="panel">
+     <v-expansion-panels accordion multiple v-model="panel">
        <v-expansion-panel>
          <v-expansion-panel-header>Past events</v-expansion-panel-header>
          <v-expansion-panel-content>
@@ -37,13 +37,30 @@
            </v-row>
          </v-expansion-panel-content>
        </v-expansion-panel>
+       <v-expansion-panel>
+         <v-expansion-panel-header>The future</v-expansion-panel-header>
+         <v-expansion-panel-content>
+           <v-row dense>
+             <v-col
+                 cols="12" xs="12" md="6"
+                 v-for="event in futureEvents"
+                 :key="event.id">
+               <v-card class="mx-auto">
+                 <v-card-title class="headline">{{ event.title }}</v-card-title>
+                 <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
+                 <v-card-text>{{ event.description }}</v-card-text>
+               </v-card>
+             </v-col>
+           </v-row>
+         </v-expansion-panel-content>
+       </v-expansion-panel>
      </v-expansion-panels>
    </v-container>
  </v-container>
 </template>
 
 <script>
-import { compareAsc } from 'date-fns'
+import { compareAsc, addMonths } from 'date-fns'
 
 export default {
   name: "LifeEventsListView",
@@ -55,6 +72,9 @@ export default {
   computed: {
     calendarId() {
       return this.$store.state.calendarBackendId
+    },
+    oneMonthAhead() {
+      return addMonths(this.now, 1)
     },
     events() {
       return this.gEvents.map((gEvent) => ({
@@ -76,7 +96,10 @@ export default {
       return this.events.filter((candidate) => candidate.redZone.end < this.now)
     },
     nextMonthEvents() {
-      return this.events.filter((candidate) => candidate.redZone.end > this.now)
+      return this.events.filter((candidate) => candidate.redZone.end > this.now && candidate.redZone.end < this.oneMonthAhead)
+    },
+    futureEvents() {
+      return this.events.filter((candidate) => candidate.redZone.end > this.oneMonthAhead)
     }
   }
 }
