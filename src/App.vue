@@ -19,6 +19,8 @@
       </div>
       <v-spacer></v-spacer>
 
+      <v-btn v-if="isAuthenticated" @click="addEvent" text>New Event</v-btn>
+
       <v-avatar v-if="isAuthenticated">
         <img
             :src="this.$gapi.getUserData().imageUrl"
@@ -43,21 +45,23 @@
         <v-icon>mdi-login</v-icon>
       </v-btn>
     </v-app-bar>
-
+    <AddSoftEvent ref="addSoftEvent" v-on:softEventAdded="onEventAdded"></AddSoftEvent>
     <v-main>
-      <Main/>
+      <Main ref="main"/>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import Main from './components/Main';
+import AddSoftEvent from "@/components/AddSoftEvent";
 
 export default {
   name: 'App',
 
   components: {
     Main,
+    AddSoftEvent
   },
 
   data: () => ({
@@ -102,6 +106,12 @@ export default {
               console.error(err.message)
             })
       }
+    },
+    addEvent() {
+      this.$refs.addSoftEvent.open()
+    },
+    onEventAdded() {
+      this.$refs.main.onEventAdded()
     }
   },
   computed: {

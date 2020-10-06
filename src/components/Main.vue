@@ -22,7 +22,8 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <AddSoftEvent v-on:softEventAdded="onEventAdded"></AddSoftEvent>
+          <AddSoftEvent ref="addSoftEvent" v-on:softEventAdded="onEventAdded"></AddSoftEvent>
+          <v-btn @click="addEvent">New Event</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -143,7 +144,10 @@ export default {
                   ? console.warn("could not create life-reminder calender-backend:", err)
                   : console.log("all done.")
           )
-      }
+    },
+    addEvent() {
+      this.$refs.addSoftEvent.open()
+    },
   }
 }
 </script>
