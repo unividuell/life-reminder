@@ -6,16 +6,9 @@
         dark
     >
       <div class="d-flex align-center">
-        <v-img
-            alt="Life Reminder Logo"
-            class="shrink mr-2"
-            contain
-            src="./assets/logo.png"
-            transition="scale-transition"
-            width="40"
-        />
+        <v-icon size="32">mdi-account-check</v-icon>
 
-        <h1 class="hidden-sm-and-down">Life Reminder</h1>
+        <h1 class="hidden-sm-and-down pl-4">Life Reminder</h1>
       </div>
       <v-spacer></v-spacer>
 
