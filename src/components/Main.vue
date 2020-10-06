@@ -17,7 +17,7 @@
           <h1 class="display-2 font-weight-bold mb-3 text-center">
             Welcome
           </h1>
-          <LifeEventsListView :events="events"></LifeEventsListView>
+          <LifeEventsListView :g-events="events"></LifeEventsListView>
         </v-col>
       </v-row>
       <v-row>
