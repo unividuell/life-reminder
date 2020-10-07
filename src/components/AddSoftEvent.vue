@@ -23,34 +23,32 @@
                </v-col>
              </v-row>
              <v-row>
-               <v-col cols="12" xs="8" sm="8">
-                 <p>Select the period you plan to solve this life event:</p>
+               <v-col cols="12" xs="12" sm="12">
+                 <h2>Start and end date:</h2>
                </v-col>
-               <v-col cols="12" xs="4" sm="4">
-                 <v-menu
-                     ref="redZoneStartPicker"
-                     v-model="showRedZonePicker"
-                     :close-on-content-click="false"
-                     :return-value.sync="redZone"
-                     transition="scale-transition"
-                     offset-y
-                     min-width="290px">
-                   <template v-slot:activator="{ on, attrs }">
-                     <v-text-field
-                         v-model="redZoneText"
-                         label="Period"
-                         readonly
-                         v-bind="attrs"
-                         v-on="on"
-                         :rules="[ v=>!!v || 'Please define the period for this event.']"
-                     ></v-text-field>
-                   </template>
-                   <v-date-picker v-model="redZone" no-title scrollable range>
-                     <v-spacer></v-spacer>
-                     <v-btn text color="primary" @click="showRedZonePicker = false">Cancel</v-btn>
-                     <v-btn text color="primary" @click="$refs.redZoneStartPicker.save(redZone)">OK</v-btn>
-                   </v-date-picker>
-                 </v-menu>
+             </v-row>
+             <v-row>
+               <v-col cols="12" xs="12" sm="12">
+                 <v-date-picker
+                     v-model="redZone"
+                     scrollable
+                     no-title
+                     range
+                     first-day-of-week="1"
+                     show-week
+                     full-width
+                     elevation="5">
+                 </v-date-picker>
+               </v-col>
+             </v-row>
+             <v-row>
+               <v-col cols="12">
+                 <v-text-field
+                     v-model="redZoneText"
+                     label="Period"
+                     readonly
+                     :rules="[ () => this.redZone.length === 2 || 'Please define the period for this event (start and end).']"
+                 ></v-text-field>
                </v-col>
              </v-row>
              <v-row>
@@ -62,7 +60,7 @@
          </v-card-text>
          <v-card-actions>
            <v-spacer></v-spacer>
-           <v-btn :disabled="loading" type="submit" form="addSimpleEvent" color="primary">Add Event</v-btn>
+           <v-btn :disabled="loading || !valid" type="submit" form="addSimpleEvent" color="primary">Add Event</v-btn>
          </v-card-actions>
        </v-card>
      </v-dialog>
@@ -78,7 +76,6 @@ export default {
     loading: false,
     summary: null,
     redZone: [ ],
-    showRedZonePicker: false,
     notes: ''
   }),
   methods: {
@@ -87,6 +84,10 @@ export default {
     },
     async onAddSimpleEvent() {
       if (!this.$refs.addSimpleEvent.validate()) {
+        return
+      }
+      if (this.redZone.length < 2) {
+        console.log(this.redZone)
         return
       }
       this.loading = true
