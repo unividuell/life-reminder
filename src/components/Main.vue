@@ -3,12 +3,17 @@
     <template v-if="isAuthenticated">
       <v-row>
         <v-col class="mb-4">
-          <LifeEventsListView :events="events"></LifeEventsListView>
+          <LifeEventsListView
+              :events="events"
+              v-on:reload="reload"
+          />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
-          <AddSoftEvent ref="addSoftEvent" v-on:softEventAdded="onEventAdded"></AddSoftEvent>
+          <AddSoftEvent
+              ref="addSoftEvent"
+              v-on:softEventAdded="onEventAdded"/>
           <v-btn @click="addEvent">New Event</v-btn>
         </v-col>
       </v-row>
@@ -56,7 +61,7 @@ export default {
       }
     },
     isLoading(newValue) {
-      this.$emit('loading', newValue)
+      this.$store.commit('setLoading', newValue)
     }
   },
   methods: {
@@ -71,13 +76,14 @@ export default {
       this.isLoading = false
     },
     async loadEvents() {
+      this.isLoading = true
       await this.$gapi.request({
         path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
         method: 'GET'
       })
       .then((resp) => {
         this.events = resp.result.items.map((gEvent) => ({
-          id: gEvent.id,
+          googleId: gEvent.id,
           title: gEvent.summary,
           redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
           note: gEvent.description
@@ -85,11 +91,13 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
+      this.isLoading = false
     },
     onEventAdded() {
       this.loadEvents()
     },
     async createCalendarBackend() {
+      this.isLoading = true
       let calendarId = 'Live Reminder by unividuell.org'
       await this.$gapi.request({
         path: `https://www.googleapis.com/calendar/v3/users/me/calendarList`,
@@ -137,10 +145,14 @@ export default {
               ? console.warn("could not create life-reminder calender-backend:", err)
               : console.log("all done.")
       )
+      this.isLoading = false
     },
     addEvent() {
       this.$refs.addSoftEvent.open()
     },
+    reload() {
+      this.loadEvents()
+    }
   }
 }
 </script>

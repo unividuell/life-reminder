@@ -49,7 +49,7 @@
     </v-app-bar>
     <AddSoftEvent ref="addSoftEvent" v-on:softEventAdded="onEventAdded"></AddSoftEvent>
     <v-main>
-      <Main ref="main" v-on:loading="onLoading"/>
+      <Main ref="main" />
     </v-main>
   </v-app>
 </template>
@@ -68,7 +68,7 @@ export default {
 
   data: () => ({
     currentUser: null,
-    loading: false
+    isLoading: false
   }),
   created() {
     this.$gapi.isSignedIn()
@@ -83,32 +83,30 @@ export default {
   methods: {
     signIn() {
       if (!this.isAuthenticated) {
-        this.loading = true
+        this.isLoading = true
         this.$gapi.signIn()
             .then((user) => {
               this.$store.commit('setAuthenticated', true)
               this.currentUser = user
-              this.loading = false
             })
             .catch((err) => {
               console.error(err)
-              this.loading = false
             })
+        this.isLoading = false
       }
     },
     signOut() {
       if (this.isAuthenticated) {
-        this.loading = true
+        this.isLoading = true
         this.$gapi.signOut()
             .then(() => {
               this.$store.commit('setAuthenticated', false)
               this.currentUser = null
-              this.loading = false
             })
             .catch((err) => {
               console.error(err.message)
-              this.loading = false
             })
+        this.isLoading = false
       }
     },
     addEvent() {
@@ -116,14 +114,19 @@ export default {
     },
     onEventAdded() {
       this.$refs.main.onEventAdded()
-    },
-    onLoading(value) {
-      this.loading = value
     }
   },
   computed: {
     isAuthenticated () {
       return this.$store.state.authenticated
+    },
+    loading() {
+      return this.$store.state.loading
+    }
+  },
+  watch: {
+    isLoading(newValue) {
+      this.$store.commit('setLoading', newValue)
     }
   }
 };

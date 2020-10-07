@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         authenticated: false,
-        calendarBackendId: null
+        calendarBackendId: null,
+        loading: false
     },
     mutations: {
         setAuthenticated (state, value) {
@@ -14,6 +15,9 @@ export default new Vuex.Store({
         },
         setCalendarBackendId(state, value) {
             state.calendarBackendId = value
+        },
+        setLoading(state, value) {
+            state.loading = value
         }
     }
 });

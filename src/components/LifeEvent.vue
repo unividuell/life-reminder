@@ -9,9 +9,27 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>
+      <v-menu
+          bottom
+          left
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+              dark
+              icon
+              v-bind="attrs"
+              v-on="on"
+          >
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item @click="deleteDialog = true">
+            <v-list-item-title>Delete</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
     <v-progress-linear
         color="pink"
@@ -23,6 +41,32 @@
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.description }}</v-card-text>
+    <template>
+      <v-row justify="center">
+        <v-dialog
+            v-model="deleteDialog"
+            persistent
+            max-width="290">
+          <v-card>
+            <v-card-title class="headline">
+              Really delete Event <b>{{ event.title }}</b>?
+            </v-card-title>
+            <v-card-text>Do you really want to delete this event?</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                  color="green darken-1"
+                  text
+                  @click="deleteDialog = false">Disagree</v-btn>
+              <v-btn
+                  color="green darken-1"
+                  text
+                  @click="onDelete">Agree</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </template>
   </v-card>
 </template>
 
@@ -34,6 +78,8 @@ export default {
   props: ["event"],
   data: () => ({
     now: new Date(),
+    isLoading: false,
+    deleteDialog: false
   }),
   computed: {
     endLabel() {
@@ -60,6 +106,30 @@ export default {
     },
     currentlyInRedZone() {
       return isWithinInterval(this.now, {start: this.event.redZone.start, end: this.event.redZone.end})
+    },
+    calendarId() {
+      return this.$store.state.calendarBackendId
+    }
+  },
+  methods: {
+    async onDelete() {
+      await this.$gapi.request({
+        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
+        method: 'DELETE'
+      })
+      .then(() => {
+        this.$emit('reload')
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      this.isLoading = false
+      this.deleteDialog = false
+    }
+  },
+  watch: {
+    isLoading(newValue) {
+      this.$emit('loading', newValue)
     }
   }
 }

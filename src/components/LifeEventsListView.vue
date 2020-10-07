@@ -9,7 +9,7 @@
                cols="12" xs="12" md="6"
                v-for="event in pastEvents"
                :key="event.id">
-             <LifeEvent :event="event" />
+             <LifeEvent :event="event" v-on:reload="reload" />
            </v-col>
          </v-row>
        </v-expansion-panel-content>
@@ -22,7 +22,7 @@
                cols="12" xs="12" md="12"
                v-for="event in nextMonthEvents"
                :key="event.id">
-             <LifeEvent :event="event" />
+             <LifeEvent :event="event" v-on:reload="reload" />
            </v-col>
          </v-row>
        </v-expansion-panel-content>
@@ -35,7 +35,7 @@
                cols="12" xs="12" md="6"
                v-for="event in futureEvents"
                :key="event.id">
-             <LifeEvent :event="event" />
+             <LifeEvent :event="event" v-on:reload="reload" />
            </v-col>
          </v-row>
        </v-expansion-panel-content>
@@ -82,6 +82,16 @@ export default {
     },
     futureEvents() {
       return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.oneMonthAhead)
+    }
+  },
+  methods: {
+    reload() {
+      this.$emit('reload')
+    }
+  },
+  watch: {
+    isLoading(newValue) {
+      this.$store.commit('setLoading', newValue)
     }
   }
 }

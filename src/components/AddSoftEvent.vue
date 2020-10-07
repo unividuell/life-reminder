@@ -73,7 +73,7 @@ export default {
   data: () => ({
     dialog: false,
     valid: true,
-    loading: false,
+    isLoading: false,
     summary: null,
     redZone: [ ],
     notes: ''
@@ -90,7 +90,7 @@ export default {
         console.log(this.redZone)
         return
       }
-      this.loading = true
+      this.isLoading = true
       let event = {
         summary: this.summary,
         description: this.notes,
@@ -121,7 +121,7 @@ export default {
       }).catch((err) => {
           console.warn(err)
       })
-      this.loading = false
+      this.isLoading = false
       this.dialog = false
       this.$emit('softEventAdded')
     }
@@ -132,8 +132,16 @@ export default {
     },
     calendarId() {
       return this.$store.state.calendarBackendId
+    },
+    loading() {
+      return this.$store.state.loading
     }
   },
+  watch: {
+    isLoading(newValue) {
+      this.$store.commit('setLoading', newValue)
+    }
+  }
 }
 </script>
 
