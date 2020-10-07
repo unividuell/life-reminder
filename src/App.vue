@@ -16,7 +16,7 @@
 
       <v-avatar v-if="isAuthenticated">
         <img
-            :src="this.$gapi.getUserData().imageUrl"
+            :src="this.currentUser.image"
             alt="Profile Picture"
         >
       </v-avatar>
@@ -71,44 +71,43 @@ export default {
     loading: false
   }),
   created() {
-    if (this.$gapi.isAuthenticated()) {
-      this.$store.commit('setAuthenticated', true)
-      this.currentUser = this.$gapi.getUserData()
-    }
-
-    try {
-      // NOTE: Google recommends 45 min refresh policy
-      window.setInterval(this.$gapi.refreshToken(), 1000 * 60 * 45);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
+    this.$gapi.isSignedIn()
+      .then((result) => {
+        if (result) {
+          this.$store.commit('setAuthenticated', true)
+        }
+      })
+    this.$gapi.currentUser()
+      .then(user => this.currentUser = user)
   },
   methods: {
     signIn() {
-      if (!this.$gapi.isAuthenticated()) {
+      if (!this.isAuthenticated) {
         this.loading = true
-        this.$gapi
-            .login(
-                () => {
-                  this.$store.commit('setAuthenticated', true)
-                  this.currentUser = this.$gapi.getUserData()
-                  this.loading = false
-                },
-                (err) => {
-                  console.error(err)
-                })
+        this.$gapi.signIn()
+            .then((user) => {
+              this.$store.commit('setAuthenticated', true)
+              this.currentUser = user
+              this.loading = false
+            })
+            .catch((err) => {
+              console.error(err)
+              this.loading = false
+            })
       }
     },
     signOut() {
-      if (this.$gapi.isAuthenticated()) {
-        this.$gapi.logout(
-            () => {
+      if (this.isAuthenticated) {
+        this.loading = true
+        this.$gapi.signOut()
+            .then(() => {
               this.$store.commit('setAuthenticated', false)
               this.currentUser = null
-            },
-            (err) => {
+              this.loading = false
+            })
+            .catch((err) => {
               console.error(err.message)
+              this.loading = false
             })
       }
     },

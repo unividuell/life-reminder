@@ -106,21 +106,20 @@ export default {
           ]
         }
       }
-      await this.$gapi.getGapiClient()
-        .then((gapi) => {
-            return gapi.client.calendar.events.insert({
-              calendarId: this.calendarId,
-              resource: event
-            })
-        }).then((resp) => {
-            console.log(resp)
-            this.summary = null
-            this.redZone = []
-            this.notes = ''
-            this.valid = true
-        }).catch((err) => {
-            console.warn(err)
-        })
+      await this.$gapi.request({
+        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
+        method: 'POST',
+        body: event
+      })
+      .then((resp) => {
+        console.log(resp)
+        this.summary = null
+        this.redZone = []
+        this.notes = ''
+        this.valid = true
+      }).catch((err) => {
+          console.warn(err)
+      })
       this.loading = false
       this.dialog = false
       this.$emit('softEventAdded')
