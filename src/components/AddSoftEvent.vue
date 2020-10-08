@@ -100,6 +100,7 @@ export default {
         end: {
           date: this.redZone[1]
         },
+        transparency: "opaque",
         reminders: {
           useDefault: false,
           overrides: [

@@ -86,7 +86,8 @@ export default {
           googleId: gEvent.id,
           title: gEvent.summary,
           redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
-          note: gEvent.description
+          note: gEvent.description,
+          complete: gEvent.transparency === "transparent"
         }))
       }).catch((err) => {
         console.log(err)

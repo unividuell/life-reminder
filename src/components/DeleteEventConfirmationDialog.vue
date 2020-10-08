@@ -3,7 +3,7 @@
     <v-dialog
         v-model="showDialog"
         persistent
-        max-width="290">
+        max-width="400">
       <v-card>
         <v-card-title class="headline">
           Really delete Event <b>{{ event.title }}</b>?
@@ -38,16 +38,17 @@ export default {
       this.showDialog = true
     },
     async onDelete() {
+      this.isLoading = true
       await this.$gapi.request({
         path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
         method: 'DELETE'
       })
-          .then(() => {
-            this.$emit('reload')
-          })
-          .catch(err => {
-            console.log(err)
-          })
+      .then(() => {
+        this.$emit('reload')
+      })
+      .catch(err => {
+        console.log(err)
+      })
       this.isLoading = false
       this.showDialog = false
     }

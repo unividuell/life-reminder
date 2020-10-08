@@ -25,6 +25,12 @@
         </template>
 
         <v-list>
+          <v-list-item @click="finishEvent('complete')" v-if="! event.complete">
+            <v-list-item-title>Finish</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="finishEvent('re-open')" v-else>
+            <v-list-item-title>Re-Open</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="deleteEvent">
             <v-list-item-title>Delete</v-list-item-title>
           </v-list-item>
@@ -32,7 +38,7 @@
       </v-menu>
     </v-app-bar>
     <v-progress-linear
-        color="pink"
+        :color="event.complete ? 'green' : 'pink'"
         v-model="remainingTime"
         reverse
         height="25">
@@ -42,16 +48,18 @@
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.description }}</v-card-text>
     <DeleteEventConfirmationDialog ref="deleteEventConfirmationDialog" :event="event" v-on:reload="$emit('reload')" />
+    <FinishEvent ref="finishEvent" :event="event" v-on:reload="$emit('reload')" />
   </v-card>
 </template>
 
 <script>
 import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, differenceInCalendarDays } from 'date-fns'
 import DeleteEventConfirmationDialog from "@/components/DeleteEventConfirmationDialog";
+import FinishEvent from "@/components/FinishEvent";
 
 export default {
   name: "LifeEvent",
-  components: {DeleteEventConfirmationDialog},
+  components: {FinishEvent, DeleteEventConfirmationDialog},
   props: ["event"],
   data: () => ({
     now: new Date(),
@@ -90,6 +98,9 @@ export default {
   methods: {
     deleteEvent() {
       this.$refs.deleteEventConfirmationDialog.open()
+    },
+    finishEvent(desiredState) {
+      this.$refs.finishEvent.finishEvent(desiredState)
     }
   },
   watch: {
