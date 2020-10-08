@@ -47,19 +47,19 @@
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.description }}</v-card-text>
-    <DeleteEventConfirmationDialog ref="deleteEventConfirmationDialog" :event="event" v-on:reload="$emit('reload')" />
+    <DeleteEvent ref="deleteEvent" :event="event" v-on:reload="$emit('reload')" />
     <SetEventState ref="setEventState" :event="event" v-on:reload="$emit('reload')" />
   </v-card>
 </template>
 
 <script>
 import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, differenceInCalendarDays } from 'date-fns'
-import DeleteEventConfirmationDialog from "@/components/DeleteEventConfirmationDialog";
+import DeleteEvent from "@/components/DeleteEvent";
 import SetEventState from "@/components/SetEventState";
 
 export default {
   name: "LifeEvent",
-  components: {SetEventState, DeleteEventConfirmationDialog},
+  components: {SetEventState, DeleteEvent},
   props: ["event"],
   data: () => ({
     now: new Date(),
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     deleteEvent() {
-      this.$refs.deleteEventConfirmationDialog.open()
+      this.$refs.deleteEvent.open()
     },
     setEventState(desiredState) {
       this.$refs.setEventState.setEventState(desiredState)

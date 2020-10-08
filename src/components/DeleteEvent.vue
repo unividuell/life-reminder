@@ -6,7 +6,7 @@
         max-width="400">
       <v-card>
         <v-card-title class="headline">
-          Really delete Event <b>{{ event.title }}</b>?
+          Really delete event {{ event.title }}?
         </v-card-title>
         <v-card-text>Do you really want to delete this event?</v-card-text>
         <v-card-actions>
@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  name: "DeleteEventConfirmationDialog",
+  name: "DeleteEvent",
   props: ["event"],
   data: () => ({
     showDialog: false,
