@@ -25,10 +25,10 @@
         </template>
 
         <v-list>
-          <v-list-item @click="finishEvent('complete')" v-if="! event.complete">
+          <v-list-item @click="setEventState('close')" v-if="! event.closed">
             <v-list-item-title>Finish</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="finishEvent('re-open')" v-else>
+          <v-list-item @click="setEventState('re-open')" v-else>
             <v-list-item-title>Re-Open</v-list-item-title>
           </v-list-item>
           <v-list-item @click="deleteEvent">
@@ -38,7 +38,7 @@
       </v-menu>
     </v-app-bar>
     <v-progress-linear
-        :color="event.complete ? 'green' : 'pink'"
+        :color="event.closed ? 'green' : 'pink'"
         v-model="remainingTime"
         reverse
         height="25">
@@ -48,18 +48,18 @@
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.description }}</v-card-text>
     <DeleteEventConfirmationDialog ref="deleteEventConfirmationDialog" :event="event" v-on:reload="$emit('reload')" />
-    <FinishEvent ref="finishEvent" :event="event" v-on:reload="$emit('reload')" />
+    <SetEventState ref="setEventState" :event="event" v-on:reload="$emit('reload')" />
   </v-card>
 </template>
 
 <script>
 import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, differenceInCalendarDays } from 'date-fns'
 import DeleteEventConfirmationDialog from "@/components/DeleteEventConfirmationDialog";
-import FinishEvent from "@/components/FinishEvent";
+import SetEventState from "@/components/SetEventState";
 
 export default {
   name: "LifeEvent",
-  components: {FinishEvent, DeleteEventConfirmationDialog},
+  components: {SetEventState, DeleteEventConfirmationDialog},
   props: ["event"],
   data: () => ({
     now: new Date(),
@@ -99,8 +99,8 @@ export default {
     deleteEvent() {
       this.$refs.deleteEventConfirmationDialog.open()
     },
-    finishEvent(desiredState) {
-      this.$refs.finishEvent.finishEvent(desiredState)
+    setEventState(desiredState) {
+      this.$refs.setEventState.setEventState(desiredState)
     }
   },
   watch: {

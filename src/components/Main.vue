@@ -87,7 +87,7 @@ export default {
           title: gEvent.summary,
           redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
           note: gEvent.description,
-          complete: gEvent.transparency === "transparent"
+          closed: gEvent.transparency === "transparent"
         }))
       }).catch((err) => {
         console.log(err)

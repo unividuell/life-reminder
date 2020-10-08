@@ -1,7 +1,7 @@
 <template>
   <v-dialog
       v-model="showDialog">
-    <v-card v-if="desiredState === 'complete'">
+    <v-card v-if="desiredState === 'close'">
       <v-card-title>Mission Accomplished</v-card-title>
       <v-card-text>Nice job! :)</v-card-text>
     </v-card>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "FinishEvent",
+  name: "SetEventState",
   props: ["event"],
   data: () => ({
     showDialog: false,
@@ -22,11 +22,11 @@ export default {
     desiredState: null
   }),
   methods: {
-    async finishEvent(desiredState) {
+    async setEventState(desiredState) {
       this.desiredState = desiredState
       this.isLoading = true
       this.showDialog = false // no user interruption
-      let gState = this.desiredState === 'complete' ? "transparent" : "opaque"
+      let gState = this.desiredState === 'close' ? "transparent" : "opaque"
       await this.$gapi.request({
         path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
         method: 'PATCH',
