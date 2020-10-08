@@ -25,7 +25,7 @@
         </template>
 
         <v-list>
-          <v-list-item @click="deleteDialog = true">
+          <v-list-item @click="deleteEvent">
             <v-list-item-title>Delete</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -41,45 +41,21 @@
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.description }}</v-card-text>
-    <template>
-      <v-row justify="center">
-        <v-dialog
-            v-model="deleteDialog"
-            persistent
-            max-width="290">
-          <v-card>
-            <v-card-title class="headline">
-              Really delete Event <b>{{ event.title }}</b>?
-            </v-card-title>
-            <v-card-text>Do you really want to delete this event?</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                  color="green darken-1"
-                  text
-                  @click="deleteDialog = false">Disagree</v-btn>
-              <v-btn
-                  color="green darken-1"
-                  text
-                  @click="onDelete">Agree</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-    </template>
+    <DeleteEventConfirmationDialog ref="deleteEventConfirmationDialog" :event="event" v-on:reload="$emit('reload')" />
   </v-card>
 </template>
 
 <script>
 import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, differenceInCalendarDays } from 'date-fns'
+import DeleteEventConfirmationDialog from "@/components/DeleteEventConfirmationDialog";
 
 export default {
   name: "LifeEvent",
+  components: {DeleteEventConfirmationDialog},
   props: ["event"],
   data: () => ({
     now: new Date(),
-    isLoading: false,
-    deleteDialog: false
+    isLoading: false
   }),
   computed: {
     endLabel() {
@@ -112,19 +88,8 @@ export default {
     }
   },
   methods: {
-    async onDelete() {
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
-        method: 'DELETE'
-      })
-      .then(() => {
-        this.$emit('reload')
-      })
-      .catch(err => {
-        console.log(err)
-      })
-      this.isLoading = false
-      this.deleteDialog = false
+    deleteEvent() {
+      this.$refs.deleteEventConfirmationDialog.open()
     }
   },
   watch: {
