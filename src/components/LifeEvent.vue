@@ -42,7 +42,7 @@
     </v-app-bar>
     <v-progress-linear
         :color="event.closed ? 'green' : 'pink'"
-        v-model="remainingTime"
+        :value="remainingTime"
         reverse
         height="25">
       <strong v-if="currentlyInRedZone">{{ redZoneDaysLeft }} of {{ redZoneDurationInDays }} days left</strong>
