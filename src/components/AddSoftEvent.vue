@@ -2,16 +2,16 @@
    <v-container>
      <v-dialog
          v-model="dialog"
-         max-width="600px"
-     >
+         max-width="600px">
        <v-card>
-         <v-card-title>Add Life Reminder Event</v-card-title>
+         <v-card-title>Life Reminder Event</v-card-title>
          <v-card-text>
            <v-form
                v-model="valid"
-               id="addSimpleEvent"
-               ref="addSimpleEvent"
-               @submit.stop.prevent="onAddSimpleEvent" >
+               :id="formId"
+               ref="eventForm"
+               v-bind:key="event ? event.googleId : 'add'"
+               @submit.stop.prevent="handleEvent" >
              <v-row>
                <v-col cols="12">
                  <v-text-field
@@ -60,7 +60,7 @@
          </v-card-text>
          <v-card-actions>
            <v-spacer></v-spacer>
-           <v-btn :disabled="loading || !valid" type="submit" form="addSimpleEvent" color="primary">Add Event</v-btn>
+           <v-btn :disabled="loading || !valid" type="submit" :form="formId" color="primary">{{actionLabel}}</v-btn>
          </v-card-actions>
        </v-card>
      </v-dialog>
@@ -68,26 +68,84 @@
 </template>
 
 <script>
+import { formatISO } from 'date-fns'
+
 export default {
   name: "AddSoftEvent",
+  props: ["event"],
   data: () => ({
     dialog: false,
     valid: true,
     isLoading: false,
+    googleId: null,
     summary: null,
     redZone: [ ],
-    notes: ''
+    notes: '',
+    edit: false
   }),
+  created() {
+    if (this.event) {
+      this.googleId = this.event.googleId
+      this.summary = this.event.title
+      this.redZone = [
+        formatISO(this.event.redZone.start, { representation: 'date' }),
+        formatISO(this.event.redZone.end, { representation: 'date' })
+      ]
+      this.notes = this.event.note
+      this.edit = true
+    } else {
+      this.edit = false
+    }
+  },
   methods: {
     open() {
       this.dialog = true
     },
-    async onAddSimpleEvent() {
-      if (!this.$refs.addSimpleEvent.validate()) {
+    clear() {
+      this.googleId = null
+      this.summary = null
+      this.redZone = []
+      this.notes = null
+      this.edit = false
+    },
+    async handleEvent() {
+      if (this.edit) {
+        await this.editSimpleEvent()
+      } else {
+        await this.addSimpleEvent()
+      }
+    },
+    async editSimpleEvent() {
+      if (!this.$refs.eventForm.validate()) {
         return
       }
-      if (this.redZone.length < 2) {
-        console.log(this.redZone)
+      this.isLoading = true
+      let event = {
+        summary: this.summary,
+        description: this.notes,
+        start: {
+          date: this.redZone[0]
+        },
+        end: {
+          date: this.redZone[1]
+        }
+      }
+      await this.$gapi.request({
+        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
+        method: 'PATCH',
+        body: event
+      })
+      .then(() => {
+        // no-op
+      }).catch((err) => {
+        console.warn(err)
+      })
+      this.isLoading = false
+      this.dialog = false
+      this.$emit('reload')
+    },
+    async addSimpleEvent() {
+      if (!this.$refs.eventForm.validate()) {
         return
       }
       this.isLoading = true
@@ -113,21 +171,20 @@ export default {
         method: 'POST',
         body: event
       })
-      .then((resp) => {
-        console.log(resp)
-        this.summary = null
-        this.redZone = []
-        this.notes = ''
-        this.valid = true
+      .then(() => {
+        this.clear()
       }).catch((err) => {
           console.warn(err)
       })
       this.isLoading = false
       this.dialog = false
-      this.$emit('softEventAdded')
+      this.$emit('reload')
     }
   },
   computed: {
+    formId() {
+      return this.event ? this.event.googleId : 'add'
+    },
     redZoneText () {
       return this.redZone.join(' ~ ')
     },
@@ -136,6 +193,9 @@ export default {
     },
     loading() {
       return this.$store.state.loading
+    },
+    actionLabel() {
+      return this.edit ? "Edit Event" : "Add Event"
     }
   },
   watch: {

@@ -31,6 +31,9 @@
           <v-list-item @click="setEventState('re-open')" v-else>
             <v-list-item-title>Re-Open</v-list-item-title>
           </v-list-item>
+          <v-list-item @click="editEvent">
+            <v-list-item-title>Edit</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="deleteEvent">
             <v-list-item-title>Delete</v-list-item-title>
           </v-list-item>
@@ -47,8 +50,9 @@
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.description }}</v-card-text>
-    <DeleteEvent ref="deleteEvent" :event="event" v-on:reload="$emit('reload')" />
-    <SetEventState ref="setEventState" :event="event" v-on:reload="$emit('reload')" />
+    <DeleteEvent ref="deleteEvent" v-bind:key="'delete_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
+    <SetEventState ref="setEventState" v-bind:key="'set-state_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
+    <AddSoftEvent ref="editEvent" v-bind:key="'edit_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
   </v-card>
 </template>
 
@@ -56,10 +60,11 @@
 import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, differenceInCalendarDays } from 'date-fns'
 import DeleteEvent from "@/components/DeleteEvent";
 import SetEventState from "@/components/SetEventState";
+import AddSoftEvent from "@/components/AddSoftEvent";
 
 export default {
   name: "LifeEvent",
-  components: {SetEventState, DeleteEvent},
+  components: {AddSoftEvent, SetEventState, DeleteEvent},
   props: ["event"],
   data: () => ({
     now: new Date(),
@@ -97,10 +102,13 @@ export default {
   },
   methods: {
     deleteEvent() {
-      this.$refs.deleteEvent.open()
+      this.$refs.deleteEvent.open(this.event)
     },
     setEventState(desiredState) {
       this.$refs.setEventState.setEventState(desiredState)
+    },
+    editEvent() {
+      this.$refs.editEvent.open(this.event)
     }
   },
   watch: {

@@ -47,7 +47,7 @@
           height="4"
       ></v-progress-linear>
     </v-app-bar>
-    <AddSoftEvent ref="addSoftEvent" v-on:softEventAdded="onEventAdded"></AddSoftEvent>
+    <AddSoftEvent ref="addSoftEvent" v-bind:key="'add-event-app'" v-on:reload="reload"></AddSoftEvent>
     <v-main>
       <Main ref="main" />
     </v-main>
@@ -112,8 +112,8 @@ export default {
     addEvent() {
       this.$refs.addSoftEvent.open()
     },
-    onEventAdded() {
-      this.$refs.main.onEventAdded()
+    reload() {
+      this.$refs.main.reload()
     }
   },
   computed: {

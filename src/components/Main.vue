@@ -13,7 +13,8 @@
         <v-col cols="12">
           <AddSoftEvent
               ref="addSoftEvent"
-              v-on:softEventAdded="onEventAdded"/>
+              v-bind:key="'add-event-main'"
+              v-on:reload="reload"/>
           <v-btn @click="addEvent">New Event</v-btn>
         </v-col>
       </v-row>
@@ -93,9 +94,6 @@ export default {
         console.log(err)
       })
       this.isLoading = false
-    },
-    onEventAdded() {
-      this.loadEvents()
     },
     async createCalendarBackend() {
       this.isLoading = true
