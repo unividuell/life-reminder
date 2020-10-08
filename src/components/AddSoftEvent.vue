@@ -102,11 +102,10 @@ export default {
       this.dialog = true
     },
     clear() {
-      this.googleId = null
-      this.summary = null
+      this.summary = []
       this.redZone = []
       this.notes = null
-      this.edit = false
+      this.$refs.eventForm.reset()
     },
     async handleEvent() {
       if (this.edit) {
@@ -185,8 +184,14 @@ export default {
     formId() {
       return this.event ? this.event.googleId : 'add'
     },
-    redZoneText () {
-      return this.redZone.join(' ~ ')
+    redZoneText: {
+      get() {
+        return this.redZone.join(' ~ ')
+      },
+      set(newValue) {
+        // w/o `this.$refs.eventForm.reset()` will throw an error :/
+        console.log(newValue)
+      }
     },
     calendarId() {
       return this.$store.state.calendarBackendId
