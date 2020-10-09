@@ -1,70 +1,68 @@
 <template>
-   <v-container>
-     <v-dialog
-         v-model="dialog"
-         max-width="600px">
-       <v-card>
-         <v-card-title>Life Reminder Event</v-card-title>
-         <v-card-text>
-           <v-form
-               v-model="valid"
-               :id="formId"
-               ref="eventForm"
-               v-bind:key="event ? event.googleId : 'add'"
-               @submit.stop.prevent="handleEvent" >
-             <v-row>
-               <v-col cols="12">
-                 <v-text-field
-                     v-model="summary"
-                     label="Summary"
-                     :rules="[ v=>!!v || 'Please provide a summary (title) for this event.']"
-                     required>
-                 </v-text-field>
-               </v-col>
-             </v-row>
-             <v-row>
-               <v-col cols="12" xs="12" sm="12">
-                 <h2>Start and end date:</h2>
-               </v-col>
-             </v-row>
-             <v-row>
-               <v-col cols="12" xs="12" sm="12">
-                 <v-date-picker
-                     v-model="redZone"
-                     scrollable
-                     no-title
-                     range
-                     first-day-of-week="1"
-                     show-week
-                     full-width
-                     elevation="5">
-                 </v-date-picker>
-               </v-col>
-             </v-row>
-             <v-row>
-               <v-col cols="12">
-                 <v-text-field
-                     v-model="redZoneText"
-                     label="Period"
-                     readonly
-                     :rules="[ () => this.redZone.length === 2 || 'Please define the period for this event (start and end).']"
-                 ></v-text-field>
-               </v-col>
-             </v-row>
-             <v-row>
-               <v-col cols="12" xs="12">
-                 <v-textarea v-model="notes" label="Personal notes"></v-textarea>
-               </v-col>
-             </v-row>
-           </v-form>
-         </v-card-text>
-         <v-card-actions>
-           <v-spacer></v-spacer>
-           <v-btn :disabled="loading || !valid" type="submit" :form="formId" color="primary">{{actionLabel}}</v-btn>
-         </v-card-actions>
-       </v-card>
-     </v-dialog>
-   </v-container>
+   <v-dialog
+       v-model="dialog"
+       max-width="600px">
+     <v-card>
+       <v-card-title>Life Reminder Event</v-card-title>
+       <v-card-text>
+         <v-form
+             v-model="valid"
+             :id="formId"
+             ref="eventForm"
+             v-bind:key="event ? event.googleId : 'add'"
+             @submit.stop.prevent="handleEvent" >
+           <v-row>
+             <v-col cols="12">
+               <v-text-field
+                   v-model="summary"
+                   label="Summary"
+                   :rules="[ v=>!!v || 'Please provide a summary (title) for this event.']"
+                   required>
+               </v-text-field>
+             </v-col>
+           </v-row>
+           <v-row>
+             <v-col cols="12" xs="12" sm="12">
+               <h2>Start and end date:</h2>
+             </v-col>
+           </v-row>
+           <v-row>
+             <v-col cols="12" xs="12" sm="12">
+               <v-date-picker
+                   v-model="redZone"
+                   scrollable
+                   no-title
+                   range
+                   first-day-of-week="1"
+                   show-week
+                   full-width
+                   elevation="5">
+               </v-date-picker>
+             </v-col>
+           </v-row>
+           <v-row>
+             <v-col cols="12">
+               <v-text-field
+                   v-model="redZoneText"
+                   label="Period"
+                   readonly
+                   :rules="[ () => this.redZone.length === 2 || 'Please define the period for this event (start and end).']"
+               ></v-text-field>
+             </v-col>
+           </v-row>
+           <v-row>
+             <v-col cols="12" xs="12">
+               <v-textarea v-model="notes" label="Personal notes"></v-textarea>
+             </v-col>
+           </v-row>
+         </v-form>
+       </v-card-text>
+       <v-card-actions>
+         <v-spacer></v-spacer>
+         <v-btn :disabled="loading || !valid" type="submit" :form="formId" color="primary">{{actionLabel}}</v-btn>
+       </v-card-actions>
+     </v-card>
+   </v-dialog>
 </template>
 
 <script>
