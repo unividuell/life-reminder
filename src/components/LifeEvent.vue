@@ -2,28 +2,16 @@
   <v-card class="mx-auto" outlined>
     <v-app-bar flat color="deep-purple darken-2" dark>
       <v-icon>mdi-calendar</v-icon>
-
       <v-toolbar-title class="title pl-4">
         {{ event.title }}
       </v-toolbar-title>
-
       <v-spacer></v-spacer>
-
-      <v-menu
-          bottom
-          left
-      >
+      <v-menu bottom left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-              dark
-              icon
-              v-bind="attrs"
-              v-on="on"
-          >
+          <v-btn dark icon v-bind="attrs" v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
-
         <v-list>
           <v-list-item @click="setEventState('close')" v-if="! event.closed">
             <v-list-item-title>Finish</v-list-item-title>
