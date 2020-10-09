@@ -9,15 +9,6 @@
           />
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12">
-          <AddSoftEvent
-              ref="addSoftEvent"
-              v-bind:key="'add-event-main'"
-              v-on:reload="reload"/>
-          <v-btn @click="addEvent">New Event</v-btn>
-        </v-col>
-      </v-row>
     </template>
     <template v-else>
       <v-row>
@@ -30,11 +21,11 @@
 </template>
 
 <script>
-import AddSoftEvent from "@/components/AddSoftEvent";
 import LifeEventsListView from "@/components/LifeEventsListView";
+
 export default {
   name: 'Main',
-  components: {LifeEventsListView, AddSoftEvent},
+  components: {LifeEventsListView},
   data: () => ({
     currentUser: null,
     isLoading: false,
