@@ -1,6 +1,7 @@
 <template>
    <v-dialog
        v-model="dialog"
+       scrollable
        max-width="600px">
      <v-card>
        <v-card-title>Life Reminder Event</v-card-title>
@@ -22,12 +23,7 @@
              </v-col>
            </v-row>
            <v-row>
-             <v-col cols="12" xs="12" sm="12">
-               <h2>Start and end date:</h2>
-             </v-col>
-           </v-row>
-           <v-row>
-             <v-col cols="12" xs="12" sm="12">
+             <v-col cols="12" xs="12" sm="12" class="pt-0">
                <v-date-picker
                    v-model="redZone"
                    scrollable
@@ -37,21 +33,17 @@
                    show-week
                    full-width
                    elevation="5">
+                 <v-text-field
+                     v-model="redZoneText"
+                     label="Period"
+                     readonly
+                     :rules="[ () => this.redZone.length === 2 || 'Please define the period for this event (start and end).']"
+                 ></v-text-field>
                </v-date-picker>
              </v-col>
            </v-row>
            <v-row>
-             <v-col cols="12">
-               <v-text-field
-                   v-model="redZoneText"
-                   label="Period"
-                   readonly
-                   :rules="[ () => this.redZone.length === 2 || 'Please define the period for this event (start and end).']"
-               ></v-text-field>
-             </v-col>
-           </v-row>
-           <v-row>
-             <v-col cols="12" xs="12">
+             <v-col cols="12" xs="12" class="pt-0">
                <v-textarea v-model="notes" label="Personal notes"></v-textarea>
              </v-col>
            </v-row>
@@ -66,7 +58,8 @@
 </template>
 
 <script>
-import { formatISO } from 'date-fns'
+import { formatISO, parseISO } from 'date-fns'
+import format from '../plugins/date-fns-format'
 
 export default {
   name: "AddSoftEvent",
@@ -184,7 +177,7 @@ export default {
     },
     redZoneText: {
       get() {
-        return this.redZone.join(' ~ ')
+        return this.redZone.map(date => format(parseISO(date))).join(' -> ')
       },
       set(newValue) {
         // w/o `this.$refs.eventForm.reset()` will throw an error :/
