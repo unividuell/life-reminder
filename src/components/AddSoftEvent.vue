@@ -75,7 +75,6 @@ export default {
     edit: false
   }),
   created() {
-    console.log("created")
     if (this.event) {
       this.googleId = this.event.googleId
       this.summary = this.event.title
