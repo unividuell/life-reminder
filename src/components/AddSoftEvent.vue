@@ -75,6 +75,7 @@ export default {
     edit: false
   }),
   created() {
+    console.log("created")
     if (this.event) {
       this.googleId = this.event.googleId
       this.summary = this.event.title
@@ -139,6 +140,11 @@ export default {
         return
       }
       this.isLoading = true
+      if(this.redZone[0] > this.redZone[1]){
+        let temp = this.redZone[0]
+        this.redZone[0] = this.redZone[1]
+        this.redZone[1] = temp
+      }
       let event = {
         summary: this.summary,
         description: this.notes,
