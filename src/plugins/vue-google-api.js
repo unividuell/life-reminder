@@ -1,5 +1,5 @@
 import Vue from "vue";
-import VueGoogleApi from 'vue-google-api';
+import VueGoogleApi from './vue-google-api-patch/vue-google-api-patch';
 
 const apiKey = process.env.VUE_APP_GAPI_KEY;
 const clientId = process.env.VUE_APP_GAPI_CLIENT_ID;
