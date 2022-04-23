@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" outlined>
-    <v-app-bar flat color="deep-purple darken-2" dark>
+    <v-app-bar flat color="blue-grey darken-3" dark>
       <v-icon>mdi-calendar</v-icon>
       <v-toolbar-title class="title pl-4">
         {{ event.title }}
@@ -29,11 +29,13 @@
       </v-menu>
     </v-app-bar>
     <v-progress-linear
-        :color="event.closed ? 'green' : 'pink'"
+        :color="getColor"
         :value="remainingTime"
-        reverse
-        height="25">
-      <strong v-if="currentlyInRedZone">{{ redZoneDaysLeft }} of {{ redZoneDurationInDays }} days left</strong>
+        :striped="event.closed ? false : true"
+        :reverse="currentlyInRedZone ? true : false"
+        height="15">
+      <strong v-if="currentlyInRedZone">{{ redZoneDaysLeft }} of {{ redZoneDurationInDays }} days left to perform task</strong>
+      <strong v-if="currentlyBeforeRedZone">{{ redZoneStartDaysLeft }} days before task starts</strong>
     </v-progress-linear>
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
@@ -56,7 +58,7 @@ export default {
   props: ["event"],
   data: () => ({
     now: new Date(),
-    isLoading: false
+    isLoading: false,
   }),
   computed: {
     endLabel() {
@@ -66,14 +68,28 @@ export default {
     remainingTime() {
       if (! this.currentlyInRedZone) {
         // we are currently not in this red-zone
-        if (isFuture(this.event.redZone.end)) {
-          return 100
+        if (isFuture(this.event.redZone.start)) {
+          //interval between now and start of event/365...
+          var progress = 100-differenceInCalendarDays(this.event.redZone.start, this.now)/365*100
+          return progress
         } else {
-          return 0
+          //past Events
+          return 100
         }
       }
-
+      //in red-zone
       return (this.redZoneDaysLeft / this.redZoneDurationInDays) * 100
+    },
+    getColor(){
+      if(this.event.closed){
+        return 'green'
+      } else {
+        if(this.currentlyInRedZone){
+          return 'pink'
+        } else {
+          return 'blue'
+        }
+      } 
     },
     redZoneDurationInDays() {
       return eachDayOfInterval({start: this.event.redZone.start, end: this.event.redZone.end}).length
@@ -81,8 +97,17 @@ export default {
     redZoneDaysLeft() {
       return differenceInCalendarDays(this.event.redZone.end, this.now)
     },
+    redZoneStartDaysLeft() {
+      return differenceInCalendarDays(this.event.redZone.start, this.now)
+    },
     currentlyInRedZone() {
       return isWithinInterval(this.now, {start: this.event.redZone.start, end: this.event.redZone.end})
+    },
+    currentlyBeforeRedZone() {
+      return (!this.currentlyInRedZone && isFuture(this.event.redZone.start))
+    },
+    currentlyOverDue() {
+      return (!this.currentlyInRedZone && !isFuture(this.event.redZone.end))
     },
     calendarId() {
       return this.$store.state.calendarBackendId

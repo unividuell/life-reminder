@@ -8,7 +8,7 @@
       <div class="d-flex align-center">
         <v-icon size="32">mdi-account-check</v-icon>
 
-        <h1 class="hidden-sm-and-down pl-4">Life Reminder</h1>
+        <h1 class="hidden-sm-and-down pl-4">Life Reminder 3000</h1>
       </div>
       <v-spacer></v-spacer>
 
