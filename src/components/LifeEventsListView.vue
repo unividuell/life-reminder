@@ -1,19 +1,7 @@
 <template>
  <v-container>
    <v-expansion-panels accordion multiple v-model="panel">
-     <v-expansion-panel>
-       <v-expansion-panel-header>Past events</v-expansion-panel-header>
-       <v-expansion-panel-content>
-         <v-row dense>
-           <v-col
-               cols="12" xs="12" md="6"
-               v-for="event in pastEvents"
-               :key="event.id">
-             <LifeEvent :event="event" v-bind:key="event.googleId" v-on:reload="reload" />
-           </v-col>
-         </v-row>
-       </v-expansion-panel-content>
-     </v-expansion-panel>
+    
      <v-expansion-panel>
        <v-expansion-panel-header>Next up</v-expansion-panel-header>
        <v-expansion-panel-content>
@@ -32,8 +20,21 @@
        <v-expansion-panel-content>
          <v-row dense>
            <v-col
-               cols="12" xs="12" md="6"
+               cols="12" xs="12" md="12"
                v-for="event in futureEvents"
+               :key="event.id">
+             <LifeEvent :event="event" v-bind:key="event.googleId" v-on:reload="reload" />
+           </v-col>
+         </v-row>
+       </v-expansion-panel-content>
+     </v-expansion-panel>
+      <v-expansion-panel>
+       <v-expansion-panel-header>Past events</v-expansion-panel-header>
+       <v-expansion-panel-content>
+         <v-row dense>
+           <v-col
+               cols="12" xs="12" md="6"
+               v-for="event in pastEvents"
                :key="event.id">
              <LifeEvent :event="event" v-bind:key="event.googleId" v-on:reload="reload" />
            </v-col>
