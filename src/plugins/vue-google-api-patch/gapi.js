@@ -117,6 +117,7 @@ export default class GAPI {
             // if auth2, returns the google auth object, the library otherwise
             return Promise.resolve((lib === 'auth2') ? response : library)
           }, (err) => {
+            console.error(err)
             return Promise.reject(new Error(`Error on gapi ${lib} init: ${err.message}`))
           })
       })

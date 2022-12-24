@@ -55,8 +55,8 @@
 </template>
 
 <script>
-import Main from './components/Main';
-import AddSoftEvent from "@/components/AddSoftEvent";
+import Main from '@/components/Main.vue';
+import AddSoftEvent from "@/components/AddSoftEvent.vue";
 
 export default {
   name: 'App',

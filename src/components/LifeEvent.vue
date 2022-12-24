@@ -48,9 +48,9 @@
 
 <script>
 import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, differenceInCalendarDays } from 'date-fns'
-import DeleteEvent from "@/components/DeleteEvent";
-import SetEventState from "@/components/SetEventState";
-import AddSoftEvent from "@/components/AddSoftEvent";
+import DeleteEvent from "@/components/DeleteEvent.vue";
+import SetEventState from "@/components/SetEventState.vue";
+import AddSoftEvent from "@/components/AddSoftEvent.vue";
 
 export default {
   name: "LifeEvent",
