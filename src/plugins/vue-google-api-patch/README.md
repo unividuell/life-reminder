@@ -230,11 +230,11 @@ yarn install
 ```
 Then create at the root of the project a .env.local file with your own Google application identifiers like this :
 ```
-VUE_APP_CLIENTID=your_client_id.apps.googleusercontent.com
-VUE_APP_APIKEY=your_api_key
-VUE_APP_SCOPE=your_application_scope
+VITE_CLIENTID=your_client_id.apps.googleusercontent.com
+VITE_APIKEY=your_api_key
+VITE_SCOPE=your_application_scope
 ```
-You can also add a VUE_APP_DISCOVERYDOCS key / value if you need.
+You can also add a VITE_DISCOVERYDOCS key / value if you need.
 
 This file will not be versionned by git and will remain local in your computer.
 

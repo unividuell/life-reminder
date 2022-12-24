@@ -47,7 +47,7 @@
 
 <script>
 import { compareAsc, addMonths } from 'date-fns'
-import LifeEvent from "@/components/LifeEvent";
+import LifeEvent from "@/components/LifeEvent.vue";
 
 export default {
   name: "LifeEventsListView",

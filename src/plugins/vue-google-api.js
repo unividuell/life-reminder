@@ -1,14 +1,14 @@
 import Vue from "vue";
 import VueGoogleApi from './vue-google-api-patch/vue-google-api-patch';
 
-const apiKey = process.env.VUE_APP_GAPI_KEY;
-const clientId = process.env.VUE_APP_GAPI_CLIENT_ID;
+const apiKey = import.meta.env.VITE_GAPI_KEY;
+const clientId = import.meta.env.VITE_GAPI_CLIENT_ID;
 
 if (!apiKey || !clientId) {
     throw new Error(
         "Has the .env file been setup? One or both variables are not set: " +
-        "VUE_APP_GAPI_API_KEY=" + apiKey +
-        ", VUE_APP_GAPI_CLIENT_ID=" + clientId
+        "VITE_GAPI_API_KEY=" + apiKey +
+        ", VITE_GAPI_CLIENT_ID=" + clientId
     );
 }
 
@@ -20,7 +20,7 @@ const apiConfig = {
     scope: "https://www.googleapis.com/auth/calendar profile"
 };
 
-if (process.env.NODE_ENV === "development") {
+if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console
     console.log("apiConfig", apiConfig);
 }

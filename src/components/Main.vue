@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import LifeEventsListView from "@/components/LifeEventsListView";
+import LifeEventsListView from "@/components/LifeEventsListView.vue";
 
 export default {
   name: 'Main',
