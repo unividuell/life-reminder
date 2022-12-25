@@ -18,8 +18,8 @@ RUN npm install
 COPY . .
 # a bad workaround b/c of lacking https://fly.io/docs/reference/build-secrets/
 COPY .env .
-
-RUN npm run build
+RUN npm run build \
+    && rm .env
 
 EXPOSE 8080
 CMD [ "http-server", "dist" ]
