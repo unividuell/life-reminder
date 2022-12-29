@@ -1,21 +1,12 @@
-import { createApp } from 'vue'
 import { defineStore } from "pinia";
 
-export const useMainStore = defineStore("main", {
+export const useGoogleLoginStore = defineStore("googleLogin", {
     state: () => ({
-        authenticated: false,
+        currentUser: null,
         calendarBackendId: null,
         loading: false
     }),
-    // actions: {
-    //     setAuthenticated (value) {
-    //         this.state.authenticated = value
-    //     },
-    //     setCalendarBackendId(value) {
-    //         this.state.calendarBackendId = value
-    //     },
-    //     setLoading(value) {
-    //         this.state.loading = value
-    //     }
-    // }
+    getters: {
+        authenticated: (state) => state.currentUser != null
+    }
 });

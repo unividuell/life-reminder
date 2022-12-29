@@ -9,22 +9,23 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
-    "date-fns": "^2.16.1",
-    "vue": "^3.2.31",
     "axios": "^0.26.1",
+    "date-fns": "^2.16.1",
+    "pinia": "^2.0.13",
+    "vue": "^3.2.31",
     "vue-axios": "^3.4.1",
-    "vuetify": "^3.0.6",
+    "vue3-google-login": "^2.0.12",
     "vuelidate": "^0.7.5",
-    "pinia": "^2.0.13"
+    "vuetify": "^3.0.6"
   },
   "devDependencies": {
     "@mdi/font": "^7.1.96",
+    "@vitejs/plugin-vue": "^4.0.0",
     "eslint": "8.26.0",
     "eslint-plugin-vue": "9.6.0",
     "sass": "^1.26.0",
     "unplugin-vue-components": "^0.22.12",
     "vite": "^4.0.3",
-    "@vitejs/plugin-vue": "^4.0.0",
     "vite-plugin-vuetify": "^1.0.1"
   }
 }

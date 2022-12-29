@@ -23,7 +23,7 @@
 <script>
 import LifeEventsListView from "@/components/LifeEventsListView.vue";
 import {mapState, mapWritableState} from "pinia";
-import { useMainStore } from "@/stores/main.js";
+import { useGoogleLoginStore } from "@/stores/main.js";
 
 export default {
   name: 'Main',
@@ -39,8 +39,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(useMainStore, ['authenticated', 'calendarBackendId']),
-    ...mapWritableState(useMainStore, ['loading']),
+    ...mapState(useGoogleLoginStore, ['authenticated', 'calendarBackendId']),
+    ...mapWritableState(useGoogleLoginStore, ['loading']),
     isAuthenticated() {
       return this.authenticated
     },

@@ -16,7 +16,7 @@
 
       <v-avatar v-if="isAuthenticated">
         <img
-            :src="this.currentUser.image"
+            :src="this.currentUser.picture"
             alt="Profile Picture"
         >
       </v-avatar>
@@ -28,14 +28,6 @@
       >
         <span class="mr-2">Logout</span>
         <v-icon>mdi-logout</v-icon>
-      </v-btn>
-      <v-btn
-          v-else
-          @click="signIn"
-          text
-      >
-        <span class="mr-2">Login</span>
-        <v-icon>mdi-login</v-icon>
       </v-btn>
 
       <v-progress-linear
@@ -49,7 +41,15 @@
     </v-app-bar>
     <AddSoftEvent ref="addSoftEvent" v-bind:key="'add-event-app'" v-on:reload="reload"></AddSoftEvent>
     <v-main>
-      <Main ref="main" />
+      <Main v-if="isAuthenticated" ref="main" />
+
+      <v-container v-else>
+        <v-row>
+          <v-col cols="12">
+            <GoogleLogin :callback="signIn" prompt/>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -57,59 +57,32 @@
 <script>
 import Main from '@/components/Main.vue';
 import AddSoftEvent from "@/components/AddSoftEvent.vue";
-import { useMainStore } from "@/stores/main.js";
+import { useGoogleLoginStore } from "@/stores/main.js";
 import {mapState, mapWritableState} from "pinia";
+import { decodeCredential } from 'vue3-google-login'
+import { googleLogout } from "vue3-google-login"
 
 export default {
   name: 'App',
 
   components: {
     Main,
-    AddSoftEvent
+    AddSoftEvent,
   },
 
   data: () => ({
-    currentUser: null,
     isLoading: false,
   }),
-  created() {
-    // this.$gapi.isSignedIn()
-    //   .then((result) => {
-    //     if (result) {
-    //       this.authenticated = true
-    //     }
-    //   })
-    // this.$gapi.currentUser()
-    //   .then(user => this.currentUser = user)
-  },
   methods: {
-    signIn() {
-      if (!this.isAuthenticated) {
-        this.isLoading = true
-        // this.$gapi.signIn()
-        //     .then((user) => {
-        //       this.authenticated = true
-        //       this.currentUser = user
-        //     })
-        //     .catch((err) => {
-        //       console.error(err)
-        //     })
-        this.isLoading = false
-      }
+    signIn(response) {
+      // decodeCredential will retrive the JWT payload from the credential
+      const userData = decodeCredential(response.credential)
+      this.isAuthenticated = true
+      this.currentUser = userData
     },
     signOut() {
-      if (this.isAuthenticated) {
-        this.isLoading = true
-        // this.$gapi.signOut()
-        //     .then(() => {
-        //       this.authenticated = false
-        //       this.currentUser = null
-        //     })
-        //     .catch((err) => {
-        //       console.error(err.message)
-        //     })
-        this.isLoading = false
-      }
+      this.currentUser = null
+      googleLogout()
     },
     addEvent() {
       this.$refs.addSoftEvent.open()
@@ -119,7 +92,7 @@ export default {
     }
   },
   computed: {
-    ...mapWritableState(useMainStore, ['authenticated', 'loading']),
+    ...mapWritableState(useGoogleLoginStore, ['authenticated', 'loading', 'currentUser']),
     isAuthenticated () {
       return this.authenticated
     },
