@@ -22,6 +22,8 @@
 
 <script>
 import LifeEventsListView from "@/components/LifeEventsListView.vue";
+import {mapState, mapWritableState} from "pinia";
+import { useMainStore } from "@/stores/main.js";
 
 export default {
   name: 'Main',
@@ -37,11 +39,13 @@ export default {
     }
   },
   computed: {
+    ...mapState(useMainStore, ['authenticated', 'calendarBackendId']),
+    ...mapWritableState(useMainStore, ['loading']),
     isAuthenticated() {
-      return this.$store.state.authenticated
+      return this.authenticated
     },
     calendarId() {
-      return this.$store.state.calendarBackendId
+      return this.calendarBackendId
     }
   },
   watch: {
@@ -53,88 +57,88 @@ export default {
       }
     },
     isLoading(newValue) {
-      this.$store.commit('setLoading', newValue)
+      this.loading = newValue
     }
   },
   methods: {
     async init() {
       this.isLoading = true
-      this.$gapi.currentUser()
-          .then(user => this.currentUser = user)
-      if (this.isAuthenticated) {
-        await this.createCalendarBackend()
-        await this.loadEvents()
-      }
+      // this.$gapi.currentUser()
+      //     .then(user => this.currentUser = user)
+      // if (this.isAuthenticated) {
+      //   await this.createCalendarBackend()
+      //   await this.loadEvents()
+      // }
       this.isLoading = false
     },
     async loadEvents() {
       this.isLoading = true
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
-        method: 'GET'
-      })
-      .then((resp) => {
-        this.events = resp.result.items.map((gEvent) => ({
-          googleId: gEvent.id,
-          title: gEvent.summary,
-          redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
-          note: gEvent.description,
-          closed: gEvent.transparency === "transparent"
-        }))
-      }).catch((err) => {
-        console.log(err)
-      })
+      // await this.$gapi.request({
+      //   path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
+      //   method: 'GET'
+      // })
+      // .then((resp) => {
+      //   this.events = resp.result.items.map((gEvent) => ({
+      //     googleId: gEvent.id,
+      //     title: gEvent.summary,
+      //     redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
+      //     note: gEvent.description,
+      //     closed: gEvent.transparency === "transparent"
+      //   }))
+      // }).catch((err) => {
+      //   console.log(err)
+      // })
       this.isLoading = false
     },
     async createCalendarBackend() {
       this.isLoading = true
       let calendarId = 'Live Reminder by unividuell.org'
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/users/me/calendarList`,
-        method: 'GET'
-      })
-      .then(
-        (resp) => {
-          return resp.result.items.some((candidate) => {
-            if (candidate.summary === calendarId) {
-              this.$store.commit('setCalendarBackendId', candidate.id)
-              console.log(`Calendar with summary ${calendarId} is present: ${candidate.id}`)
-              return true
-            }
-            return false
-          })
-        }
-      )
-      .then(
-        (present) => {
-          if (! present) {
-            console.log("Did not found our calendar-backend - will create it..")
-            return this.$gapi.request({
-              path: `https://www.googleapis.com/calendar/v3/calendars`,
-              method: 'POST',
-              body: {
-                summary: calendarId
-              }
-            })
-          } else {
-            // sooo ugly :/ don't know how to better break a promise chain
-            throw new Error("expected")
-          }
-        }
-      )
-      .then(
-        (resp) => {
-          this.$store.commit('setCalendarBackendId', resp.result.id)
-          console.log("created life-reminder calendar-backend")
-          return true
-        }
-      )
-      .then(() => console.log("last then"))
-      .catch(
-          (err) => (err.message !== "expected")
-              ? console.warn("could not create life-reminder calender-backend:", err)
-              : console.log("all done.")
-      )
+      // await this.$gapi.request({
+      //   path: `https://www.googleapis.com/calendar/v3/users/me/calendarList`,
+      //   method: 'GET'
+      // })
+      // .then(
+      //   (resp) => {
+      //     return resp.result.items.some((candidate) => {
+      //       if (candidate.summary === calendarId) {
+      //         this.calendarId = candidate.id
+      //         console.log(`Calendar with summary ${calendarId} is present: ${candidate.id}`)
+      //         return true
+      //       }
+      //       return false
+      //     })
+      //   }
+      // )
+      // .then(
+      //   (present) => {
+      //     if (! present) {
+      //       console.log("Did not found our calendar-backend - will create it..")
+      //       return this.$gapi.request({
+      //         path: `https://www.googleapis.com/calendar/v3/calendars`,
+      //         method: 'POST',
+      //         body: {
+      //           summary: calendarId
+      //         }
+      //       })
+      //     } else {
+      //       // sooo ugly :/ don't know how to better break a promise chain
+      //       throw new Error("expected")
+      //     }
+      //   }
+      // )
+      // .then(
+      //   (resp) => {
+      //     this.calendarId = resp.result.id
+      //     console.log("created life-reminder calendar-backend")
+      //     return true
+      //   }
+      // )
+      // .then(() => console.log("last then"))
+      // .catch(
+      //     (err) => (err.message !== "expected")
+      //         ? console.warn("could not create life-reminder calender-backend:", err)
+      //         : console.log("all done.")
+      // )
       this.isLoading = false
     },
     addEvent() {

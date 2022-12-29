@@ -57,6 +57,8 @@
 <script>
 import Main from '@/components/Main.vue';
 import AddSoftEvent from "@/components/AddSoftEvent.vue";
+import { useMainStore } from "@/stores/main.js";
+import {mapState, mapWritableState} from "pinia";
 
 export default {
   name: 'App',
@@ -68,44 +70,44 @@ export default {
 
   data: () => ({
     currentUser: null,
-    isLoading: false
+    isLoading: false,
   }),
   created() {
-    this.$gapi.isSignedIn()
-      .then((result) => {
-        if (result) {
-          this.$store.commit('setAuthenticated', true)
-        }
-      })
-    this.$gapi.currentUser()
-      .then(user => this.currentUser = user)
+    // this.$gapi.isSignedIn()
+    //   .then((result) => {
+    //     if (result) {
+    //       this.authenticated = true
+    //     }
+    //   })
+    // this.$gapi.currentUser()
+    //   .then(user => this.currentUser = user)
   },
   methods: {
     signIn() {
       if (!this.isAuthenticated) {
         this.isLoading = true
-        this.$gapi.signIn()
-            .then((user) => {
-              this.$store.commit('setAuthenticated', true)
-              this.currentUser = user
-            })
-            .catch((err) => {
-              console.error(err)
-            })
+        // this.$gapi.signIn()
+        //     .then((user) => {
+        //       this.authenticated = true
+        //       this.currentUser = user
+        //     })
+        //     .catch((err) => {
+        //       console.error(err)
+        //     })
         this.isLoading = false
       }
     },
     signOut() {
       if (this.isAuthenticated) {
         this.isLoading = true
-        this.$gapi.signOut()
-            .then(() => {
-              this.$store.commit('setAuthenticated', false)
-              this.currentUser = null
-            })
-            .catch((err) => {
-              console.error(err.message)
-            })
+        // this.$gapi.signOut()
+        //     .then(() => {
+        //       this.authenticated = false
+        //       this.currentUser = null
+        //     })
+        //     .catch((err) => {
+        //       console.error(err.message)
+        //     })
         this.isLoading = false
       }
     },
@@ -117,16 +119,14 @@ export default {
     }
   },
   computed: {
+    ...mapWritableState(useMainStore, ['authenticated', 'loading']),
     isAuthenticated () {
-      return this.$store.state.authenticated
+      return this.authenticated
     },
-    loading() {
-      return this.$store.state.loading
-    }
   },
   watch: {
     isLoading(newValue) {
-      this.$store.commit('setLoading', newValue)
+      this.loading = newValue
     }
   }
 };

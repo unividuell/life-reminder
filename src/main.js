@@ -1,19 +1,12 @@
-import Vue from 'vue'
-import App from './App.vue'
-import store from "./store"
-import "./plugins/vue-google-api";
-import vuetify from './plugins/vuetify';
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+import vuetify from "./plugins/vuetify";
+import axios from "axios";
+import VueAxios from "vue-axios";
 
-Vue.config.productionTip = false
-
-if (import.meta.env.PROD && location.protocol !== "https:") {
-  // in production we need SSL-connections (b/c of google credentials settings (only https is allowed))
-  // kudos: https://stackoverflow.com/a/10036029/810944
-  location.protocol = "https:";
-}
-
-new Vue({
-  render: h => h(App),
-  vuetify,
-  store: store
-}).$mount('#app')
+createApp(App)
+    .use(createPinia())
+    .use(VueAxios, axios)
+    .use(vuetify)
+    .mount("#app");

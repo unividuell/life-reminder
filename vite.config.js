@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue2';
-import { VuetifyResolver } from 'unplugin-vue-components/resolvers';
-import Components from 'unplugin-vue-components/vite';
-import path from "path";
+import { fileURLToPath, URL } from "url";
+
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vuetify from 'vite-plugin-vuetify';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,16 +11,15 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    Components({
-      resolvers: [
-        // Vuetify
-        VuetifyResolver(),
-      ],
+    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
+    vuetify({
+      autoImport: true,
     }),
   ],
+  define: { "process.env": {} },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
 })

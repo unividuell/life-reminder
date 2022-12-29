@@ -10,20 +10,21 @@
   },
   "dependencies": {
     "date-fns": "^2.16.1",
-    "vue": "v2-latest",
+    "vue": "^3.2.31",
+    "axios": "^0.26.1",
+    "vue-axios": "^3.4.1",
+    "vuetify": "^3.0.6",
     "vuelidate": "^0.7.5",
-    "vuetify": "^2.6.13",
-    "vuex": "^3.5.1"
+    "pinia": "^2.0.13"
   },
   "devDependencies": {
     "@mdi/font": "^7.1.96",
-    "@vitejs/plugin-vue2": "^2.2.0",
     "eslint": "8.26.0",
     "eslint-plugin-vue": "9.6.0",
     "sass": "^1.26.0",
     "unplugin-vue-components": "^0.22.12",
     "vite": "^4.0.3",
-    "vue-template-compiler": "^2.7.14",
-    "vuetify-loader": "1.9.2"
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite-plugin-vuetify": "^1.0.1"
   }
 }
