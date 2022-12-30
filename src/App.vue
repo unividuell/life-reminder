@@ -71,7 +71,7 @@ export default {
   },
 
   data: () => ({
-    isLoading: false,
+    loading: false,
   }),
   methods: {
     ...mapActions(useGoogleAuthenticationStore, ['logout']),
@@ -87,11 +87,6 @@ export default {
     isAuthenticated () {
       return this.authenticated
     },
-  },
-  watch: {
-    isLoading(newValue) {
-      this.loading = newValue
-    }
   }
 };
 </script>
