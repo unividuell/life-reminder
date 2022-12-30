@@ -17,7 +17,10 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", {
                 "email",
                 "https://www.googleapis.com/auth/calendar"
             )
-            if (result === false) console.warn('user did not granted all scopes!')
+            if (result === false) {
+                console.warn('user did not granted all scopes!')
+                throw Error('user did not granted all scopes!')
+            }
         }
     }
 })

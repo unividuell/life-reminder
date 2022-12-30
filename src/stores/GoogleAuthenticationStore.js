@@ -8,7 +8,6 @@ import axios from "axios";
 export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", {
     state: () => ({
         currentUser: null,
-        calendarBackendId: null,
     }),
     getters: {
         authenticated: (state) => state.currentUser != null
