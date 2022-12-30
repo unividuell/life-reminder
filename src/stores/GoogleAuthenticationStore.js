@@ -5,6 +5,7 @@ import { googleLogout } from "vue3-google-login"
 // Authentication establishes who someone is, and is commonly referred to as user sign-up or sign-in.
 export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", {
     state: () => ({
+        googleToken: null,
         currentUser: null,
         calendarBackendId: null,
         loading: false
@@ -14,13 +15,14 @@ export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", 
     },
     actions: {
         loginCallback(response) {
+            this.googleToken = response
             const userData = decodeCredential(response.credential)
             this.currentUser = userData
         },
         logout() {
             googleLogout()
+            this.googleToken = null
             this.currentUser = null
-            googleLogout()
         }
     }
 });
