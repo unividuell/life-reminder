@@ -46,10 +46,7 @@
       <v-container v-else>
         <v-row>
           <v-col cols="12">
-            <GoogleSignInButton
-                @success="loginCallback"
-                @error="handleLoginError"
-            ></GoogleSignInButton>
+            <GoogleLogin />
           </v-col>
         </v-row>
       </v-container>
@@ -58,15 +55,17 @@
 </template>
 
 <script>
-import Main from '@/components/Main.vue';
-import AddSoftEvent from "@/components/AddSoftEvent.vue";
-import { useGoogleAuthenticationStore } from "@/stores/GoogleAuthenticationStore.js";
+import Main from './components/Main.vue';
+import AddSoftEvent from "./components/AddSoftEvent.vue";
+import { useGoogleAuthenticationStore } from "./stores/GoogleAuthenticationStore.js";
 import {mapActions, mapState, mapWritableState} from "pinia";
+import GoogleLogin from "./components/GoogleLogin.vue";
 
 export default {
   name: 'App',
 
   components: {
+    GoogleLogin,
     Main,
     AddSoftEvent,
   },
@@ -75,10 +74,7 @@ export default {
     isLoading: false,
   }),
   methods: {
-    ...mapActions(useGoogleAuthenticationStore, ['loginCallback', 'logout']),
-    handleLoginError(e) {
-      console.error('login failed', e)
-    },
+    ...mapActions(useGoogleAuthenticationStore, ['logout']),
     addEvent() {
       this.$refs.addSoftEvent.open()
     },
@@ -87,7 +83,7 @@ export default {
     }
   },
   computed: {
-    ...mapWritableState(useGoogleAuthenticationStore, ['authenticated', 'loading', 'currentUser']),
+    ...mapState(useGoogleAuthenticationStore, ['authenticated', 'currentUser']),
     isAuthenticated () {
       return this.authenticated
     },
