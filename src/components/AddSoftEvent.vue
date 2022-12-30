@@ -23,23 +23,26 @@
              </v-col>
            </v-row>
            <v-row>
-             <v-col cols="12" xs="12" sm="12" class="pt-0">
-               <v-date-picker
+             <v-col cols="12">
+               <div class="display-2">
+                 Periode for clearance is
+                 <template v-if="redZoneText">{{redZoneText}}</template>
+               </div>
+             </v-col>
+           </v-row>
+           <v-row>
+             <v-col cols="12">
+               <Datepicker
                    v-model="redZone"
-                   scrollable
-                   no-title
+                   model-type="yyyy-MM-dd"
+                   inline
                    range
-                   first-day-of-week="1"
-                   show-week
-                   full-width
-                   elevation="5">
-                 <v-text-field
-                     v-model="redZoneText"
-                     label="Period"
-                     readonly
-                     :rules="[ () => this.redZone.length === 2 || 'Please define the period for this event (start and end).']"
-                 ></v-text-field>
-               </v-date-picker>
+                   auto-apply
+                   :start-date="initStartDate"
+                   :enable-time-picker="false"
+                   six-weeks
+                   show-now-button
+               />
              </v-col>
            </v-row>
            <v-row>
@@ -51,15 +54,16 @@
        </v-card-text>
        <v-card-actions>
          <v-spacer></v-spacer>
-         <v-btn :disabled="loading || !valid" type="submit" :form="formId" color="primary">{{actionLabel}}</v-btn>
+         <v-btn :disabled="isLoading || !valid" type="submit" :form="formId" color="primary">{{actionLabel}}</v-btn>
        </v-card-actions>
      </v-card>
    </v-dialog>
 </template>
 
 <script>
-import { formatISO, parseISO } from 'date-fns'
+import {addDays, formatISO, parseISO} from 'date-fns'
 import format from '../plugins/date-fns-format'
+import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
 
 export default {
   name: "AddSoftEvent",
@@ -72,7 +76,8 @@ export default {
     summary: null,
     redZone: [ ],
     notes: '',
-    edit: false
+    edit: false,
+    initStartDate: new Date()
   }),
   created() {
     if (this.event) {
@@ -106,36 +111,25 @@ export default {
       }
     },
     async editSimpleEvent() {
-      if (!this.$refs.eventForm.validate()) {
+      if (!await this.$refs.eventForm.validate()) {
         return
       }
       this.isLoading = true
-      let event = {
-        summary: this.summary,
-        description: this.notes,
-        start: {
-          date: this.redZone[0]
-        },
-        end: {
-          date: this.redZone[1]
-        }
-      }
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
-        method: 'PATCH',
-        body: event
-      })
-      .then(() => {
-        // no-op
-      }).catch((err) => {
-        console.warn(err)
-      })
+      await useGoogleCalendarStore()
+          .editEvent(
+              this.event.googleId,
+              this.summary,
+              this.notes,
+              this.redZone[0],
+              this.redZone[1]
+          )
+
       this.isLoading = false
       this.dialog = false
       this.$emit('reload')
     },
     async addSimpleEvent() {
-      if (!this.$refs.eventForm.validate()) {
+      if (!await this.$refs.eventForm.validate()) {
         return
       }
       this.isLoading = true
@@ -144,64 +138,41 @@ export default {
         this.redZone[0] = this.redZone[1]
         this.redZone[1] = temp
       }
-      let event = {
-        summary: this.summary,
-        description: this.notes,
-        start: {
-          date: this.redZone[0]
-        },
-        end: {
-          date: this.redZone[1]
-        },
-        transparency: "opaque",
-        reminders: {
-          useDefault: false,
-          overrides: [
-            { method: 'email', minutes: 6 * 60 }
-          ]
-        }
-      }
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
-        method: 'POST',
-        body: event
-      })
-      .then(() => {
-        this.clear()
-      }).catch((err) => {
-          console.warn(err)
-      })
+      await useGoogleCalendarStore()
+          .addEvent(
+              this.summary,
+              this.notes,
+              this.startDateForGoogle,
+              this.endDateForGoogle
+          )
+      this.clear()
       this.isLoading = false
       this.dialog = false
       this.$emit('reload')
-    }
+    },
   },
   computed: {
     formId() {
       return this.event ? this.event.googleId : 'add'
     },
-    redZoneText: {
-      get() {
-        return this.redZone.map(date => format(parseISO(date))).join(' -> ')
-      },
-      set(newValue) {
-        // w/o `this.$refs.eventForm.reset()` will throw an error :/
-        console.log(newValue)
+    redZoneText() {
+      try {
+        return (this.startDateForGoogle ?? 'tbd') + ' -> ' + (this.endDateForGoogle ?? 'tbd')
+      } catch (e) {
+        return null
       }
     },
-    calendarId() {
-      return this.$store.state.calendarBackendId
+    startDateForGoogle() {
+      return format(parseISO(this.redZone[0]), "yyyy-MM-dd")
     },
-    loading() {
-      return this.$store.state.loading
+    endDateForGoogle() {
+      if (this.redZone.length >= 2) {
+        return format(parseISO(this.redZone[1]), "yyyy-MM-dd")
+      }
+      return null
     },
     actionLabel() {
       return this.edit ? "Edit Event" : "Add Event"
-    }
-  },
-  watch: {
-    isLoading(newValue) {
-      this.$store.commit('setLoading', newValue)
     }
   }
 }

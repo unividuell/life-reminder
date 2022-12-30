@@ -38,6 +38,55 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                 closed: gEvent.transparency === "transparent"
             }))
         },
+        async addEvent(summary, notes, start, end) {
+            let event = {
+                summary: summary,
+                description: notes,
+                start: { date: start },
+                end: { date: end },
+                transparency: "opaque",
+                reminders: {
+                    useDefault: false,
+                    overrides: [
+                        { method: 'email', minutes: 6 * 60 }
+                    ]
+                }
+            }
+            let response = await axios.post(
+                `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
+                event,
+                {
+                    headers:
+                        {
+                            Accept : 'application/json',
+                            'Content-Type' : 'application/json',
+                            Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
+                        }
+                }
+            )
+            if (response.status !== 200) throw Error('could not edit calendar event')
+        },
+        async editEvent(eventId, summary, notes, start, end) {
+            let event = {
+                summary: summary,
+                description: notes,
+                start: start,
+                end: end
+            }
+            let response = await axios.patch(
+                `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${eventId}`,
+                event,
+                {
+                    headers:
+                        {
+                            Accept : 'application/json',
+                            'Content-Type' : 'application/json',
+                            Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
+                        }
+                }
+            )
+            if (response.status !== 200) throw Error('could not edit calendar event')
+        },
         async setCalendarId() {
             let response = await axios.get(
                 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
