@@ -46,7 +46,10 @@
       <v-container v-else>
         <v-row>
           <v-col cols="12">
-            <GoogleLogin :callback="loginCallback" prompt/>
+            <GoogleSignInButton
+                @success="loginCallback"
+                @error="handleLoginError"
+            ></GoogleSignInButton>
           </v-col>
         </v-row>
       </v-container>
@@ -73,6 +76,9 @@ export default {
   }),
   methods: {
     ...mapActions(useGoogleAuthenticationStore, ['loginCallback', 'logout']),
+    handleLoginError(e) {
+      console.error('login failed', e)
+    },
     addEvent() {
       this.$refs.addSoftEvent.open()
     },

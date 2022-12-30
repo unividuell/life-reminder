@@ -14,7 +14,7 @@ specifiers:
   vite-plugin-vuetify: ^1.0.1
   vue: ^3.2.31
   vue-axios: ^3.4.1
-  vue3-google-login: ^2.0.12
+  vue3-google-signin: ^1.2.1
   vuelidate: ^0.7.5
   vuetify: ^3.0.6
 
@@ -24,7 +24,7 @@ dependencies:
   pinia: 2.0.28_vue@3.2.45
   vue: 3.2.45
   vue-axios: 3.5.2_axios@0.26.1+vue@3.2.45
-  vue3-google-login: 2.0.12_vue@3.2.45
+  vue3-google-signin: 1.2.1_vue@3.2.45
   vuelidate: 0.7.7
   vuetify: 3.0.6_41db5e5136c7a1b80b04789130e6204e
 
@@ -1587,10 +1587,10 @@ packages:
       '@vue/shared': 3.2.45
     dev: false
 
-  /vue3-google-login/2.0.12_vue@3.2.45:
-    resolution: {integrity: sha512-gKc9yS6NDgU2JLKXZGYu9NQzIBd/CTXFFo1IU8nUZsP5QFjRuylSDZQ7tLUeueL+SYHJiE/FzxB5bQlcTdQ7Wg==}
+  /vue3-google-signin/1.2.1_vue@3.2.45:
+    resolution: {integrity: sha512-6MqDxMhZhb2Ow+AybKB2wqhOX+Egr6yDsn8ZY7Q/RGAMsQL9xy+btTbcAaIjOymFTLWXxhooZfF0yHgv8+6WHQ==}
     peerDependencies:
-      vue: ^3.0.3
+      vue: ^3
     dependencies:
       vue: 3.2.45
     dev: false

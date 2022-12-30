@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import { decodeCredential } from 'vue3-google-login'
-import { googleLogout } from "vue3-google-login"
+import {decodeCredential} from "vue3-google-signin";
+
 
 // Authentication establishes who someone is, and is commonly referred to as user sign-up or sign-in.
 export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", {
@@ -20,7 +20,6 @@ export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", 
             this.currentUser = userData
         },
         logout() {
-            googleLogout()
             this.googleToken = null
             this.currentUser = null
         }
