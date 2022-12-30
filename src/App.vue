@@ -23,7 +23,7 @@
 
       <v-btn
           v-if="isAuthenticated"
-          @click="signOut"
+          @click="logout"
           text
       >
         <span class="mr-2">Logout</span>
@@ -46,7 +46,7 @@
       <v-container v-else>
         <v-row>
           <v-col cols="12">
-            <GoogleLogin :callback="signIn" prompt/>
+            <GoogleLogin :callback="loginCallback" prompt/>
           </v-col>
         </v-row>
       </v-container>
@@ -57,10 +57,8 @@
 <script>
 import Main from '@/components/Main.vue';
 import AddSoftEvent from "@/components/AddSoftEvent.vue";
-import { useGoogleLoginStore } from "@/stores/main.js";
-import {mapState, mapWritableState} from "pinia";
-import { decodeCredential } from 'vue3-google-login'
-import { googleLogout } from "vue3-google-login"
+import { useGoogleAuthenticationStore } from "@/stores/GoogleAuthenticationStore.js";
+import {mapActions, mapState, mapWritableState} from "pinia";
 
 export default {
   name: 'App',
@@ -74,16 +72,7 @@ export default {
     isLoading: false,
   }),
   methods: {
-    signIn(response) {
-      // decodeCredential will retrive the JWT payload from the credential
-      const userData = decodeCredential(response.credential)
-      this.isAuthenticated = true
-      this.currentUser = userData
-    },
-    signOut() {
-      this.currentUser = null
-      googleLogout()
-    },
+    ...mapActions(useGoogleAuthenticationStore, ['loginCallback', 'logout']),
     addEvent() {
       this.$refs.addSoftEvent.open()
     },
@@ -92,7 +81,7 @@ export default {
     }
   },
   computed: {
-    ...mapWritableState(useGoogleLoginStore, ['authenticated', 'loading', 'currentUser']),
+    ...mapWritableState(useGoogleAuthenticationStore, ['authenticated', 'loading', 'currentUser']),
     isAuthenticated () {
       return this.authenticated
     },
