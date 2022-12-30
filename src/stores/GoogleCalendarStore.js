@@ -6,16 +6,43 @@ const calendarSummary = 'Live Reminder by unividuell.org'
 
 export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
     state: () => ({
-        calendarId: null
+        calendarId: null,
+        events: []
     }),
     actions: {
         async loadCalendarItems() {
+            await this.setCalendarId()
+
+            if (this.calendarId === null) {
+                throw Error('Did not get a valid calendar ID')
+            }
+            let response = await axios.get(
+                `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
+                {
+                    headers:
+                        {
+                            Accept : 'application/json',
+                            Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
+                        }
+                }
+            )
+            if (response.status !== 200) throw Error('could not load calendar-list')
+
+            this.events = response.data.items.map((gEvent) => ({
+                googleId: gEvent.id,
+                title: gEvent.summary,
+                redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
+                note: gEvent.description,
+                closed: gEvent.transparency === "transparent"
+            }))
+        },
+        async setCalendarId() {
             let response = await axios.get(
                 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
                 {
                     headers:
                         {
-                            'Content-Type' : 'application/json',
+                            Accept : 'application/json',
                             Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
                         }
                 }
@@ -39,6 +66,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                 {
                     headers:
                         {
+                            Accept : 'application/json',
                             'Content-Type' : 'application/json',
                             Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
                         }
