@@ -1,12 +1,14 @@
 import {defineStore} from "pinia";
 import axios from "axios";
 import {useGoogleAuthorizationStore} from "./GoogleAuthorizationStore";
+import {addMonths, compareAsc} from "date-fns";
 
 const calendarSummary = 'Live Reminder by unividuell.org'
 
 export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
     state: () => ({
         calendarId: null,
+        now: new Date(),
         events: []
     }),
     actions: {
@@ -74,6 +76,31 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error('could not create calendar')
 
+        }
+    },
+    getters: {
+        oneMonthAhead() {
+            return addMonths(this.now, 1)
+        },
+        sortedEvents() {
+            return [...this.events]
+                ?.sort((a, b) => {
+                    // first criteria: the end date
+                    let dateSort = compareAsc(a.redZone.end, b.redZone.end)
+                    if (dateSort !== 0) return dateSort
+                    // second criteria: the title
+                    if (a.title > b.title) return 1;
+                    if (a.title < b.title) return -1;
+                })
+        },
+        pastEvents() {
+            return this.sortedEvents.filter((candidate) => candidate.redZone.end < this.now)
+        },
+        nextMonthEvents() {
+            return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.now && candidate.redZone.end < this.oneMonthAhead)
+        },
+        futureEvents() {
+            return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.oneMonthAhead)
         }
     }
 })
