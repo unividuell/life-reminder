@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import axios from "axios";
-import {useGoogleAuthorizationStore} from "./GoogleAuthorizationStore";
 import {addMonths, compareAsc} from "date-fns";
 
 const calendarSummary = 'Live Reminder by unividuell.org'

@@ -3,21 +3,12 @@
 </template>
 
 <script setup>
-import {
-  useTokenClient
-} from "vue3-google-signin";
+import { useTokenClient } from "vue3-google-signin";
 import { useGoogleAuthorizationStore } from '../stores/GoogleAuthorizationStore.js'
-import { useGoogleAuthenticationStore } from "../stores/GoogleAuthenticationStore";
-import { useGoogleCalendarStore } from "../stores/GoogleCalendarStore";
 
-const authorizationStore = useGoogleAuthorizationStore()
-const authenticationStore = useGoogleAuthenticationStore()
-const calendarStore = useGoogleCalendarStore()
-
+const googleAuthorizationStore = useGoogleAuthorizationStore()
 const handleOnSuccess = (response) => {
-  authorizationStore.authorize(response)
-  authenticationStore.getUserProfile()
-  calendarStore.loadCalendarItems()
+  googleAuthorizationStore.authorize(response)
 };
 
 const handleOnError = (errorResponse) => {
