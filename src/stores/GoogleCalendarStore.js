@@ -92,6 +92,22 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error('could not edit calendar event')
         },
+        async setEventState(eventId, desiredState) {
+            let gState = desiredState === 'close' ? "transparent" : "opaque"
+            let response = await axios.patch(
+                `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${eventId}`,
+                { transparency: gState },
+                {
+                    headers:
+                        {
+                            Accept : 'application/json',
+                            'Content-Type' : 'application/json',
+                            Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
+                        }
+                }
+            )
+            if (response.status !== 200) throw Error('could not edit state of calendar event')
+        },
         async setCalendarId() {
             let response = await axios.get(
                 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
