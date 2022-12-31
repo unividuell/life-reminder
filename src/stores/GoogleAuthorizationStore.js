@@ -33,6 +33,8 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     })
 
     const tokenKey = 'google_access_token'
+    // watch for initial change via workaround.
+    // kudos: https://github.com/vuejs/pinia/issues/309#issuecomment-1291213101
     const tokenInStore = localStorage.getItem(tokenKey)
     if (tokenInStore) {
         accessToken.value = tokenInStore

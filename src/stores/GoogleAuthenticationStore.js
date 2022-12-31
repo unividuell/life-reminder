@@ -24,7 +24,7 @@ export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", 
         },
         logout() {
             this.currentUser = null
-            useGoogleAuthorizationStore().accessToken = null
+            useGoogleAuthorizationStore().accessToken.value = null
         }
     }
 });
