@@ -24,41 +24,43 @@
 </template>
 
 <script>
+import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
+import {mapState, mapWritableState} from "pinia";
+import {useDialogStore} from "../stores/DialogStore";
+
 export default {
   name: "DeleteEvent",
-  props: ["event"],
   data: () => ({
     showDialog: false,
     isLoading: false,
+    event: null
   }),
+  computed: {
+    ...mapWritableState(useDialogStore, ['handleDelete'])
+  },
   methods: {
     open() {
       this.showDialog = true
     },
     async onDelete() {
       this.isLoading = true
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
-        method: 'DELETE'
-      })
-      .then(() => {
-        this.$emit('reload')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      await useGoogleCalendarStore().deleteEvent(this.event.googleId)
+      await useGoogleCalendarStore().reload()
       this.isLoading = false
       this.showDialog = false
     }
   },
-  computed: {
-    calendarId() {
-      return this.$store.state.calendarBackendId
-    }
-  },
   watch: {
-    isLoading(newValue) {
-      this.$emit('loading', newValue)
+    handleDelete(newValue) {
+      if (newValue) {
+        this.event = newValue
+        this.showDialog = true
+      }
+    },
+    showDialog(newValue) {
+      if (! newValue) {
+        this.handleDelete = null
+      }
     }
   }
 }

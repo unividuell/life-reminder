@@ -1,33 +1,6 @@
 <template>
-  <v-card class="mx-auto" outlined>
-    <v-app-bar flat color="blue-grey darken-3" dark>
-      <v-icon>mdi-calendar</v-icon>
-      <v-toolbar-title class="title pl-4">
-        {{ event.title }}
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-menu bottom left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn dark icon v-bind="attrs" v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item @click="setEventState('close')" v-if="! event.closed">
-            <v-list-item-title>Finish</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="setEventState('re-open')" v-else>
-            <v-list-item-title>Re-Open</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="editEvent">
-            <v-list-item-title>Edit</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="deleteEvent">
-            <v-list-item-title>Delete</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
+  <v-card class="mx-auto" outlined prepend-icon="mdi-calendar">
+    <template v-slot:title>{{ event.title }}</template>
     <v-progress-linear
         :color="getColor"
         :value="remainingTime"
@@ -40,9 +13,21 @@
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
     <v-card-text>{{ event.note }}</v-card-text>
-    <DeleteEvent ref="deleteEvent" v-bind:key="'delete_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
-    <SetEventState ref="setEventState" v-bind:key="'set-state_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
-    <AddSoftEvent ref="editEvent" v-bind:key="'edit_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
+    <v-card-actions>
+      <v-spacer />
+      <v-btn @click="setEventState('close')" v-if="! event.closed">
+        Finish
+      </v-btn>
+      <v-btn @click="setEventState('re-open')" v-else>
+        Re-Open
+      </v-btn>
+      <v-btn @click="editEvent">
+        Edit
+      </v-btn>
+      <v-btn @click="deleteEvent">
+        Delete
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -51,6 +36,8 @@ import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, dif
 import DeleteEvent from "@/components/DeleteEvent.vue";
 import SetEventState from "@/components/SetEventState.vue";
 import AddSoftEvent from "@/components/AddSoftEvent.vue";
+import {mapActions} from "pinia";
+import {useDialogStore} from "../stores/DialogStore";
 
 export default {
   name: "LifeEvent",
@@ -115,14 +102,15 @@ export default {
   },
   methods: {
     deleteEvent() {
-      this.$refs.deleteEvent.open(this.event)
+      this.handleEventDeletion(this.event)
     },
     setEventState(desiredState) {
-      this.$refs.setEventState.setEventState(desiredState)
+      this.handleEventState(this.event, desiredState)
     },
     editEvent() {
-      this.$refs.editEvent.open(this.event)
-    }
+      this.handleEventEditing(this.event)
+    },
+    ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   },
   watch: {
     isLoading(newValue) {
