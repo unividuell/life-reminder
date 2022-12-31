@@ -70,7 +70,7 @@ export default {
   props: ["event"],
   data: () => ({
     dialog: false,
-    valid: true,
+    valid: false,
     isLoading: false,
     googleId: null,
     summary: null,
@@ -173,6 +173,11 @@ export default {
     },
     actionLabel() {
       return this.edit ? "Edit Event" : "Add Event"
+    }
+  },
+  watch: {
+    redZone() {
+      this.$refs.eventForm?.validate()
     }
   }
 }

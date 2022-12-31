@@ -70,8 +70,8 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             let event = {
                 summary: summary,
                 description: notes,
-                start: start,
-                end: end
+                start: { date: start },
+                end: { date: end }
             }
             let response = await axios.patch(
                 `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${eventId}`,
