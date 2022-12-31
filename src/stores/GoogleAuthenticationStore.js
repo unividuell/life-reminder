@@ -19,15 +19,7 @@ export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", 
             this.currentUser = userData
         },
         async getUserProfile() {
-            let response = await axios
-                .get(
-                    'https://www.googleapis.com/oauth2/v1/userinfo',
-                    {
-                        headers: {
-                            Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
-                        }
-                    }
-                )
+            let response = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo')
             this.currentUser = response.data
         },
         logout() {
