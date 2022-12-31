@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
+
 export default {
   name: "DeleteEvent",
   props: ["event"],
@@ -37,28 +39,10 @@ export default {
     },
     async onDelete() {
       this.isLoading = true
-      await this.$gapi.request({
-        path: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${this.event.googleId}`,
-        method: 'DELETE'
-      })
-      .then(() => {
-        this.$emit('reload')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      await useGoogleCalendarStore().deleteEvent(this.event.googleId)
+      await useGoogleCalendarStore().reload()
       this.isLoading = false
       this.showDialog = false
-    }
-  },
-  computed: {
-    calendarId() {
-      return this.$store.state.calendarBackendId
-    }
-  },
-  watch: {
-    isLoading(newValue) {
-      this.$emit('loading', newValue)
     }
   }
 }

@@ -108,6 +108,20 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error('could not edit state of calendar event')
         },
+        async deleteEvent(eventId) {
+            let response = await axios.delete(
+                `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${eventId}`,
+                {
+                    headers:
+                        {
+                            Accept : 'application/json',
+                            'Content-Type' : 'application/json',
+                            Authorization: `Bearer ${useGoogleAuthorizationStore().accessToken}`
+                        }
+                }
+            )
+            if (response.status !== 204) throw Error('could not delete of calendar event')
+        },
         async setCalendarId() {
             let response = await axios.get(
                 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
