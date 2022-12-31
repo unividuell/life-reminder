@@ -4,41 +4,24 @@
       color="primary"
       dark
   >
-    <div class="d-flex align-center">
-      <v-icon size="32">mdi-account-check</v-icon>
+    <v-app-bar-nav-icon><v-icon size="32">mdi-account-check</v-icon></v-app-bar-nav-icon>
+    <v-app-bar-title>Life Reminder 3000</v-app-bar-title>
 
-      <h1 class="hidden-sm-and-down pl-4">Life Reminder 3000</h1>
-    </div>
-    <v-spacer></v-spacer>
-
-    <v-btn v-if="authenticated" @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
-
-    <v-avatar v-if="authenticated">
-      <img
-          :src="this.currentUser.picture"
-          alt="Profile Picture"
-          :height="42"
-          :width="42"
-      >
-    </v-avatar>
-
-    <v-btn
-        v-if="authenticated"
-        @click="logout"
-        text
-    >
-      <span class="mr-2">Logout</span>
-      <v-icon>mdi-logout</v-icon>
-    </v-btn>
-
-    <v-progress-linear
-        :active="loading"
-        :indeterminate="loading"
-        absolute
-        bottom
-        color="deep-orange accent-4"
-        height="4"
-    ></v-progress-linear>
+    <template v-slot:append v-if="authenticated">
+      <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
+      <v-avatar>
+        <img
+            :src="this.currentUser.picture"
+            alt="Profile Picture"
+            :height="42"
+            :width="42"
+        >
+      </v-avatar>
+      <v-btn @click="logout" text>
+        <span class="mr-2">Logout</span>
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
+    </template>
   </v-app-bar>
   <AddSoftEvent v-model="showAddEvent" />
 </template>
@@ -52,7 +35,6 @@ export default {
   name: "AppBar",
   components: {AddSoftEvent},
   data: () => ({
-    loading: false,
     showAddEvent: false
   }),
   computed: {
