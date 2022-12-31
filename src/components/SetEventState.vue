@@ -11,30 +11,36 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup>
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
+import {useDialogStore} from "../stores/DialogStore";
+import {ref, watch} from "vue";
 
-export default {
-  name: "SetEventState",
-  props: ["event"],
-  data: () => ({
-    showDialog: false,
-    isLoading: false,
-    desiredState: null
-  }),
-  methods: {
-    async setEventState(desiredState) {
-      this.desiredState = desiredState
-      this.isLoading = true
-      this.showDialog = false // no user interruption
-      await useGoogleCalendarStore()
-          .setEventState(this.event.googleId, this.desiredState)
-      await useGoogleCalendarStore().reload()
-      this.isLoading = false
-      this.showDialog = false
-    }
-  },
+const event = ref(null)
+const showDialog = ref(false)
+const isLoading = ref(false)
+const desiredState = ref(null)
+
+const dialogStore = useDialogStore()
+
+async function setEventState() {
+  isLoading.value = true
+  showDialog.value = false // no user interruption
+  await useGoogleCalendarStore()
+      .setEventState(event.value.googleId, desiredState.value)
+  await useGoogleCalendarStore().reload()
+  isLoading.value = false
+  showDialog.value = false
+  dialogStore.handleState = null
 }
+
+watch(() => dialogStore.handleState, (newValue) => {
+  if (newValue) {
+    desiredState.value = newValue.desiredState
+    event.value = newValue.event
+    setEventState()
+  }
+})
 </script>
 
 <style scoped>

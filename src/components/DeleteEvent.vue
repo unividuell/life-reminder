@@ -25,14 +25,19 @@
 
 <script>
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
+import {mapState, mapWritableState} from "pinia";
+import {useDialogStore} from "../stores/DialogStore";
 
 export default {
   name: "DeleteEvent",
-  props: ["event"],
   data: () => ({
     showDialog: false,
     isLoading: false,
+    event: null
   }),
+  computed: {
+    ...mapWritableState(useDialogStore, ['handleDelete'])
+  },
   methods: {
     open() {
       this.showDialog = true
@@ -43,6 +48,19 @@ export default {
       await useGoogleCalendarStore().reload()
       this.isLoading = false
       this.showDialog = false
+    }
+  },
+  watch: {
+    handleDelete(newValue) {
+      if (newValue) {
+        this.event = newValue
+        this.showDialog = true
+      }
+    },
+    showDialog(newValue) {
+      if (! newValue) {
+        this.handleDelete = null
+      }
     }
   }
 }

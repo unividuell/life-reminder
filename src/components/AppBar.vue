@@ -23,27 +23,27 @@
       </v-btn>
     </template>
   </v-app-bar>
-  <AddSoftEvent v-model="showAddEvent" />
 </template>
 
 <script>
 import {mapActions, mapState} from "pinia";
 import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import AddSoftEvent from "./AddSoftEvent.vue";
+import {useDialogStore} from "../stores/DialogStore";
 
 export default {
   name: "AppBar",
   components: {AddSoftEvent},
   data: () => ({
-    showAddEvent: false
   }),
   computed: {
     ...mapState(useGoogleAuthenticationStore, ['authenticated', 'currentUser']),
   },
   methods: {
     ...mapActions(useGoogleAuthenticationStore, ['logout']),
+    ...mapActions(useDialogStore, ['handleEventAdding']),
     addEvent() {
-      this.showAddEvent = true
+      this.handleEventAdding()
     },
   }
 }

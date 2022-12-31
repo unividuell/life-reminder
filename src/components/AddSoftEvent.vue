@@ -1,6 +1,6 @@
 <template>
    <v-dialog
-       v-model="show"
+       v-model="showDialog"
        scrollable
        max-width="600px">
      <v-card>
@@ -64,11 +64,14 @@
 import {addDays, formatISO, parseISO} from 'date-fns'
 import format from '../plugins/date-fns-format'
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
+import {mapState, mapWritableState} from "pinia";
+import {useDialogStore} from "../stores/DialogStore";
 
 export default {
   name: "AddSoftEvent",
-  props: ["event", "value"],
   data: () => ({
+    showDialog: false,
+    event: null,
     valid: false,
     isLoading: false,
     googleId: null,
@@ -78,23 +81,20 @@ export default {
     edit: false,
     initStartDate: new Date()
   }),
-  created() {
-    if (this.event) {
-      this.googleId = this.event.googleId
-      this.summary = this.event.title
-      this.redZone = [
-        formatISO(this.event.redZone.start, { representation: 'date' }),
-        formatISO(this.event.redZone.end, { representation: 'date' })
-      ]
-      this.notes = this.event.note
-      this.edit = true
-    } else {
-      this.edit = false
-    }
-  },
   methods: {
-    open() {
-      this.dialog = true
+    init() {
+      if (this.event) {
+        this.googleId = this.event.googleId
+        this.summary = this.event.title
+        this.redZone = [
+          formatISO(this.event.redZone.start, { representation: 'date' }),
+          formatISO(this.event.redZone.end, { representation: 'date' })
+        ]
+        this.notes = this.event.note
+        this.edit = true
+      } else {
+        this.edit = false
+      }
     },
     clear() {
       this.summary = []
@@ -124,7 +124,7 @@ export default {
           )
 
       this.isLoading = false
-      this.dialog = false
+      this.showDialog = false
       await useGoogleCalendarStore().reload()
     },
     async addSimpleEvent() {
@@ -146,19 +146,12 @@ export default {
           )
       this.clear()
       this.isLoading = false
-      this.dialog = false
+      this.showDialog = false
       await useGoogleCalendarStore().reload()
     },
   },
   computed: {
-    show: {
-      get () {
-        return this.value
-      },
-      set (value) {
-        this.$emit('input', value)
-      }
-    },
+    ...mapWritableState(useDialogStore, ['handleEdit', 'handleAdd']),
     formId() {
       return this.event ? this.event.googleId : 'add'
     },
@@ -184,7 +177,36 @@ export default {
   },
   watch: {
     redZone() {
+      // re-validate as soon as the clearance periode gets adjusted
       this.$refs.eventForm?.validate()
+    },
+    notes() {
+      // re-validate as soon as the summary gets adjusted
+      this.$refs.eventForm?.validate()
+    },
+    handleEdit(newValue) {
+      if (newValue) {
+        this.event = newValue
+        this.init()
+        this.showDialog = true
+      }
+    },
+    handleAdd(newValue) {
+      if (newValue) {
+        this.event = null
+        this.init()
+        this.showDialog = true
+      }
+    },
+    showDialog(newValue) {
+      // re-validate as soon as the dialog gets opened / closed
+      console.log(newValue)
+      this.$refs.eventForm?.validate()
+      if (!newValue) {
+        this.handleEdit = null
+        this.handleAdd = null
+        this.init()
+      }
     }
   }
 }

@@ -12,6 +12,11 @@
           </v-col>
         </v-row>
       </v-container>
+
+      <AddSoftEvent />
+      <SetEventState />
+      <DeleteEvent />
+
     </v-main>
   </v-app>
 </template>
@@ -22,14 +27,20 @@ import { useGoogleAuthenticationStore } from "./stores/GoogleAuthenticationStore
 import { mapState } from "pinia";
 import GoogleLogin from "./components/GoogleLogin.vue";
 import AppBar from "./components/AppBar.vue";
+import SetEventState from "./components/SetEventState.vue";
+import DeleteEvent from "./components/DeleteEvent.vue";
+import AddSoftEvent from "./components/AddSoftEvent.vue";
 
 export default {
   name: 'App',
 
   components: {
+    AddSoftEvent,
+    DeleteEvent,
     AppBar,
     GoogleLogin,
     Main,
+    SetEventState
   },
 
   data: () => ({

@@ -28,9 +28,6 @@
         Delete
       </v-btn>
     </v-card-actions>
-    <DeleteEvent ref="deleteEvent" v-bind:key="'delete_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
-    <SetEventState ref="setEventState" v-bind:key="'set-state_'+event.googleId" :event="event" />
-    <AddSoftEvent ref="editEvent" v-bind:key="'edit_'+event.googleId" :event="event" />
   </v-card>
 </template>
 
@@ -39,6 +36,8 @@ import { formatDistanceToNow, isFuture, isWithinInterval, eachDayOfInterval, dif
 import DeleteEvent from "@/components/DeleteEvent.vue";
 import SetEventState from "@/components/SetEventState.vue";
 import AddSoftEvent from "@/components/AddSoftEvent.vue";
+import {mapActions} from "pinia";
+import {useDialogStore} from "../stores/DialogStore";
 
 export default {
   name: "LifeEvent",
@@ -103,14 +102,15 @@ export default {
   },
   methods: {
     deleteEvent() {
-      this.$refs.deleteEvent.open(this.event)
+      this.handleEventDeletion(this.event)
     },
     setEventState(desiredState) {
-      this.$refs.setEventState.setEventState(desiredState)
+      this.handleEventState(this.event, desiredState)
     },
     editEvent() {
-      this.$refs.editEvent.open(this.event)
-    }
+      this.handleEventEditing(this.event)
+    },
+    ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   },
   watch: {
     isLoading(newValue) {
