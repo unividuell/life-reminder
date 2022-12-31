@@ -1,5 +1,5 @@
 <template>
-  <button :disabled="!isReady" @click="() => login()">Login with Google</button>
+  <v-btn :disabled="!isReady" @click="() => login()" prepend-icon="mdi-login"><slot></slot></v-btn>
 </template>
 
 <script setup>

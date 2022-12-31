@@ -22,6 +22,9 @@
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </template>
+    <template v-slot:append v-if="!authenticated">
+      <GoogleLogin>Login</GoogleLogin>
+    </template>
   </v-app-bar>
 </template>
 
@@ -29,11 +32,15 @@
 import {mapActions, mapState} from "pinia";
 import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import AddSoftEvent from "./AddSoftEvent.vue";
+import GoogleLogin from "./GoogleLogin.vue";
 import {useDialogStore} from "../stores/DialogStore";
 
 export default {
   name: "AppBar",
-  components: {AddSoftEvent},
+  components: {
+    AddSoftEvent,
+    GoogleLogin
+  },
   data: () => ({
   }),
   computed: {
