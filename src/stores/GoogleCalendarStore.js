@@ -12,8 +12,13 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
         events: []
     }),
     actions: {
+        async reload() {
+          await this.loadCalendarItems()
+        },
         async loadCalendarItems() {
-            await this.setCalendarId()
+            if (! this.calendarId) {
+                await this.setCalendarId()
+            }
 
             if (this.calendarId === null) {
                 throw Error('Did not get a valid calendar ID')

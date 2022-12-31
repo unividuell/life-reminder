@@ -126,7 +126,7 @@ export default {
 
       this.isLoading = false
       this.dialog = false
-      this.$emit('reload')
+      await useGoogleCalendarStore().reload()
     },
     async addSimpleEvent() {
       if (!await this.$refs.eventForm.validate()) {
@@ -148,7 +148,7 @@ export default {
       this.clear()
       this.isLoading = false
       this.dialog = false
-      this.$emit('reload')
+      await useGoogleCalendarStore().reload()
     },
   },
   computed: {

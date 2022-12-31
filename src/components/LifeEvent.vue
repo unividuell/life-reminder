@@ -30,7 +30,7 @@
     </v-card-actions>
     <DeleteEvent ref="deleteEvent" v-bind:key="'delete_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
     <SetEventState ref="setEventState" v-bind:key="'set-state_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
-    <AddSoftEvent ref="editEvent" v-bind:key="'edit_'+event.googleId" :event="event" v-on:reload="$emit('reload')" />
+    <AddSoftEvent ref="editEvent" v-bind:key="'edit_'+event.googleId" :event="event" />
   </v-card>
 </template>
 
