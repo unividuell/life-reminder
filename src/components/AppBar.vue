@@ -40,17 +40,20 @@
         height="4"
     ></v-progress-linear>
   </v-app-bar>
-  <AddSoftEvent ref="addSoftEvent" v-bind:key="'add-event-app'" />
+  <AddSoftEvent v-model="showAddEvent" />
 </template>
 
 <script>
 import {mapActions, mapState} from "pinia";
 import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
+import AddSoftEvent from "./AddSoftEvent.vue";
 
 export default {
   name: "AppBar",
+  components: {AddSoftEvent},
   data: () => ({
-    loading: false
+    loading: false,
+    showAddEvent: false
   }),
   computed: {
     ...mapState(useGoogleAuthenticationStore, ['authenticated', 'currentUser']),
@@ -58,7 +61,7 @@ export default {
   methods: {
     ...mapActions(useGoogleAuthenticationStore, ['logout']),
     addEvent() {
-      this.$refs.addSoftEvent.open()
+      this.showAddEvent = true
     },
   }
 }

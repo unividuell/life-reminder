@@ -1,6 +1,6 @@
 <template>
    <v-dialog
-       v-model="dialog"
+       v-model="show"
        scrollable
        max-width="600px">
      <v-card>
@@ -67,9 +67,8 @@ import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
 
 export default {
   name: "AddSoftEvent",
-  props: ["event"],
+  props: ["event", "value"],
   data: () => ({
-    dialog: false,
     valid: false,
     isLoading: false,
     googleId: null,
@@ -152,6 +151,14 @@ export default {
     },
   },
   computed: {
+    show: {
+      get () {
+        return this.value
+      },
+      set (value) {
+        this.$emit('input', value)
+      }
+    },
     formId() {
       return this.event ? this.event.googleId : 'add'
     },
