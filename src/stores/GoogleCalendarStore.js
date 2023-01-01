@@ -124,15 +124,6 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                     if (a.title > b.title) return 1;
                     if (a.title < b.title) return -1;
                 })
-        },
-        pastEvents() {
-            return this.sortedEvents.filter((candidate) => candidate.redZone.end < this.now)
-        },
-        nextMonthEvents() {
-            return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.now && candidate.redZone.end < this.oneMonthAhead)
-        },
-        futureEvents() {
-            return this.sortedEvents.filter((candidate) => candidate.redZone.end > this.oneMonthAhead)
         }
     }
 })

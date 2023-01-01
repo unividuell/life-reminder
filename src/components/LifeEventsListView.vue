@@ -78,7 +78,7 @@ export default {
     sortBy: 'end'
   }),
   computed: {
-    ...mapState(useGoogleCalendarStore, ['sortedEvents', 'pastEvents', 'nextMonthEvents', 'futureEvents']),
+    ...mapState(useGoogleCalendarStore, ['sortedEvents']),
     events() {
       return this
           .sortedEvents(this.sortBy)
