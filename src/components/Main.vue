@@ -1,11 +1,5 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col class="mb-4">
-        <LifeEventsListView v-on:reload="reload" />
-      </v-col>
-    </v-row>
-  </v-container>
+    <LifeEventsListView />
 </template>
 
 <script>
@@ -21,9 +15,6 @@ export default {
     addEvent() {
       this.$refs.addSoftEvent.open()
     },
-    reload() {
-      // this.loadEvents()
-    }
   }
 }
 </script>
