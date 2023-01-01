@@ -34,7 +34,7 @@
                v-for="event in events"
                :key="event.id"
                color="primary"
-               :active="currentlyInRedZone(event)"
+               :active="currentlyInRedZone(event) && !event.closed"
            >
              <template v-slot:prepend="{ isSelected }">
                <v-list-item-action start>
