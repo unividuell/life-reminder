@@ -36,9 +36,10 @@
                color="primary"
                :active="currentlyInRedZone(event) && !event.closed"
            >
-             <template v-slot:prepend="{ isSelected }">
+             <template v-slot:prepend>
                <v-list-item-action start>
-                 <v-checkbox-btn @click="toggleEventState(event)" :model-value="event.closed"></v-checkbox-btn>
+                  <!-- kudos: https://github.com/vuetifyjs/vuetify/issues/13026#issuecomment-977035686 -->
+                 <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @change="toggleEventState(event)" />
                </v-list-item-action>
              </template>
 
