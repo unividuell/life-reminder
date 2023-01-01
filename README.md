@@ -19,7 +19,7 @@ pnpm run build
 
 ### Preview production build
 ```
-npm run perview
+pnpm run perview
 ```
 
 ### Lints and fixes files
