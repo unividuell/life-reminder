@@ -200,7 +200,6 @@ export default {
     },
     showDialog(newValue) {
       // re-validate as soon as the dialog gets opened / closed
-      console.log(newValue)
       this.$refs.eventForm?.validate()
       this.handleEdit = null
       this.handleAdd = null
