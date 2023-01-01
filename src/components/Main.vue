@@ -1,5 +1,5 @@
 <template>
-    <LifeEventsListView v-on:reload="reload" />
+    <LifeEventsListView />
 </template>
 
 <script>
@@ -15,9 +15,6 @@ export default {
     addEvent() {
       this.$refs.addSoftEvent.open()
     },
-    reload() {
-      // this.loadEvents()
-    }
   }
 }
 </script>
