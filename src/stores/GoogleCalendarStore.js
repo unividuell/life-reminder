@@ -115,9 +115,9 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                     // first criteria: the date
                     let dateSort
                     if (sortBy == 'end') {
-                        dateSort = compareDesc(a.redZone.end, b.redZone.end)
+                        dateSort = compareAsc(a.redZone.end, b.redZone.end)
                     } else if (sortBy == 'start') {
-                        dateSort = compareDesc(a.redZone.start, b.redZone.start)
+                        dateSort = compareAsc(a.redZone.start, b.redZone.start)
                     }
                     if (dateSort !== 0) return dateSort
                     // second criteria: the title
