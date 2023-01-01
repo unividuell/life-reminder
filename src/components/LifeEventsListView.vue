@@ -49,6 +49,12 @@
              </v-list-item-subtitle>
 
              <template v-slot:append>
+               <v-tooltip location="bottom" v-if="event.note !== undefined">
+                 <template v-slot:activator="{ props }">
+                   <v-icon v-bind="props">mdi-message</v-icon>
+                 </template>
+                 <span style="white-space: pre-line;">{{event.note}}</span>
+               </v-tooltip>
                <v-btn @click="editEvent(event)" icon="mdi-pencil" variant="text" />
                <v-btn @click="deleteEvent(event)" icon="mdi-delete" variant="text" />
              </template>
