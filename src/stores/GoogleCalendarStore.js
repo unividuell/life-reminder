@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import axios from "axios";
-import {addMonths, compareAsc} from "date-fns";
+import {addMonths, compareAsc, compareDesc} from "date-fns";
 
 const calendarSummary = 'Live Reminder by unividuell.org'
 
@@ -109,11 +109,16 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
         oneMonthAhead() {
             return addMonths(this.now, 1)
         },
-        sortedEvents() {
-            return [...this.events]
+        sortedEvents: (state) => {
+            return (sortBy) => [...state.events]
                 ?.sort((a, b) => {
-                    // first criteria: the end date
-                    let dateSort = compareAsc(a.redZone.end, b.redZone.end)
+                    // first criteria: the date
+                    let dateSort
+                    if (sortBy == 'end') {
+                        dateSort = compareDesc(a.redZone.end, b.redZone.end)
+                    } else if (sortBy == 'start') {
+                        dateSort = compareDesc(a.redZone.start, b.redZone.start)
+                    }
                     if (dateSort !== 0) return dateSort
                     // second criteria: the title
                     if (a.title > b.title) return 1;

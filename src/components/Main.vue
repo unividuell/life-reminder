@@ -1,11 +1,5 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col class="mb-4">
-        <LifeEventsListView v-on:reload="reload" />
-      </v-col>
-    </v-row>
-  </v-container>
+    <LifeEventsListView v-on:reload="reload" />
 </template>
 
 <script>
