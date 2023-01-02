@@ -41,8 +41,8 @@
            <v-list-item
                v-for="event in events"
                :key="event.id"
-               color="primary"
-               :active="currentlyInRedZone(event) && !event.closed"
+               :class="isOverdue(event)?'bg-deep-orange accent-3':''"
+               
                @click="manageEvent(event)"
            >
              <template v-slot:prepend>
@@ -58,7 +58,10 @@
                   {{event.title}}
                  </v-col>
                  <v-col cols="2" class="text-end">
-                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" color="red" size="x-small">-{{ redZoneDaysLeft(event) }}d</v-chip>
+                  <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
+                    <v-icon start icon="mdi-alarm-light"></v-icon>OVERDUE
+                  </v-chip>
+                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" class="bg-light-blue-lighten-3" color="black" size="x-small">-{{ redZoneDaysLeft(event) }}d</v-chip>
                  </v-col>
                </v-row>
              </v-list-item-title>
@@ -66,7 +69,7 @@
              <v-progress-linear
                  v-if="currentlyInRedZone(event) && !event.closed"
                  :model-value="remainingTime(event)"
-                 color="red"
+                 color="light-blue-lighten-3"
                  :striped="event.closed ? false : true"
                  :reverse="true"
                  :height="6"
@@ -85,7 +88,7 @@ import LifeEvent from "@/components/LifeEvent.vue";
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
-import {differenceInCalendarDays, eachDayOfInterval, isFuture, isWithinInterval} from "date-fns";
+import {differenceInCalendarDays, eachDayOfInterval, isFuture, isPast, isWithinInterval} from "date-fns";
 
 export default {
   name: "LifeEventsListView",
@@ -161,6 +164,9 @@ export default {
     },
     manageEvent(event) {
       this.handleEventEditing(event)
+    },
+    isOverdue(event) {
+      return isPast(event.redZone.end) && !event.closed
     },
     ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   }
