@@ -57,7 +57,7 @@
                   {{event.title}}
                  </v-col>
                  <v-col cols="2" class="text-end">
-                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" color="red" size="x-small">{{ redZoneDaysLeft(event) }} / {{ redZoneDurationInDays(event) }}</v-chip>
+                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" color="red" size="x-small">-{{ redZoneDaysLeft(event) }}d</v-chip>
                  </v-col>
                </v-row>
              </v-list-item-title>
