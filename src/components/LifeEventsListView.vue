@@ -61,7 +61,7 @@
                   <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
                     <v-icon start icon="mdi-alarm-light"></v-icon>OVERDUE
                   </v-chip>
-                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" class="bg-light-blue-lighten-3" color="black" size="x-small">-{{ redZoneDaysLeft(event) }}d</v-chip>
+                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" class="bg-light-blue lighten-3" color="black" size="x-small">-{{ redZoneDaysLeft(event) }}d</v-chip>
                  </v-col>
                </v-row>
              </v-list-item-title>
@@ -69,7 +69,7 @@
              <v-progress-linear
                  v-if="currentlyInRedZone(event) && !event.closed"
                  :model-value="remainingTime(event)"
-                 color="light-blue-lighten-3"
+                 color="light-blue lighten-3"
                  :striped="event.closed ? false : true"
                  :reverse="true"
                  :height="6"
