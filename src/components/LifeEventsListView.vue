@@ -42,7 +42,6 @@
                v-for="event in events"
                :key="event.id"
                :class="isOverdue(event)?'bg-deep-orange accent-3':''"
-               
                @click="manageEvent(event)"
            >
              <template v-slot:prepend>
@@ -53,17 +52,21 @@
              </template>
 
              <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
-               <v-row>
-                 <v-col cols="10">
-                  {{event.title}}
-                 </v-col>
-                 <v-col cols="2" class="text-end">
-                  <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
-                    <v-icon start icon="mdi-alarm-light"></v-icon>OVERDUE
-                  </v-chip>
-                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" class="bg-light-blue lighten-3" color="black" size="x-small">-{{ redZoneDaysLeft(event) }}d</v-chip>
-                 </v-col>
-               </v-row>
+               <div class="d-flex justify-space-between">
+                 <span class="me-1">{{event.title}}</span>
+                 <div>
+                   <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
+                     <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light"></v-icon>
+                     <span class="d-none d-sm-block">OVERDUE</span>
+                   </v-chip>
+                   <v-chip
+                       v-if="currentlyInRedZone(event) && !event.closed"
+                       class="bg-light-blue lighten-3"
+                       color="black"
+                       size="x-small">-{{ redZoneDaysLeft(event) }}d
+                   </v-chip>
+                 </div>
+               </div>
              </v-list-item-title>
 
              <v-progress-linear
