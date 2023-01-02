@@ -7,13 +7,21 @@
            <v-row>
              <v-col cols="12" sm="6" md="12" class="mx-auto">
                <v-switch
-                   label="Show cleared items"
+                   label="Show cleared"
                    v-model="includeClearedEvents"
                    density="compact"
                    hide-details
                />
              </v-col>
              <v-col cols="12" sm="6" md="12" class="mx-auto">
+               <v-switch
+                   label="Show upcoming"
+                   v-model="includeUpcomingEvents"
+                   density="compact"
+                   hide-details
+               />
+             </v-col>
+             <v-col cols="12" sm="12" md="12" class="mx-auto">
                <v-select
                    label="Sort by"
                    :items="sortByOptions"
@@ -100,6 +108,7 @@ export default {
     now: new Date(),
     loading: false,
     includeClearedEvents: false,
+    includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
     sortBy: 'end'
   }),
@@ -111,6 +120,12 @@ export default {
           .filter(e => {
             if (this.includeClearedEvents) return e
             else return e.closed === false
+          })
+          .filter(e => {
+            if (this.includeUpcomingEvents && isFuture(e.redZone.start)) return true
+            if (! this.includeUpcomingEvents && isFuture(e.redZone.start)) return false
+            if (this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
+            if (! this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
           })
     }
   },
