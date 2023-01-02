@@ -48,7 +48,7 @@
              <template v-slot:prepend>
                <v-list-item-action start>
                   <!-- kudos: https://github.com/vuetifyjs/vuetify/issues/13026#issuecomment-977035686 -->
-                 <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @change="toggleEventState(event)" />
+                 <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @click.stop="toggleEventState(event)" />
                </v-list-item-action>
              </template>
 
