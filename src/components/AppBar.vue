@@ -5,7 +5,7 @@
       dark
   >
     <v-app-bar-nav-icon><v-icon size="32">mdi-account-check</v-icon></v-app-bar-nav-icon>
-    <v-app-bar-title>Life Reminder 3000</v-app-bar-title>
+    <v-app-bar-title class="d-none d-sm-block">Life Reminder 3000</v-app-bar-title>
 
     <template v-slot:append v-if="authenticated">
       <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
