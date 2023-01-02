@@ -43,11 +43,30 @@
                </v-list-item-action>
              </template>
 
-             <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">{{event.title}}</v-list-item-title>
+             <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
+               <v-row>
+                 <v-col cols="10">
+                  {{event.title}}
+                 </v-col>
+                 <v-col cols="2" class="text-end">
+                  <v-chip v-if="currentlyInRedZone(event) && !event.closed" color="red" size="x-small">{{ redZoneDaysLeft(event) }} / {{ redZoneDurationInDays(event) }}</v-chip>
+                 </v-col>
+               </v-row>
+             </v-list-item-title>
 
              <v-list-item-subtitle>
                Clear until {{ event.redZone.end.toLocaleDateString() }} (starting at {{ event.redZone.start.toLocaleDateString() }})
              </v-list-item-subtitle>
+
+             <v-progress-linear
+                 v-if="currentlyInRedZone(event) && !event.closed"
+                 :model-value="remainingTime(event)"
+                 color="red"
+                 :striped="event.closed ? false : true"
+                 :reverse="true"
+                 :height="6"
+                 class="mt-2"
+             />
 
              <template v-slot:append>
                <v-tooltip location="bottom" v-if="event.note !== undefined">
@@ -56,7 +75,7 @@
                  </template>
                  <span style="white-space: pre-line;">{{event.note}}</span>
                </v-tooltip>
-               <v-btn @click="editEvent(event)" icon="mdi-pencil" variant="text" />
+               <v-btn @click="editEvent(event)" icon="mdi-pencil" variant="text" :class="event.note === undefined ? 'ms-14' : ''" />
                <v-btn @click="deleteEvent(event)" icon="mdi-delete" variant="text" />
              </template>
            </v-list-item>
@@ -72,7 +91,7 @@ import LifeEvent from "@/components/LifeEvent.vue";
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
-import {isWithinInterval} from "date-fns";
+import {differenceInCalendarDays, eachDayOfInterval, isFuture, isWithinInterval} from "date-fns";
 
 export default {
   name: "LifeEventsListView",
@@ -112,6 +131,40 @@ export default {
     editEvent(event) {
       this.handleEventEditing(event)
     },
+    remainingTime(event) {
+      if (! this.currentlyInRedZone(event)) {
+        // we are currently not in this red-zone
+        if (isFuture(event.redZone.start)) {
+          //interval between now and start of event/365...
+          let progress = 100 - differenceInCalendarDays(event.redZone.start, this.now) / 365 * 100;
+          console.log(progress, '<- for future')
+          return progress
+        } else {
+          //past Events
+          return 100
+        }
+      }
+      //in red-zone
+      return (this.redZoneDaysLeft(event) / this.redZoneDurationInDays(event)) * 100
+    },
+    getColor(event){
+      if(event.closed){
+        return 'green'
+      } else {
+        if(this.currentlyInRedZone(event)){
+          return 'pink'
+        } else {
+          return 'blue'
+        }
+      }
+    },
+    redZoneDaysLeft(event) {
+      return differenceInCalendarDays(event.redZone.end, this.now)
+    },
+    redZoneDurationInDays(event) {
+      return eachDayOfInterval({start: event.redZone.start, end: event.redZone.end}).length
+    },
+
     ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   }
 }
