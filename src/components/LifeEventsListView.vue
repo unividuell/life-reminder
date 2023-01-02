@@ -43,6 +43,7 @@
                :key="event.id"
                color="primary"
                :active="currentlyInRedZone(event) && !event.closed"
+               @click="manageEvent(event)"
            >
              <template v-slot:prepend>
                <v-list-item-action start>
@@ -75,17 +76,6 @@
                  :height="6"
                  class="mt-2"
              />
-
-             <template v-slot:append>
-               <v-tooltip location="bottom" v-if="event.note !== undefined">
-                 <template v-slot:activator="{ props }">
-                   <v-icon v-bind="props">mdi-message</v-icon>
-                 </template>
-                 <span style="white-space: pre-line;">{{event.note}}</span>
-               </v-tooltip>
-               <v-btn @click="editEvent(event)" icon="mdi-pencil" variant="text" :class="event.note === undefined ? 'ms-14' : ''" />
-               <v-btn @click="deleteEvent(event)" icon="mdi-delete" variant="text" />
-             </template>
            </v-list-item>
          </v-list>
        </v-card>
@@ -133,18 +123,12 @@ export default {
     currentlyInRedZone(event) {
       return isWithinInterval(this.now, {start: event.redZone.start, end: event.redZone.end})
     },
-    deleteEvent(event) {
-      this.handleEventDeletion(event)
-    },
     toggleEventState(event) {
       let desiredState = event.closed ? 're-open' : 'close'
       this.setEventState(event, desiredState)
     },
     setEventState(event, desiredState) {
       this.handleEventState(event, desiredState)
-    },
-    editEvent(event) {
-      this.handleEventEditing(event)
     },
     remainingTime(event) {
       if (! this.currentlyInRedZone(event)) {
@@ -179,7 +163,9 @@ export default {
     redZoneDurationInDays(event) {
       return eachDayOfInterval({start: event.redZone.start, end: event.redZone.end}).length
     },
-
+    manageEvent(event) {
+      this.handleEventEditing(event)
+    },
     ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   }
 }

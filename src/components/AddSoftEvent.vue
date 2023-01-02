@@ -52,9 +52,16 @@
            </v-row>
          </v-form>
        </v-card-text>
-       <v-card-actions>
+       <v-card-actions v-if="! inDeleteConfirmation">
          <v-spacer></v-spacer>
+         <v-btn :form="formId" v-if="edit" color="error" @click="inDeleteConfirmation = true">delete</v-btn>
          <v-btn :disabled="isLoading || !valid" type="submit" :form="formId" color="primary">{{actionLabel}}</v-btn>
+       </v-card-actions>
+       <v-card-actions v-else>
+         <strong class="text-error">Are you sure to delete it?</strong>
+         <v-spacer />
+         <v-btn color="error" @click="onDelete">yes</v-btn>
+         <v-btn @click="inDeleteConfirmation = false">no</v-btn>
        </v-card-actions>
      </v-card>
    </v-dialog>
@@ -79,10 +86,13 @@ export default {
     redZone: [ ],
     notes: '',
     edit: false,
-    initStartDate: new Date()
+    initStartDate: new Date(),
+    inDeleteConfirmation: false
   }),
   methods: {
     init() {
+      this.clear()
+      this.inDeleteConfirmation = false
       if (this.event) {
         this.googleId = this.event.googleId
         this.summary = this.event.title
@@ -97,10 +107,12 @@ export default {
       }
     },
     clear() {
-      this.summary = []
+      this.googleId = null
+      this.summary = null
       this.redZone = []
       this.notes = null
-      this.$refs.eventForm.reset()
+      this.inDeleteConfirmation = false
+      this.$refs.eventForm?.reset()
     },
     async handleEvent() {
       if (this.edit) {
@@ -149,6 +161,13 @@ export default {
       this.showDialog = false
       await useGoogleCalendarStore().reload()
     },
+    async onDelete() {
+      this.isLoading = true
+      await useGoogleCalendarStore().deleteEvent(this.event.googleId)
+      await useGoogleCalendarStore().reload()
+      this.isLoading = false
+      this.showDialog = false
+    }
   },
   computed: {
     ...mapWritableState(useDialogStore, ['handleEdit', 'handleAdd']),
