@@ -63,10 +63,6 @@
                </v-row>
              </v-list-item-title>
 
-             <v-list-item-subtitle>
-               Clear until {{ event.redZone.end.toLocaleDateString() }} (starting at {{ event.redZone.start.toLocaleDateString() }})
-             </v-list-item-subtitle>
-
              <v-progress-linear
                  v-if="currentlyInRedZone(event) && !event.closed"
                  :model-value="remainingTime(event)"
