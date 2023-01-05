@@ -24,10 +24,14 @@
            </v-row>
            <v-row>
              <v-col cols="12">
-               <div class="display-2">
-                 Periode for clearance is
-                 <template v-if="redZoneText">{{redZoneText}}</template>
-               </div>
+               <p class="text-black-50 pl-4">
+                 {{redZoneText}}
+               </p>
+             </v-col>
+           </v-row>
+           <v-row>
+             <v-col cols="12" xs="12" class="pt-0">
+               <v-textarea v-model="notes" label="Personal notes"></v-textarea>
              </v-col>
            </v-row>
            <v-row>
@@ -43,11 +47,6 @@
                    six-weeks
                    show-now-button
                />
-             </v-col>
-           </v-row>
-           <v-row>
-             <v-col cols="12" xs="12" class="pt-0">
-               <v-textarea v-model="notes" label="Personal notes"></v-textarea>
              </v-col>
            </v-row>
          </v-form>
@@ -68,7 +67,7 @@
 </template>
 
 <script>
-import {addDays, formatISO, parseISO} from 'date-fns'
+import {addDays, differenceInCalendarDays, formatISO, parseISO} from 'date-fns'
 import format from '../plugins/date-fns-format'
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
 import {mapState, mapWritableState} from "pinia";
@@ -176,7 +175,11 @@ export default {
     },
     redZoneText() {
       try {
-        return (this.startDateForGoogle ?? 'tbd') + ' -> ' + (this.endDateForGoogle ?? 'tbd')
+
+        let period = (format(parseISO(this.startDateForGoogle), "dd.MM.yyyy") ?? 'tbd') + ' - ' + (format(parseISO(this.endDateForGoogle),"dd.MM.yyyy") ?? 'tbd')
+        let duration = differenceInCalendarDays(parseISO(this.endDateForGoogle), parseISO(this.startDateForGoogle))
+
+        return "Period: " + period + " (" + duration + "d)"
       } catch (e) {
         return null
       }
