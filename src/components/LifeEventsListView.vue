@@ -84,15 +84,19 @@
      <v-col cols="12" md="2">
       <v-card>
         <v-card-text>
-          Hallo
-          <v-list>
-            <v-list-item 
-              for="tag in tags"
+          <v-chip-group
+            v-model="filterTag"
+            column
+          >
+            <v-chip
+              v-for = "tag in listOfCurrentTags" 
+              filter
+              :value = "tag"
             >
             #{{ tag }}
-            </v-list-item>
-            <v-btn @click="this.filterTag='test'">#test</v-btn>
-          </v-list>
+            </v-chip>
+
+          </v-chip-group>
         </v-card-text>
       </v-card>
      </v-col>
@@ -117,8 +121,7 @@ export default {
     includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
     sortBy: 'end',
-    listOfCurrentTags: [],
-    filterTag: ''
+    filterTag: undefined
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
@@ -134,6 +137,12 @@ export default {
             if (! this.includeUpcomingEvents && isFuture(e.redZone.start)) return false
             if (this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
             if (! this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
+          })
+          .filter(e => {
+            if(this.filterTag === undefined) return true
+            console.log(this.filterTag)
+            if(e.title.includes(this.filterTag)) return true
+            return false
           })
     },
     listOfCurrentTags() {
