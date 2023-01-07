@@ -1,43 +1,66 @@
 <template>
  <v-container fluid>
    <v-row>
-     <v-col cols="12" md="4">
-       <v-card>
-         <v-card-text>
-           <v-row>
-             <v-col cols="12" sm="6" md="12" class="mx-auto">
-               <v-switch
-                   label="Show cleared"
-                   v-model="includeClearedEvents"
-                   density="compact"
-                   hide-details
-               />
-             </v-col>
-             <v-col cols="12" sm="6" md="12" class="mx-auto">
-               <v-switch
-                   label="Show upcoming"
-                   v-model="includeUpcomingEvents"
-                   density="compact"
-                   hide-details
-               />
-             </v-col>
-             <v-col cols="12" sm="12" md="12" class="mx-auto">
-               <v-select
-                   label="Sort by"
-                   :items="sortByOptions"
-                   item-title="text"
-                   item-value="key"
-                   v-model="sortBy"
-                   density="compact"
-               />
-             </v-col>
-           </v-row>
-         </v-card-text>
-       </v-card>
+     <v-col cols="12" md="3">
+      <v-row>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text>
+              <v-row>
+                <v-col cols="12" sm="6" md="12" class="mx-auto">
+                  <v-switch
+                      label="Show cleared"
+                      v-model="includeClearedEvents"
+                      density="compact"
+                      hide-details
+                  />
+                </v-col>
+                <v-col cols="12" sm="6" md="12" class="mx-auto">
+                  <v-switch
+                      label="Show upcoming"
+                      v-model="includeUpcomingEvents"
+                      density="compact"
+                      hide-details
+                  />
+                </v-col>
+                <v-col cols="12" sm="12" md="12" class="mx-auto">
+                  <v-select
+                      label="Sort by"
+                      :items="sortByOptions"
+                      item-title="text"
+                      item-value="key"
+                      v-model="sortBy"
+                      density="compact"
+                  />
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text>
+              <v-chip-group
+                v-model="filterTag"
+                column
+              >
+                <v-chip
+                  v-for = "tag in listOfCurrentTags" 
+                  filter
+                  :value = "tag"
+                >
+                #{{ tag }}
+                </v-chip>
+              </v-chip-group>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
      </v-col>
-     <v-col cols="12" md="6">
+     <v-col cols="12" md="9">
        <v-card class="mx-auto" :loading="loading">
          <v-list>
+          <v-list-subheader>Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
                v-for="event in events"
                :key="event.id"
@@ -50,7 +73,6 @@
                  <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @click.stop="toggleEventState(event)" />
                </v-list-item-action>
              </template>
-
              <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
                <div class="d-flex justify-space-between">
                  <span class="me-1">{{event.title}}</span>
@@ -81,26 +103,7 @@
          </v-list>
        </v-card>
      </v-col>
-     <v-col cols="12" md="2">
-      <v-card>
-        <v-card-text>
-          <v-chip-group
-            v-model="filterTag"
-            column
-          >
-            <v-chip
-              v-for = "tag in listOfCurrentTags" 
-              filter
-              :value = "tag"
-            >
-            #{{ tag }}
-            </v-chip>
-
-          </v-chip-group>
-        </v-card-text>
-      </v-card>
-     </v-col>
-   </v-row>
+    </v-row>
  </v-container>
 </template>
 
