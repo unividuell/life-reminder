@@ -41,7 +41,7 @@
            <v-list-item
                v-for="event in events"
                :key="event.id"
-               :class="isOverdue(event)?'bg-deep-orange accent-3':''"
+               :class="isOverdue(event)?'text-red':''"
                @click="manageEvent(event)"
            >
              <template v-slot:prepend>
@@ -68,7 +68,6 @@
                  </div>
                </div>
              </v-list-item-title>
-
              <v-progress-linear
                  v-if="currentlyInRedZone(event) && !event.closed"
                  :model-value="remainingTime(event)"
