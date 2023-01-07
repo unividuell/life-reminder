@@ -35,7 +35,7 @@
          </v-card-text>
        </v-card>
      </v-col>
-     <v-col cols="12" md="8">
+     <v-col cols="12" md="6">
        <v-card class="mx-auto" :loading="loading">
          <v-list>
            <v-list-item
@@ -81,6 +81,21 @@
          </v-list>
        </v-card>
      </v-col>
+     <v-col cols="12" md="2">
+      <v-card>
+        <v-card-text>
+          Hallo
+          <v-list>
+            <v-list-item 
+              for="tag in tags"
+            >
+            #{{ tag }}
+            </v-list-item>
+            <v-btn @click="this.filterTag='test'">#test</v-btn>
+          </v-list>
+        </v-card-text>
+      </v-card>
+     </v-col>
    </v-row>
  </v-container>
 </template>
@@ -101,7 +116,9 @@ export default {
     includeClearedEvents: false,
     includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
-    sortBy: 'end'
+    sortBy: 'end',
+    listOfCurrentTags: [],
+    filterTag: ''
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
@@ -118,6 +135,20 @@ export default {
             if (this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
             if (! this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
           })
+    },
+    listOfCurrentTags() {
+      let tags = []
+      this.events.forEach(element => {
+        let titleArray = element.title.split("#")
+          titleArray.forEach((tag, index) => {
+            if(index != 0){
+              if(!tags.includes(tag.trim())){
+                tags.push(tag.trim())
+              }
+            }
+          })
+      })
+      return tags
     }
   },
   methods: {
