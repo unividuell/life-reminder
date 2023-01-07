@@ -100,6 +100,20 @@
                  class="mt-2"
              />
            </v-list-item>
+           <v-list-item>
+            <div class="d-flex">
+              <v-checkbox-btn
+                v-model="newTodo"
+                class="pr-2"
+              ></v-checkbox-btn>
+              <v-text-field
+                @keyup.enter="saveTodo"
+                v-model="newTodoTitle"
+                label="New Todo"
+                hide-details
+              ></v-text-field>
+            </div>
+           </v-list-item>
          </v-list>
        </v-card>
      </v-col>
@@ -112,7 +126,8 @@ import LifeEvent from "@/components/LifeEvent.vue";
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
-import {differenceInCalendarDays, eachDayOfInterval, isFuture, isPast, isWithinInterval} from "date-fns";
+import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, parseISO} from "date-fns";
+
 
 export default {
   name: "LifeEventsListView",
@@ -124,7 +139,9 @@ export default {
     includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
     sortBy: 'end',
-    filterTag: undefined
+    filterTag: undefined,
+    newTodo: undefined,
+    newTodoTitle: ''
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
@@ -144,7 +161,7 @@ export default {
           .filter(e => {
             if(this.filterTag === undefined) return true
             console.log(this.filterTag)
-            if(e.title.includes(this.filterTag)) return true
+            if(e.title.includes("#"+this.filterTag)) return true
             return false
           })
     },
@@ -212,6 +229,25 @@ export default {
     },
     isOverdue(event) {
       return isPast(event.redZone.end) && !event.closed
+    },
+    async saveTodo(event){
+      let date = new Date()
+      let startDate = format((date), "yyyy-MM-dd")
+      //Set End to five days from now
+      let endDate = date.setDate(date.getDate() + 5)
+      endDate = format((endDate), "yyyy-MM-dd")
+      
+      await useGoogleCalendarStore()
+          .addEvent(
+              this.newTodoTitle,
+              "",
+              startDate,
+              endDate
+          )
+      
+      this.newTodoTitle = ""
+        
+      await useGoogleCalendarStore().reload()
     },
     ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   }
