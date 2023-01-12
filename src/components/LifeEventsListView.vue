@@ -48,6 +48,7 @@
                   v-for = "tag in listOfCurrentTags" 
                   filter
                   :value = "tag"
+                  :key="tag"
                 >
                 #{{ tag }}
                 </v-chip>
