@@ -1,43 +1,67 @@
 <template>
  <v-container fluid>
    <v-row>
-     <v-col cols="12" md="4">
-       <v-card>
-         <v-card-text>
-           <v-row>
-             <v-col cols="12" sm="6" md="12" class="mx-auto">
-               <v-switch
-                   label="Show cleared"
-                   v-model="includeClearedEvents"
-                   density="compact"
-                   hide-details
-               />
-             </v-col>
-             <v-col cols="12" sm="6" md="12" class="mx-auto">
-               <v-switch
-                   label="Show upcoming"
-                   v-model="includeUpcomingEvents"
-                   density="compact"
-                   hide-details
-               />
-             </v-col>
-             <v-col cols="12" sm="12" md="12" class="mx-auto">
-               <v-select
-                   label="Sort by"
-                   :items="sortByOptions"
-                   item-title="text"
-                   item-value="key"
-                   v-model="sortBy"
-                   density="compact"
-               />
-             </v-col>
-           </v-row>
-         </v-card-text>
-       </v-card>
+     <v-col cols="12" md="3">
+      <v-row>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text>
+              <v-row>
+                <v-col cols="12" sm="6" md="12" class="mx-auto">
+                  <v-switch
+                      label="Show cleared"
+                      v-model="includeClearedEvents"
+                      density="compact"
+                      hide-details
+                  />
+                </v-col>
+                <v-col cols="12" sm="6" md="12" class="mx-auto">
+                  <v-switch
+                      label="Show upcoming"
+                      v-model="includeUpcomingEvents"
+                      density="compact"
+                      hide-details
+                  />
+                </v-col>
+                <v-col cols="12" sm="12" md="12" class="mx-auto">
+                  <v-select
+                      label="Sort by"
+                      :items="sortByOptions"
+                      item-title="text"
+                      item-value="key"
+                      v-model="sortBy"
+                      density="compact"
+                  />
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text>
+              <v-chip-group
+                v-model="filterTag"
+                column
+              >
+                <v-chip
+                  v-for = "tag in listOfCurrentTags" 
+                  filter
+                  :value = "tag"
+                  :key="tag"
+                >
+                #{{ tag }}
+                </v-chip>
+              </v-chip-group>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
      </v-col>
-     <v-col cols="12" md="8">
+     <v-col cols="12" md="9">
        <v-card class="mx-auto" :loading="loading">
          <v-list>
+          <v-list-subheader>Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
                v-for="event in events"
                :key="event.id"
@@ -50,7 +74,6 @@
                  <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @click.stop="toggleEventState(event)" />
                </v-list-item-action>
              </template>
-
              <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
                <div class="d-flex justify-space-between">
                  <span class="me-1">{{event.title}}</span>
@@ -78,10 +101,25 @@
                  class="mt-2"
              />
            </v-list-item>
+           <v-list-item>
+            <div class="d-flex">
+              <v-checkbox-btn
+                class="pr-2"
+                disabled
+              ></v-checkbox-btn>
+              <v-text-field
+                @keyup.enter="saveTodo"
+                @blur="saveTodo"
+                v-model="newTodoTitle"
+                label="New Todo"
+                hide-details
+              ></v-text-field>
+            </div>
+           </v-list-item>
          </v-list>
        </v-card>
      </v-col>
-   </v-row>
+    </v-row>
  </v-container>
 </template>
 
@@ -90,7 +128,7 @@ import LifeEvent from "@/components/LifeEvent.vue";
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
-import {differenceInCalendarDays, eachDayOfInterval, isFuture, isPast, isWithinInterval} from "date-fns";
+import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, addDays} from "date-fns";
 
 export default {
   name: "LifeEventsListView",
@@ -101,7 +139,10 @@ export default {
     includeClearedEvents: false,
     includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
-    sortBy: 'end'
+    sortBy: 'end',
+    filterTag: undefined,
+    newTodo: undefined,
+    newTodoTitle: ''
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
@@ -118,6 +159,25 @@ export default {
             if (this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
             if (! this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
           })
+          .filter(e => {
+            if(this.filterTag === undefined) return true
+            console.log(this.filterTag)
+            if(e.title.includes("#"+this.filterTag)) return true
+            return false
+          })
+    },
+    listOfCurrentTags() {
+      return new Set(
+          this
+            .sortedEvents(this.sortBy)
+            .filter(event => !event.closed)
+            .map(event => event.title)
+            .filter(title => title?.includes('#'))
+            .flatMap(title => {
+              let splitted = title.split('#')
+              return splitted.splice(1, splitted.length - 1)
+            })
+      )
     }
   },
   methods: {
@@ -169,6 +229,27 @@ export default {
     },
     isOverdue(event) {
       return isPast(event.redZone.end) && !event.closed
+    },
+    async saveTodo(event){
+      if (this.newTodoTitle.length <= 0) {
+        return
+      }
+      let now = new Date()
+      let startDate = format((now), "yyyy-MM-dd")
+      //Set End to five days from now
+      let endDate = format(addDays(now, 5), "yyyy-MM-dd")
+
+      await useGoogleCalendarStore()
+          .addEvent(
+              this.newTodoTitle,
+              "",
+              startDate,
+              endDate
+          )
+      
+      this.newTodoTitle = ""
+        
+      await useGoogleCalendarStore().reload()
     },
     ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
   }
