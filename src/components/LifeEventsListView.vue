@@ -171,8 +171,8 @@ export default {
           this
             .sortedEvents(this.sortBy)
             .filter(event => !event.closed)
-            .map(event => event.title) // we just need the `title` for future computation
-            .filter(title => title.includes('#')) // skip all titles w/o the `#` char
+            .map(event => event.title)
+            .filter(title => title?.includes('#'))
             .flatMap(title => {
               let splitted = title.split('#')
               return splitted.splice(1, splitted.length - 1)
@@ -231,6 +231,9 @@ export default {
       return isPast(event.redZone.end) && !event.closed
     },
     async saveTodo(event){
+      if (this.newTodoTitle.length <= 0) {
+        return
+      }
       let now = new Date()
       let startDate = format((now), "yyyy-MM-dd")
       //Set End to five days from now
