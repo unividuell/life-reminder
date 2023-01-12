@@ -166,18 +166,17 @@ export default {
           })
     },
     listOfCurrentTags() {
-      let tags = []
-      this.events.forEach(element => {
-        let titleArray = element.title.split("#")
-          titleArray.forEach((tag, index) => {
-            if(index != 0){
-              if(!tags.includes(tag.trim())){
-                tags.push(tag.trim())
-              }
-            }
-          })
-      })
-      return tags
+      return new Set(
+          this
+            .sortedEvents(this.sortBy)
+            .filter(event => !event.closed)
+            .map(event => event.title) // we just need the `title` for future computation
+            .filter(title => title.includes('#')) // skip all titles w/o the `#` char
+            .flatMap(title => {
+              let splitted = title.split('#')
+              return splitted.splice(1, splitted.length - 1)
+            })
+      )
     }
   },
   methods: {
