@@ -104,11 +104,12 @@
            <v-list-item>
             <div class="d-flex">
               <v-checkbox-btn
-                v-model="newTodo"
                 class="pr-2"
+                disabled
               ></v-checkbox-btn>
               <v-text-field
                 @keyup.enter="saveTodo"
+                @blur="saveTodo"
                 v-model="newTodoTitle"
                 label="New Todo"
                 hide-details
