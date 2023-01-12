@@ -128,8 +128,7 @@ import LifeEvent from "@/components/LifeEvent.vue";
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
-import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, parseISO} from "date-fns";
-
+import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, addDays} from "date-fns";
 
 export default {
   name: "LifeEventsListView",
@@ -232,12 +231,11 @@ export default {
       return isPast(event.redZone.end) && !event.closed
     },
     async saveTodo(event){
-      let date = new Date()
-      let startDate = format((date), "yyyy-MM-dd")
+      let now = new Date()
+      let startDate = format((now), "yyyy-MM-dd")
       //Set End to five days from now
-      let endDate = date.setDate(date.getDate() + 5)
-      endDate = format((endDate), "yyyy-MM-dd")
-      
+      let endDate = format(addDays(now, 5), "yyyy-MM-dd")
+
       await useGoogleCalendarStore()
           .addEvent(
               this.newTodoTitle,
