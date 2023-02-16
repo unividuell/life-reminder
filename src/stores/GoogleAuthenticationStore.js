@@ -13,11 +13,6 @@ export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", 
         authenticated: (state) => state.currentUser != null
     },
     actions: {
-        loginCallback(response) {
-            this.googleToken = response
-            const userData = decodeCredential(response.credential)
-            this.currentUser = userData
-        },
         async getUserProfile() {
             let response = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo')
             this.currentUser = response.data
