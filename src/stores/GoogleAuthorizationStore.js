@@ -10,7 +10,9 @@ import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
 
     const accessToken = ref(null)
+    const authorizationResponse = ref(null)
     function authorize(response) {
+        authorizationResponse.value = response
         accessToken.value = response.access_token
         const result = hasGrantedAllScopes(
             response,
@@ -40,5 +42,5 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         accessToken.value = tokenInStore
     }
 
-    return { accessToken, authorize }
+    return { accessToken, authorizationResponse, authorize }
 })
