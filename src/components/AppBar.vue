@@ -7,11 +7,11 @@
     <v-app-bar-nav-icon><v-icon size="32">mdi-account-check</v-icon></v-app-bar-nav-icon>
     <v-app-bar-title class="d-none d-sm-block">Life Reminder 3000</v-app-bar-title>
 
-    <template v-slot:append v-if="authenticated">
+    <template v-slot:append v-if="isAuthenticated && currentUser">
       <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
       <v-avatar>
         <img
-            :src="this.currentUser.picture"
+            :src="currentUser.picture"
             alt="Profile Picture"
             :height="42"
             :width="42"
@@ -22,38 +22,34 @@
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </template>
-    <template v-slot:append v-if="!authenticated">
-      <GoogleLogin>Login</GoogleLogin>
+    <template v-slot:append v-if="!isAuthenticated">
+      <GoogleOneTapLogin />
     </template>
   </v-app-bar>
 </template>
 
-<script>
-import {mapActions, mapState} from "pinia";
-import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
-import AddSoftEvent from "./AddSoftEvent.vue";
-import GoogleLogin from "./GoogleLogin.vue";
+<script setup>
+import {mapActions, mapState, storeToRefs} from "pinia";
 import {useDialogStore} from "../stores/DialogStore";
+import {useGoogleOneTapStore} from "../stores/GoogleOneTapStore";
+import GoogleOneTapLogin from "./GoogleOneTapLogin.vue";
+import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 
-export default {
-  name: "AppBar",
-  components: {
-    AddSoftEvent,
-    GoogleLogin
-  },
-  data: () => ({
-  }),
-  computed: {
-    ...mapState(useGoogleAuthenticationStore, ['authenticated', 'currentUser']),
-  },
-  methods: {
-    ...mapActions(useGoogleAuthenticationStore, ['logout']),
-    ...mapActions(useDialogStore, ['handleEventAdding']),
-    addEvent() {
-      this.handleEventAdding()
-    },
-  }
+const dialogStore = useDialogStore()
+const authenticationStore = useGoogleOneTapStore()
+const authorizationStore = useGoogleAuthorizationStore()
+
+const { isAuthenticated, currentUser } = storeToRefs(authenticationStore)
+const { isAuthorized } = storeToRefs(authorizationStore)
+
+function addEvent() {
+  dialogStore.handleEventAdding()
 }
+
+function logout() {
+  authenticationStore.logout()
+}
+
 </script>
 
 <style scoped>

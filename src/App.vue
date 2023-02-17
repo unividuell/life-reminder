@@ -3,8 +3,7 @@
     <AppBar />
 
     <v-main>
-      <GoogleOneTapLogin />
-      <Main v-if="authenticated" ref="main" />
+      <Main v-if="isAuthenticated" ref="main" />
 
       <AddSoftEvent />
       <SetEventState />
@@ -14,33 +13,19 @@
   </v-app>
 </template>
 
-<script>
+<script setup>
 import Main from './components/Main.vue';
-import { useGoogleAuthenticationStore } from "./stores/GoogleAuthenticationStore.js";
-import { mapState } from "pinia";
+import {mapState, storeToRefs} from "pinia";
 import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
 import GoogleOneTapLogin from "./components/GoogleOneTapLogin.vue";
+import {useGoogleOneTapStore} from "./stores/GoogleOneTapStore";
+import {ref} from "vue";
 
-export default {
-  name: 'App',
+const store = useGoogleOneTapStore()
+const loading = ref(false)
+const { isAuthenticated } = storeToRefs(store)
 
-  components: {
-    GoogleOneTapLogin,
-    AddSoftEvent,
-    DeleteEvent,
-    AppBar,
-    Main,
-    SetEventState
-  },
-
-  data: () => ({
-    loading: false,
-  }),
-  computed: {
-    ...mapState(useGoogleAuthenticationStore, ['authenticated', 'currentUser']),
-  }
-};
 </script>

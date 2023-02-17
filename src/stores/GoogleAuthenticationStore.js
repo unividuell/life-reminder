@@ -5,7 +5,7 @@ import { useGoogleAuthorizationStore } from './GoogleAuthorizationStore'
 import axios from "axios";
 
 // Authentication establishes who someone is, and is commonly referred to as user sign-up or sign-in.
-export const useGoogleAuthenticationStore = defineStore("GoogleAuthentication", {
+export const useDeprecatedGoogleAuthenticationStore = defineStore("DeprecatedGoogleAuthentication", {
     state: () => ({
         currentUser: null,
     }),
