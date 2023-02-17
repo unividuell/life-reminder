@@ -3,7 +3,7 @@
     <AppBar />
 
     <v-main>
-      <Main v-if="isAuthenticated" ref="main" />
+      <Main v-if="isAuthorized" ref="main" />
 
       <AddSoftEvent />
       <SetEventState />
@@ -22,9 +22,10 @@ import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
 import {useGoogleAuthenticationStore} from "./stores/GoogleAuthenticationStore";
 import {ref} from "vue";
+import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
 
-const store = useGoogleAuthenticationStore()
+const store = useGoogleAuthorizationStore()
 const loading = ref(false)
-const { isAuthenticated } = storeToRefs(store)
+const { isAuthorized } = storeToRefs(store)
 
 </script>

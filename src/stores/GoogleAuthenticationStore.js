@@ -42,9 +42,15 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
     }
 
     watch(currentUser, async (newValue) => {
-        localStorage.setItem(currentUserKey, JSON.stringify(newValue))
-        console.info(`got different email ${newValue.email}. Will start authorization`)
-        await useGoogleAuthorizationStore().authorize(newValue.email)
+        if (newValue) {
+            localStorage.setItem(currentUserKey, JSON.stringify(newValue))
+        } else {
+            localStorage.removeItem(currentUserKey)
+        }
+        if (newValue) {
+            console.info(`got different email ${newValue.email}. Will start authorization`)
+            await useGoogleAuthorizationStore().authorize(newValue.email)
+        }
     })
 
     const currentUserKey = "google_current-user"

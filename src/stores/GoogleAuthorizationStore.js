@@ -61,9 +61,13 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     }
 
     watch(accessToken, async (newValue) => {
-        localStorage.setItem(tokenKey, newValue)
         if (newValue) {
-            console.info('detected changed google access token, will load everything..')
+            localStorage.setItem(tokenKey, newValue)
+        } else {
+            localStorage.removeItem(tokenKey)
+        }
+        if (newValue) {
+            console.info(`detected changed google access token ${newValue}, will load everything..`)
             await useGoogleCalendarStore().loadCalendarItems()
         }
     })
