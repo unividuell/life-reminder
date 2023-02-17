@@ -15,6 +15,8 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     const expiresAt = ref(null)
     const activeRefreshInterval = ref(null)
     const authorizationResponse = ref(null)
+    const needsTokenRefresh = ref(false)
+
     function authorize(response) {
         authorizationResponse.value = response
         accessToken.value = response.access_token
@@ -39,29 +41,42 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         }
     })
     watch(expiresAt, async(newValue) => {
+        localStorage.setItem(tokenExpiresAtKey, newValue)
         if (activeRefreshInterval.value) {
             clearInterval(activeRefreshInterval.value)
             console.log(`cleared interval `, activeRefreshInterval.value)
         }
+        if (! newValue) return
         activeRefreshInterval.value = setInterval(() => {
             let now = DateTime.now()
             let i = Interval.fromDateTimes(now, newValue);
             if (i.length('seconds') > 60) {
                 console.log(`more than 1 second remaining, nothing to do..`, i.length('seconds'))
+                needsTokenRefresh.value = false
             } else {
-                // do a refresh
-                useGoogleOneTapStore().tokenLogin()
+                needsTokenRefresh.value = false
             }
         }, 5_000)
     })
+    watch(needsTokenRefresh, async (newValue) => {
+        if (newValue) {
+            // do a refresh
+            await useGoogleOneTapStore().tokenLogin()
+        }
+    })
 
     const tokenKey = 'google_access_token'
+    const tokenExpiresAtKey = 'google_access_token_expires-at'
     // watch for initial change via workaround.
     // kudos: https://github.com/vuejs/pinia/issues/309#issuecomment-1291213101
     const tokenInStore = localStorage.getItem(tokenKey)
     if (tokenInStore) {
         accessToken.value = tokenInStore
     }
+    const tokenExpiresAtInStore = localStorage.getItem(tokenExpiresAtKey)
+    if (tokenExpiresAtInStore) {
+        expiresAt.value = DateTime.fromISO(tokenExpiresAtInStore)
+    }
 
-    return { accessToken, expiresAt, authorizationResponse, authorize }
+    return { accessToken, expiresAt, needsTokenRefresh, authorizationResponse, authorize }
 })

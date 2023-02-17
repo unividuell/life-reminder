@@ -3,6 +3,7 @@
     <AppBar />
 
     <v-main>
+      <GoogleOneTapLogin />
       <Main v-if="authenticated" ref="main" />
 
       <AddSoftEvent />
@@ -21,11 +22,13 @@ import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
+import GoogleOneTapLogin from "./components/GoogleOneTapLogin.vue";
 
 export default {
   name: 'App',
 
   components: {
+    GoogleOneTapLogin,
     AddSoftEvent,
     DeleteEvent,
     AppBar,
