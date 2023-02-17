@@ -31,12 +31,12 @@
 <script setup>
 import {mapActions, mapState, storeToRefs} from "pinia";
 import {useDialogStore} from "../stores/DialogStore";
-import {useGoogleOneTapStore} from "../stores/GoogleOneTapStore";
+import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import GoogleOneTapLogin from "./GoogleOneTapLogin.vue";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 
 const dialogStore = useDialogStore()
-const authenticationStore = useGoogleOneTapStore()
+const authenticationStore = useGoogleAuthenticationStore()
 const authorizationStore = useGoogleAuthorizationStore()
 
 const { isAuthenticated, currentUser } = storeToRefs(authenticationStore)

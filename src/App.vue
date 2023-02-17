@@ -20,11 +20,10 @@ import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
-import GoogleOneTapLogin from "./components/GoogleOneTapLogin.vue";
-import {useGoogleOneTapStore} from "./stores/GoogleOneTapStore";
+import {useGoogleAuthenticationStore} from "./stores/GoogleAuthenticationStore";
 import {ref} from "vue";
 
-const store = useGoogleOneTapStore()
+const store = useGoogleAuthenticationStore()
 const loading = ref(false)
 const { isAuthenticated } = storeToRefs(store)
 

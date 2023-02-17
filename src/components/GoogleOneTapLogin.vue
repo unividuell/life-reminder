@@ -3,13 +3,11 @@
 </template>
 
 <script setup>
-import {useGoogleOneTapStore} from "../stores/GoogleOneTapStore";
+import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import {onMounted, watch} from "vue";
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 import {storeToRefs} from "pinia";
 
-const googleAuthenticationStore = useGoogleOneTapStore()
-const googleAuthorizationStore = useGoogleAuthorizationStore()
+const googleAuthenticationStore = useGoogleAuthenticationStore()
 
 const {loginIsPossible, currentUser} = storeToRefs(googleAuthenticationStore)
 

@@ -5,7 +5,6 @@ import {
 import {computed, onMounted, ref, watch} from "vue";
 import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 import {DateTime, Interval} from "luxon";
-import {useGoogleOneTapStore} from "./GoogleOneTapStore";
 
 // Authorization is the process of granting or rejecting access to data or resources.
 export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
