@@ -1,5 +1,5 @@
 <template>
-
+  <v-btn v-if="userDidLogout" :disabled="!loginIsPossible" @click="() => authenticate()" prepend-icon="mdi-login">Login</v-btn>
 </template>
 
 <script setup>
@@ -9,7 +9,7 @@ import {storeToRefs} from "pinia";
 
 const googleAuthenticationStore = useGoogleAuthenticationStore()
 
-const {loginIsPossible, currentUser} = storeToRefs(googleAuthenticationStore)
+const {loginIsPossible, currentUser, userDidLogout} = storeToRefs(googleAuthenticationStore)
 
 async function authenticate() {
   console.info(currentUser.value)

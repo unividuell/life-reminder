@@ -9,6 +9,7 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
 
     const oneTapResponse = ref(null)
     const currentUser = ref(null)
+    const userDidLogout = ref(false)
 
     const isAuthenticated = computed(() => currentUser.value !== null)
 
@@ -36,9 +37,10 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
         await oneTap.login()
     }
 
-    function logout() {
+    async function logout() {
         currentUser.value = null
-        useGoogleAuthorizationStore().reset()
+        await useGoogleAuthorizationStore().reset()
+        userDidLogout.value = true
     }
 
     watch(currentUser, async (newValue) => {
@@ -56,5 +58,5 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
     const currentUserKey = "google_current-user"
     currentUser.value = JSON.parse(localStorage.getItem(currentUserKey))
 
-    return { isAuthenticated, loginIsPossible, isReady, oneTapResponse, currentUser, oneTap, authenticate, logout }
+    return { isAuthenticated, loginIsPossible, userDidLogout, currentUser, authenticate, logout }
 })
