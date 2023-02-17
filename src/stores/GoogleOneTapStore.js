@@ -16,9 +16,10 @@ export const useGoogleOneTapStore = defineStore("GoogleOneTap", {
     actions: {
         async onAuthenticated(response) {
             this.oneTapResponse = response
-
             this.currentUser = decodeCredential(this.oneTapResponse.credential)
-
+            await this.tokenLogin()
+        },
+        async tokenLogin() {
             // we can use the result from the one-tap response to get an access token
             const { isReady, login } = useTokenClient({
                 onSuccess: (response) => {

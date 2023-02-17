@@ -8,6 +8,7 @@ specifiers:
   date-fns: ^2.16.1
   eslint: 8.26.0
   eslint-plugin-vue: 9.6.0
+  luxon: ^3.2.1
   pinia: ^2.0.13
   sass: ^1.26.0
   unplugin-vue-components: ^0.22.12
@@ -23,6 +24,7 @@ dependencies:
   '@vuepic/vue-datepicker': 3.6.3_vue@3.2.45
   axios: 0.26.1
   date-fns: 2.29.3
+  luxon: 3.2.1
   pinia: 2.0.28_vue@3.2.45
   vue: 3.2.45
   vue-axios: 3.5.2_axios@0.26.1+vue@3.2.45
@@ -1117,6 +1119,11 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /luxon/3.2.1:
+    resolution: {integrity: sha512-QrwPArQCNLAKGO/C+ZIilgIuDnEnKx5QYODdDtbFaxzsbZcc/a7WFq7MhsVYgRlwawLtvOUESTlfJ+hc/USqPg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /magic-string/0.25.9:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}
