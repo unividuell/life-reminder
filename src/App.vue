@@ -3,7 +3,8 @@
     <AppBar />
 
     <v-main>
-      <Main v-if="isAuthorized" ref="main" />
+      <Main v-if="isAuthorized && !needsTokenRefresh" />
+      <GoogleSessionRefresh v-if="needsTokenRefresh" />
 
       <AddSoftEvent />
       <SetEventState />
@@ -20,12 +21,13 @@ import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
-import {useGoogleAuthenticationStore} from "./stores/GoogleAuthenticationStore";
 import {ref} from "vue";
 import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
+import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
 
-const store = useGoogleAuthorizationStore()
+const authorizationStore = useGoogleAuthorizationStore()
+
 const loading = ref(false)
-const { isAuthorized } = storeToRefs(store)
+const { isAuthorized, needsTokenRefresh } = storeToRefs(authorizationStore)
 
 </script>

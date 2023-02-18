@@ -32,7 +32,8 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
                 throw Error('user did not granted all scopes!')
             }
             accessToken.value = response.access_token
-            expiresAt.value = DateTime.now().plus({ seconds: response.expires_in })
+            needsTokenRefresh.value = false
+            expiresAt.value = DateTime.now().plus({ seconds: /*response.expires_in*/ 16 })
         },
         onError: (errorResponse) => console.error(errorResponse),
         // client_id: oneTapStore.oneTapResponse?.clientId,
@@ -56,7 +57,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         accessToken.value = null
         expiresAt.value = null
         authorizationResponse.value = null
-        needsTokenRefresh.value = true
+        needsTokenRefresh.value = false
         console.info(`did reset everything`)
     }
 
@@ -71,30 +72,32 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             await useGoogleCalendarStore().loadCalendarItems()
         }
     })
-    // watch(expiresAt, async(newValue) => {
-    //     localStorage.setItem(tokenExpiresAtKey, newValue)
-    //     if (activeRefreshInterval.value) {
-    //         clearInterval(activeRefreshInterval.value)
-    //         console.log(`cleared interval `, activeRefreshInterval.value)
-    //     }
-    //     if (! newValue) return
-    //     activeRefreshInterval.value = setInterval(() => {
-    //         let now = DateTime.now()
-    //         let i = Interval.fromDateTimes(now, newValue);
-    //         if (i.length('seconds') > 60) {
-    //             console.log(`more than 1 second remaining, nothing to do..`, i.length('seconds'))
-    //             needsTokenRefresh.value = false
-    //         } else {
-    //             needsTokenRefresh.value = false
-    //         }
-    //     }, 5_000)
-    // })
-    // watch(needsTokenRefresh, async (newValue) => {
-    //     if (newValue) {
-    //         // do a refresh
-    //         await useGoogleOneTapStore().tokenLogin()
-    //     }
-    // })
+    watch(expiresAt, async(newValue) => {
+        if (newValue) {
+            localStorage.setItem(tokenExpiresAtKey, newValue?.toString())
+        } else {
+            localStorage.removeItem(tokenExpiresAtKey)
+        }
+        if (activeRefreshInterval.value) {
+            clearInterval(activeRefreshInterval.value)
+            console.log(`cleared interval `, activeRefreshInterval.value)
+        }
+        if (! newValue) return
+        console.log(`starting expiration interval`)
+        activeRefreshInterval.value = setInterval(() => {
+            let now = DateTime.now()
+            let i = Interval.fromDateTimes(now, expiresAt.value)
+            let lengthInSeconds = i.length('seconds')
+            if (lengthInSeconds > 60) {
+                console.log(`more than 1 second remaining, nothing to do..`, lengthInSeconds)
+                needsTokenRefresh.value = false
+            } else {
+                console.log(`detected ending session in `, lengthInSeconds)
+                needsTokenRefresh.value = true
+                clearInterval(activeRefreshInterval.value)
+            }
+        }, 5_000)
+    })
 
     const tokenKey = 'google_access_token'
     const tokenExpiresAtKey = 'google_access_token_expires-at'

@@ -1,5 +1,5 @@
 <template>
-  <v-btn v-if="userDidLogout" :disabled="!loginIsPossible" @click="() => authenticate()" prepend-icon="mdi-login">Login</v-btn>
+  <v-btn :disabled="!loginIsPossible" @click="() => authenticate()" prepend-icon="mdi-login">Login</v-btn>
 </template>
 
 <script setup>

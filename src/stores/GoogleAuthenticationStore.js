@@ -19,7 +19,7 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
             currentUser.value = decodeCredential(response.credential)
         },
         onError: () => console.error("Error with One Tap Login"),
-        disableAutomaticPrompt: true,
+        disableAutomaticPrompt: userDidLogout,
         autoSelect: true,
         cancelOnTapOutside: false,
         scope: 'https://www.googleapis.com/auth/calendar',
