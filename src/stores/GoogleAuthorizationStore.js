@@ -11,6 +11,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
 
     const accessToken = ref(null)
     const expiresAt = ref(null)
+    const expiresIn = ref(null)
     const activeRefreshInterval = ref(null)
     const authorizationResponse = ref(null)
     const needsTokenRefresh = ref(false)
@@ -33,7 +34,9 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             }
             accessToken.value = response.access_token
             needsTokenRefresh.value = false
-            expiresAt.value = DateTime.now().plus({ seconds: /*response.expires_in*/ 16 })
+            expiresIn.value = response.expires_in /* use to test: 120 */
+            expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value })
+
         },
         onError: (errorResponse) => console.error(errorResponse),
         // client_id: oneTapStore.oneTapResponse?.clientId,
@@ -56,6 +59,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     function reset() {
         accessToken.value = null
         expiresAt.value = null
+        expiresIn.value = null
         authorizationResponse.value = null
         needsTokenRefresh.value = false
         console.info(`did reset everything`)
@@ -87,12 +91,12 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         activeRefreshInterval.value = setInterval(() => {
             let now = DateTime.now()
             let i = Interval.fromDateTimes(now, expiresAt.value)
-            let lengthInSeconds = i.length('seconds')
-            if (lengthInSeconds > 60) {
-                console.log(`more than 1 second remaining, nothing to do..`, lengthInSeconds)
+            expiresIn.value = i.length('seconds')
+            if (expiresIn.value > 60) {
+                console.log(`more than 1 second remaining, nothing to do..`, expiresIn.value)
                 needsTokenRefresh.value = false
             } else {
-                console.log(`detected ending session in `, lengthInSeconds)
+                console.log(`detected ending session in `, expiresIn.value)
                 needsTokenRefresh.value = true
                 clearInterval(activeRefreshInterval.value)
             }
@@ -112,5 +116,5 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         expiresAt.value = DateTime.fromISO(tokenExpiresAtInStore)
     }
 
-    return { isReady, isAuthorized, accessToken, expiresAt, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
+    return { isReady, isAuthorized, accessToken, expiresAt, expiresIn, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
 })
