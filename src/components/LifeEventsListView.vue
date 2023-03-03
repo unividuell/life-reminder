@@ -175,7 +175,7 @@ export default {
             .filter(title => title?.includes('#'))
             .flatMap(title => {
               let splitted = title.split('#')
-              return splitted.splice(1, splitted.length - 1)
+              return splitted.splice(1, splitted.length - 1).map(tag => tag.trim())
             })
       )
     }
