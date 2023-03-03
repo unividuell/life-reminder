@@ -1,9 +1,10 @@
 <template>
   <v-app>
     <AppBar />
-
     <v-main>
-      <Main v-if="authenticated" ref="main" />
+      <v-progress-linear :model-value="remainingSession" :height="2" />
+      <Main v-if="isAuthorized && !needsTokenRefresh" />
+      <GoogleSessionRefresh v-if="needsTokenRefresh" />
 
       <AddSoftEvent />
       <SetEventState />
@@ -13,31 +14,26 @@
   </v-app>
 </template>
 
-<script>
+<script setup>
 import Main from './components/Main.vue';
-import { useGoogleAuthenticationStore } from "./stores/GoogleAuthenticationStore.js";
-import { mapState } from "pinia";
+import {mapState, storeToRefs} from "pinia";
 import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
+import {computed, ref} from "vue";
+import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
+import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
 
-export default {
-  name: 'App',
+const authorizationStore = useGoogleAuthorizationStore()
 
-  components: {
-    AddSoftEvent,
-    DeleteEvent,
-    AppBar,
-    Main,
-    SetEventState
-  },
+const loading = ref(false)
+const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authorizationStore)
 
-  data: () => ({
-    loading: false,
-  }),
-  computed: {
-    ...mapState(useGoogleAuthenticationStore, ['authenticated', 'currentUser']),
-  }
-};
+const remainingSession = computed(() => {
+  let max = 3_600
+  let remaining = (expiresIn.value / max) * 100
+  // console.info(`remaining`, remaining)
+  return remaining
+})
 </script>

@@ -12,6 +12,15 @@ const axiosPlugin = {
             }
             return req;
         });
+        axios.interceptors.response.use(resp => {
+            return resp
+        }, error => {
+            if (error.response.status === 401) {
+                console.warn(`init resetting token`)
+                useGoogleAuthorizationStore().reset()
+            }
+            return Promise.reject(error);
+        })
     }
 }
 
