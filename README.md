@@ -26,3 +26,8 @@ pnpm run perview
 ```
 pnpm run lint
 ```
+
+## Deploy to production
+```
+flyctl deploy --local-only 
+```
