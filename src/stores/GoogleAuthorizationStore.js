@@ -29,7 +29,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
                 "https://www.googleapis.com/auth/calendar"
             )
             if (result === false) {
-                console.warn('user did not granted all scopes!')
+                console.warn('user did not granted all scopes!', authorizationResponse.value.scope)
                 throw Error('user did not granted all scopes!')
             }
             accessToken.value = response.access_token
@@ -45,6 +45,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         hint: null,
         // Specified as an empty string to auto select the account which we have already consented for use.
         prompt: '',
+        scope: 'https://www.googleapis.com/auth/calendar'
     })
 
     const isReady = computed(() => tokenClient.isReady.value)
