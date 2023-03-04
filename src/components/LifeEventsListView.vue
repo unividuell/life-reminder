@@ -124,7 +124,6 @@
 </template>
 
 <script>
-import LifeEvent from "@/components/LifeEvent.vue";
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
@@ -132,7 +131,7 @@ import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, i
 
 export default {
   name: "LifeEventsListView",
-  components: {LifeEvent},
+  components: {},
   data: () => ({
     now: new Date(),
     loading: false,
