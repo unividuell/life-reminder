@@ -12,7 +12,7 @@
     </v-progress-linear>
     <v-card-title class="headline">{{ endLabel }}</v-card-title>
     <v-card-subtitle>{{ event.redZone.start.toLocaleDateString() }} - {{ event.redZone.end.toLocaleDateString() }}</v-card-subtitle>
-    <v-card-text>{{ event.note }}</v-card-text>
+    <v-card-text data-test="note">{{ event.note }}</v-card-text>
     <v-card-actions>
       <v-spacer />
       <v-btn @click="setEventState('close')" v-if="! event.closed">

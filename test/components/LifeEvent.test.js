@@ -5,7 +5,7 @@ import * as directives from "vuetify/directives"
 
 import { mount, shallowMount } from "@vue/test-utils"
 import LifeEvent from "@/components/LifeEvent.vue"
-import {parseISO} from "date-fns";
+import {addDays, subDays} from "date-fns";
 
 describe("LiveEvent Component", () => {
     const vuetify = createVuetify({ components, directives})
@@ -18,8 +18,8 @@ describe("LiveEvent Component", () => {
             props: {
                 event: {
                     redZone: {
-                        start: parseISO('2023-03-04T10:28:00'),
-                        end: parseISO('2023-03-04T10:28:00')
+                        start: subDays(new Date(), 2),
+                        end: addDays(new Date(), 4)
                     },
                     closed: false,
                     title: 'unit testing',
@@ -27,6 +27,8 @@ describe("LiveEvent Component", () => {
                 }
             },
         })
-        expect(wrapper.get('[data-test=title]').text()).toContain('unit testing')
+        expect(wrapper.get('.v-card-title').text()).toContain('unit testing')
+        expect(wrapper.get('[data-test=note]').text()).toContain('first unit test!')
+        expect(wrapper.get('.headline').text()).toContain('ends in 4 days')
     })
 })
