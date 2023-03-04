@@ -51,7 +51,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                 `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
                 event,
             )
-            if (response.status !== 200) throw Error('could not edit calendar event')
+            if (response.status !== 200) throw Error(`could not edit calendar event, got http status ${response.status}`)
         },
         async editEvent(eventId, summary, notes, start, end) {
             let event = {
@@ -84,15 +84,16 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             let response = await axios.get(
                 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
             )
-            if (response.status !== 200) throw Error('could not load calendar-list')
+            if (response.status !== 200) throw Error(`could not load calendar-list, got http status ${response.status}`)
 
             let ourCalendar = response.data?.items?.find(candidate => candidate.summary === calendarSummary)
             if (ourCalendar) {
                 this.calendarId = ourCalendar.id
                 console.log(`Calendar with summary ${calendarSummary} is present: ${ourCalendar.id}`)
             } else {
-                await this.createCalendar()
-                console.log(`Calendar with summary ${calendarSummary} was created: ${ourCalendar.id}`)
+                let createdCalendar = await this.createCalendar()
+                console.log(`Calendar with summary ${calendarSummary} was created: ${createdCalendar.id}`)
+                this.calendarId = createdCalendar.id
             }
         },
         async createCalendar() {
@@ -102,7 +103,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                 { summary: calendarSummary },
             )
             if (response.status !== 200) throw Error('could not create calendar')
-
+            return response.data
         }
     },
     getters: {

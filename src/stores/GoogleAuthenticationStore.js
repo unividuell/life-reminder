@@ -22,8 +22,6 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
         disableAutomaticPrompt: userDidLogout,
         autoSelect: true,
         cancelOnTapOutside: false,
-        scope: 'https://www.googleapis.com/auth/calendar',
-        // options
     });
 
     const isReady = computed(() => oneTap.isReady.value)
