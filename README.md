@@ -12,6 +12,11 @@ pnpm install
 pnpm run dev
 ```
 
+### Run tests
+```
+pnpm run test
+```
+
 ### Compiles and minifies for production
 ```
 pnpm run build
