@@ -12,9 +12,8 @@ const googleAuthenticationStore = useGoogleAuthenticationStore()
 const {loginIsPossible, currentUser, userDidLogout} = storeToRefs(googleAuthenticationStore)
 
 async function authenticate() {
-  console.info(currentUser.value)
   if (currentUser.value == null) {
-    console.info(`need to login by one-tap`)
+    console.info(`need to login by one-tap as currentUser is null`)
     await googleAuthenticationStore.authenticate()
   }
 }
