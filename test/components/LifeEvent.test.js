@@ -1,16 +1,27 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { createVuetify } from "vuetify"
 import * as components from "vuetify/components"
 import * as directives from "vuetify/directives"
 
 import { mount, shallowMount } from "@vue/test-utils"
 import LifeEvent from "@/components/LifeEvent.vue"
-import {addDays, subDays} from "date-fns";
+import {addDays, parseISO, subDays} from "date-fns";
 
 describe("LiveEvent Component", () => {
     const vuetify = createVuetify({ components, directives})
+    beforeEach(() => {
+        // tell vitest we use mocked time
+        vi.useFakeTimers()
+    })
+    afterEach(() => {
+        // restoring date after each test run
+        vi.useRealTimers()
+    })
 
     it("renders properly", () => {
+        let now = parseISO('2023-03-04T11:00:00')
+        vi.setSystemTime(now)
+
         const wrapper = mount(LifeEvent, {
             global: {
                 plugins: [vuetify]
@@ -18,8 +29,8 @@ describe("LiveEvent Component", () => {
             props: {
                 event: {
                     redZone: {
-                        start: subDays(new Date(), 2),
-                        end: addDays(new Date(), 4)
+                        start: subDays(now, 2),
+                        end: addDays(now, 4)
                     },
                     closed: false,
                     title: 'unit testing',
