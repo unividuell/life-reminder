@@ -3,12 +3,12 @@
     <AppBar />
     <v-main>
       <v-progress-linear :model-value="remainingSession" :height="2" />
-      <Main v-if="isAuthorized && !needsTokenRefresh" />
-      <GoogleSessionRefresh v-if="needsTokenRefresh" />
+      <Main v-if="fullyUsable && !needsTokenRefresh" />
+      <GoogleSessionRefresh v-if="needsTokenRefresh && isAuthenticated" />
 
-      <AddSoftEvent />
-      <SetEventState />
-      <DeleteEvent />
+      <AddSoftEvent v-if="fullyUsable" />
+      <SetEventState v-if="fullyUsable" />
+      <DeleteEvent v-if="fullyUsable" />
 
     </v-main>
   </v-app>
@@ -24,10 +24,13 @@ import AddSoftEvent from "./components/AddSoftEvent.vue";
 import {computed, ref} from "vue";
 import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
 import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
+import {useGoogleAuthenticationStore} from "@/stores/GoogleAuthenticationStore";
 
+const authenticationStore = useGoogleAuthenticationStore()
 const authorizationStore = useGoogleAuthorizationStore()
 
 const loading = ref(false)
+const { isAuthenticated } = storeToRefs(authenticationStore)
 const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authorizationStore)
 
 const remainingSession = computed(() => {
@@ -36,4 +39,6 @@ const remainingSession = computed(() => {
   // console.info(`remaining`, remaining)
   return remaining
 })
+
+const fullyUsable = computed(() => isAuthenticated.value && isAuthorized.value)
 </script>

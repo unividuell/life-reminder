@@ -1,4 +1,5 @@
 import axios from "axios";
+import {useGoogleAuthenticationStore} from "@/stores/GoogleAuthenticationStore";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 
 const axiosPlugin = {
@@ -14,10 +15,10 @@ const axiosPlugin = {
         });
         axios.interceptors.response.use(resp => {
             return resp
-        }, error => {
+        }, async error => {
             if (error.response.status === 401) {
                 console.warn(`init resetting token`)
-                useGoogleAuthorizationStore().reset()
+                await useGoogleAuthenticationStore().logout()
             }
             return Promise.reject(error);
         })

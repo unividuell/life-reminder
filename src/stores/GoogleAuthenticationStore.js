@@ -4,6 +4,8 @@ import {decodeCredential, hasGrantedAllScopes, useOneTap, useTokenClient} from "
 import { useGoogleAuthorizationStore } from './GoogleAuthorizationStore'
 import {computed, ref, watch} from "vue";
 
+const currentUserKey = "google_current-user"
+
 // Authentication establishes who someone is, and is commonly referred to as user sign-up or sign-in.
 export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', () => {
 
@@ -13,13 +15,16 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
 
     const isAuthenticated = computed(() => currentUser.value !== null)
 
+    restoreLastState()
+
+    // init one-tap after restoring last state
     const oneTap = useOneTap({
         onSuccess: (response) => {
             oneTapResponse.value = response
             currentUser.value = decodeCredential(response.credential)
         },
         onError: () => console.error("Error with One Tap Login"),
-        disableAutomaticPrompt: userDidLogout,
+        disableAutomaticPrompt: userDidLogout.value || isAuthenticated.value,
         autoSelect: true,
         cancelOnTapOutside: false,
     });
@@ -28,10 +33,11 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
     const loginIsPossible = computed(() => isReady && useGoogleAuthorizationStore().isReady)
 
     async function authenticate() {
-        if (!oneTap.isReady) {
+        if (!oneTap.isReady.value) {
             console.warn(`cannot authenticate as the client is not ready`)
             return
         }
+        console.info(`starting google one-tap login. isReady: ${oneTap.isReady.value}, userDidLogout: ${userDidLogout.value}, isAuthenticated: ${isAuthenticated.value}`)
         await oneTap.login()
     }
 
@@ -41,6 +47,7 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
         userDidLogout.value = true
     }
 
+    // start watching after restoring last state
     watch(currentUser, async (newValue) => {
         if (newValue) {
             localStorage.setItem(currentUserKey, JSON.stringify(newValue))
@@ -53,8 +60,9 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
         }
     })
 
-    const currentUserKey = "google_current-user"
-    currentUser.value = JSON.parse(localStorage.getItem(currentUserKey))
+    function restoreLastState() {
+        currentUser.value = JSON.parse(localStorage.getItem(currentUserKey))
+    }
 
     return { isAuthenticated, loginIsPossible, userDidLogout, currentUser, authenticate, logout }
 })
