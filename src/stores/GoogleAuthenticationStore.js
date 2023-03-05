@@ -33,11 +33,11 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
     const loginIsPossible = computed(() => isReady && useGoogleAuthorizationStore().isReady)
 
     async function authenticate() {
-        if (!oneTap.isReady) {
+        if (!oneTap.isReady.value) {
             console.warn(`cannot authenticate as the client is not ready`)
             return
         }
-        console.info(`starting google one-tap login`)
+        console.info(`starting google one-tap login. isReady: ${oneTap.isReady.value}, userDidLogout: ${userDidLogout.value}, isAuthenticated: ${isAuthenticated.value}`)
         await oneTap.login()
     }
 
