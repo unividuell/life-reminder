@@ -22,7 +22,7 @@
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </template>
-    <template v-slot:append v-if="!isAuthenticated">
+    <template v-slot:append v-if="!isAuthenticated || !isAuthorized">
       <GoogleOneTapLogin />
     </template>
   </v-app-bar>
