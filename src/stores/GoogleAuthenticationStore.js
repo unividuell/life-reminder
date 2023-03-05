@@ -15,13 +15,16 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
 
     const isAuthenticated = computed(() => currentUser.value !== null)
 
+    restoreLastState()
+
+    // init one-tap after restoring last state
     const oneTap = useOneTap({
         onSuccess: (response) => {
             oneTapResponse.value = response
             currentUser.value = decodeCredential(response.credential)
         },
         onError: () => console.error("Error with One Tap Login"),
-        disableAutomaticPrompt: userDidLogout,
+        disableAutomaticPrompt: userDidLogout.value || isAuthenticated.value,
         autoSelect: true,
         cancelOnTapOutside: false,
     });
@@ -43,8 +46,6 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
         await useGoogleAuthorizationStore().reset()
         userDidLogout.value = true
     }
-
-    restoreLastState()
 
     // start watching after restoring last state
     watch(currentUser, async (newValue) => {
