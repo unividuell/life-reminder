@@ -114,7 +114,9 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
 
     function restoreLastState() {
         accessToken.value = localStorage.getItem(tokenKey)
-        expiresAt.value = DateTime.fromISO(localStorage.getItem(tokenExpiresAtKey))
+        if (localStorage.getItem(tokenExpiresAtKey) !== null) {
+            expiresAt.value = DateTime.fromISO(localStorage.getItem(tokenExpiresAtKey))
+        }
     }
 
     return { isReady, isAuthorized, accessToken, expiresAt, expiresIn, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
