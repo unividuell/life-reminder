@@ -9,18 +9,18 @@ import {storeToRefs} from "pinia";
 
 const googleAuthenticationStore = useGoogleAuthenticationStore()
 
-const {loginIsPossible, currentUser, userDidLogout} = storeToRefs(googleAuthenticationStore)
+const {loginIsPossible, isAuthenticated, currentUser, userDidLogout} = storeToRefs(googleAuthenticationStore)
 
 async function authenticate() {
-  if (currentUser.value == null) {
-    console.info(`need to login by one-tap as currentUser is null`)
+  if (! isAuthenticated) {
+    console.info(`need to login by one-tap as currently not authenticated`)
     await googleAuthenticationStore.authenticate()
   }
 }
 
 watch(loginIsPossible, async (newValue) => {
-  if (newValue) {
-    console.info(`both login clients are ready`)
+  if (newValue && ! isAuthenticated) {
+    console.info(`both login clients are ready, currently not authenticated => start authentication`)
     await authenticate()
   }
 })
