@@ -6,6 +6,9 @@ import {computed, onMounted, ref, watch} from "vue";
 import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 import {DateTime, Interval} from "luxon";
 
+const tokenKey = 'google_access_token'
+const tokenExpiresAtKey = 'google_access_token_expires-at'
+
 // Authorization is the process of granting or rejecting access to data or resources.
 export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
 
@@ -66,17 +69,6 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         console.info(`did reset everything`)
     }
 
-    watch(accessToken, async (newValue) => {
-        if (newValue) {
-            localStorage.setItem(tokenKey, newValue)
-        } else {
-            localStorage.removeItem(tokenKey)
-        }
-        if (newValue) {
-            console.info(`detected changed google access token ${newValue}, will load everything..`)
-            await useGoogleCalendarStore().loadCalendarItems()
-        }
-    })
     watch(expiresAt, async(newValue) => {
         if (newValue) {
             localStorage.setItem(tokenExpiresAtKey, newValue?.toString())
@@ -104,17 +96,26 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         }, 5_000)
     })
 
-    const tokenKey = 'google_access_token'
-    const tokenExpiresAtKey = 'google_access_token_expires-at'
     // watch for initial change via workaround.
     // kudos: https://github.com/vuejs/pinia/issues/309#issuecomment-1291213101
-    const tokenInStore = localStorage.getItem(tokenKey)
-    if (tokenInStore !== null) {
-        accessToken.value = tokenInStore
-    }
-    const tokenExpiresAtInStore = localStorage.getItem(tokenExpiresAtKey)
-    if (tokenExpiresAtInStore) {
-        expiresAt.value = DateTime.fromISO(tokenExpiresAtInStore)
+    restoreLastState()
+
+    // start watching after restoring last state
+    watch(accessToken, async (newValue) => {
+        if (newValue) {
+            localStorage.setItem(tokenKey, newValue)
+        } else {
+            localStorage.removeItem(tokenKey)
+        }
+        if (newValue) {
+            console.info(`detected changed google access token ${newValue}, will load everything..`)
+            await useGoogleCalendarStore().loadCalendarItems()
+        }
+    })
+
+    function restoreLastState() {
+        accessToken.value = localStorage.getItem(tokenKey)
+        expiresAt.value = DateTime.fromISO(localStorage.getItem(tokenExpiresAtKey))
     }
 
     return { isReady, isAuthorized, accessToken, expiresAt, expiresIn, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
