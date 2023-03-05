@@ -94,7 +94,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             let i = Interval.fromDateTimes(now, expiresAt.value)
             expiresIn.value = i.length('seconds')
             if (expiresIn.value > 60) {
-                console.log(`more than 1 second remaining, nothing to do..`, expiresIn.value)
+                // console.log(`more than 1 second remaining, nothing to do..`, expiresIn.value)
                 needsTokenRefresh.value = false
             } else {
                 console.log(`detected ending session in `, expiresIn.value)
