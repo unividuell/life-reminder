@@ -96,11 +96,6 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         }, 5_000)
     })
 
-    // watch for initial change via workaround.
-    // kudos: https://github.com/vuejs/pinia/issues/309#issuecomment-1291213101
-    restoreLastState()
-
-    // start watching after restoring last state
     watch(accessToken, async (newValue) => {
         if (newValue) {
             localStorage.setItem(tokenKey, newValue)
@@ -112,6 +107,10 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             await useGoogleCalendarStore().loadCalendarItems()
         }
     })
+
+    // watch for initial change via workaround.
+    // kudos: https://github.com/vuejs/pinia/issues/309#issuecomment-1291213101
+    restoreLastState()
 
     function restoreLastState() {
         accessToken.value = localStorage.getItem(tokenKey)
