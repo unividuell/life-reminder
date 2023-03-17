@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <AppBar />
+    <DrawerNavigation />
     <v-main>
       <v-progress-linear :model-value="remainingSession" :height="2" />
       <Main v-if="fullyUsable && !needsTokenRefresh" />
@@ -25,6 +26,7 @@ import {computed, ref} from "vue";
 import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
 import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
 import {useGoogleAuthenticationStore} from "@/stores/GoogleAuthenticationStore";
+import DrawerNavigation from "@/components/DrawerNavigation.vue";
 
 const authenticationStore = useGoogleAuthenticationStore()
 const authorizationStore = useGoogleAuthorizationStore()

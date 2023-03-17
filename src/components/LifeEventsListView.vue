@@ -1,65 +1,24 @@
 <template>
  <v-container fluid>
    <v-row>
-     <v-col cols="12" md="3">
-      <v-row>
-        <v-col cols="12">
-          <v-card>
-            <v-card-text>
-              <v-row>
-                <v-col cols="12" sm="6" md="12" class="mx-auto">
-                  <v-switch
-                      label="Show cleared"
-                      v-model="includeClearedEvents"
-                      density="compact"
-                      hide-details
-                  />
-                </v-col>
-                <v-col cols="12" sm="6" md="12" class="mx-auto">
-                  <v-switch
-                      label="Show upcoming"
-                      v-model="includeUpcomingEvents"
-                      density="compact"
-                      hide-details
-                  />
-                </v-col>
-                <v-col cols="12" sm="12" md="12" class="mx-auto">
-                  <v-select
-                      label="Sort by"
-                      :items="sortByOptions"
-                      item-title="text"
-                      item-value="key"
-                      v-model="sortBy"
-                      density="compact"
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="12">
-          <v-card>
-            <v-card-text>
-              <v-chip-group
-                v-model="filterTag"
-                column
-              >
-                <v-chip
-                  v-for = "tag in listOfCurrentTags" 
-                  filter
-                  :value = "tag"
-                  :key="tag"
-                >
-                #{{ tag }}
-                </v-chip>
-              </v-chip-group>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+     <v-col cols="12" md="3" class="pb-0">
+      <v-chip-group
+        v-model="filterTag"
+        column
+      >
+        <v-chip
+          v-for="tag in listOfCurrentTags"
+          filter
+          :value="tag"
+          :key="tag"
+          size="small"
+        >
+        #{{ tag }}
+        </v-chip>
+      </v-chip-group>
      </v-col>
-     <v-col cols="12" md="9">
-       <v-card class="mx-auto" :loading="loading">
+     <v-col cols="12" md="9" class="pa-0 pa-sm-2">
+       <v-card class="mx-auto" :loading="loading" :flat="$vuetify.display.xs">
          <v-list>
           <v-list-subheader>Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
@@ -126,7 +85,8 @@
 <script>
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
-import {useDialogStore} from "../stores/DialogStore";
+import {useDialogStore} from "@/stores/DialogStore";
+import {useCalendarFilterSettingsStore} from "@/stores/CalendarFilterSettingsStore";
 import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, addDays} from "date-fns";
 
 export default {
@@ -135,16 +95,13 @@ export default {
   data: () => ({
     now: new Date(),
     loading: false,
-    includeClearedEvents: false,
-    includeUpcomingEvents: false,
-    sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
-    sortBy: 'end',
     filterTag: undefined,
     newTodo: undefined,
     newTodoTitle: ''
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
+    ...mapState(useCalendarFilterSettingsStore, ['includeClearedEvents', 'includeUpcomingEvents', 'sortBy']),
     events() {
       return this
           .sortedEvents(this.sortBy)
@@ -176,6 +133,7 @@ export default {
               let splitted = title.split('#')
               return splitted.splice(1, splitted.length - 1).map(tag => tag.trim())
             })
+            .sort()
       )
     }
   },
