@@ -175,6 +175,7 @@ export default {
               let splitted = title.split('#')
               return splitted.splice(1, splitted.length - 1).map(tag => tag.trim())
             })
+            .sort()
       )
     }
   },
