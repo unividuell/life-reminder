@@ -1,28 +1,21 @@
 <template>
  <v-container fluid>
    <v-row>
-     <v-col cols="12" md="3">
-      <v-row>
-        <v-col cols="12">
-          <v-card>
-            <v-card-text>
-              <v-chip-group
-                v-model="filterTag"
-                column
-              >
-                <v-chip
-                  v-for = "tag in listOfCurrentTags" 
-                  filter
-                  :value = "tag"
-                  :key="tag"
-                >
-                #{{ tag }}
-                </v-chip>
-              </v-chip-group>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+     <v-col cols="12" md="3" class="pb-0">
+      <v-chip-group
+        v-model="filterTag"
+        column
+      >
+        <v-chip
+          v-for="tag in listOfCurrentTags"
+          filter
+          :value="tag"
+          :key="tag"
+          size="small"
+        >
+        #{{ tag }}
+        </v-chip>
+      </v-chip-group>
      </v-col>
      <v-col cols="12" md="9">
        <v-card class="mx-auto" :loading="loading">
