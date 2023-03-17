@@ -20,12 +20,13 @@
      <v-col cols="12" md="9" class="pa-0 pa-sm-2">
        <v-card class="mx-auto" :loading="loading" :flat="$vuetify.display.xs">
          <v-list>
-          <v-list-subheader>Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
+          <v-list-subheader class="pa-0 pa-sm-2">Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
                v-for="event in events"
                :key="event.id"
                :class="isOverdue(event)?'text-red':''"
                @click="manageEvent(event)"
+               class="pa-0 pa-sm-2"
            >
              <template v-slot:prepend>
                <v-list-item-action start>
@@ -60,7 +61,7 @@
                  class="mt-2"
              />
            </v-list-item>
-           <v-list-item>
+           <v-list-item class="pa-0 pa-sm-2">
             <div class="d-flex">
               <v-checkbox-btn
                 class="pr-2"
