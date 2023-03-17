@@ -126,7 +126,8 @@
 <script>
 import {mapActions, mapState} from "pinia";
 import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
-import {useDialogStore} from "../stores/DialogStore";
+import {useDialogStore} from "@/stores/DialogStore";
+import {useCalendarFilterSettingsStore} from "@/stores/CalendarFilterSettingsStore";
 import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, addDays} from "date-fns";
 
 export default {
@@ -135,7 +136,6 @@ export default {
   data: () => ({
     now: new Date(),
     loading: false,
-    includeClearedEvents: false,
     includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
     sortBy: 'end',
@@ -145,6 +145,7 @@ export default {
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
+    ...mapState(useCalendarFilterSettingsStore, ['includeClearedEvents']),
     events() {
       return this
           .sortedEvents(this.sortBy)

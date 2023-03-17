@@ -4,7 +4,7 @@
       color="primary"
       dark
   >
-    <v-app-bar-nav-icon><v-icon size="32">mdi-account-check</v-icon></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon @click.stop="toggleDrawer" varian="text" />
     <v-app-bar-title class="d-none d-sm-block">Life Reminder 3000</v-app-bar-title>
 
     <template v-slot:append v-if="isAuthenticated && isAuthorized">
@@ -34,13 +34,16 @@ import {useDialogStore} from "../stores/DialogStore";
 import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import GoogleOneTapLogin from "./GoogleOneTapLogin.vue";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {useCalendarFilterSettingsStore} from "@/stores/CalendarFilterSettingsStore";
 
 const dialogStore = useDialogStore()
 const authenticationStore = useGoogleAuthenticationStore()
 const authorizationStore = useGoogleAuthorizationStore()
+const calendarSettingsStore = useCalendarFilterSettingsStore()
 
 const { isAuthenticated, currentUser } = storeToRefs(authenticationStore)
 const { isAuthorized } = storeToRefs(authorizationStore)
+const { toggleDrawer } = calendarSettingsStore
 
 function addEvent() {
   dialogStore.handleEventAdding()
