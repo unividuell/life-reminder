@@ -35,6 +35,18 @@
         </v-list-item-subtitle>
       </v-list-item>
 
+      <v-list-subheader>Event Sorting</v-list-subheader>
+      <v-list-item>
+        <v-radio-group v-model="sortBy">
+          <v-radio
+              v-for="option in sortByOptions"
+              :key="option.key"
+              :label="option.text"
+              :value="option.key"
+          />
+        </v-radio-group>
+      </v-list-item>
+
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -42,10 +54,12 @@
 <script setup>
 import { useCalendarFilterSettingsStore } from "@/stores/CalendarFilterSettingsStore";
 import {storeToRefs} from "pinia";
+import {reactive} from "vue";
 
 const store = useCalendarFilterSettingsStore()
+const sortByOptions = reactive([{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}])
 
-const { includeClearedEvents, includeUpcomingEvents } = storeToRefs(store)
+const { includeClearedEvents, includeUpcomingEvents, sortBy } = storeToRefs(store)
 
 </script>
 
