@@ -17,8 +17,8 @@
         </v-chip>
       </v-chip-group>
      </v-col>
-     <v-col cols="12" md="9">
-       <v-card class="mx-auto" :loading="loading">
+     <v-col cols="12" md="9" class="pa-0 pa-sm-2">
+       <v-card class="mx-auto" :loading="loading" :flat="$vuetify.display.xs">
          <v-list>
           <v-list-subheader>Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
