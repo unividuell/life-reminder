@@ -6,10 +6,11 @@ export const useCalendarFilterSettingsStore = defineStore("CalendarFilterSetting
 
     // event filter
     const includeClearedEvents = ref(false)
+    const includeUpcomingEvents = ref(false)
 
     function toggleDrawer() {
         drawerVisible.value = !drawerVisible.value
     }
 
-    return { drawerVisible, includeClearedEvents, toggleDrawer }
+    return { drawerVisible, includeClearedEvents, includeUpcomingEvents, toggleDrawer }
 })

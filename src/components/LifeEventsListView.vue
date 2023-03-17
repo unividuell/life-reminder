@@ -136,7 +136,6 @@ export default {
   data: () => ({
     now: new Date(),
     loading: false,
-    includeUpcomingEvents: false,
     sortByOptions: [{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}],
     sortBy: 'end',
     filterTag: undefined,
@@ -145,7 +144,7 @@ export default {
   }),
   computed: {
     ...mapState(useGoogleCalendarStore, ['sortedEvents']),
-    ...mapState(useCalendarFilterSettingsStore, ['includeClearedEvents']),
+    ...mapState(useCalendarFilterSettingsStore, ['includeClearedEvents', 'includeUpcomingEvents']),
     events() {
       return this
           .sortedEvents(this.sortBy)
