@@ -1,6 +1,6 @@
 import axios from "axios";
-import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore.js";
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore.js";
+import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
+import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 import {App} from "vue";
 
 interface AxiosOptions {
