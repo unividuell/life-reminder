@@ -5,14 +5,14 @@
     <v-list lines="three" density="compact" nav>
       <v-list-subheader>Event Filter</v-list-subheader>
 
-      <v-list-item @click="includeClearedEvents = !includeClearedEvents" value="filterClearedEvents">
+      <v-list-item @click="store.includeClearedEvents = !store.includeClearedEvents" value="includeClearedEvents">
         <template v-slot:prepend="{ isActive }">
           <v-list-item-action start>
             <v-switch density="compact" hide-details :model-value="isActive"></v-switch>
           </v-list-item-action>
         </template>
         <v-list-item-title>Show cleared events</v-list-item-title>
-        <v-list-item-subtitle v-if="includeClearedEvents">
+        <v-list-item-subtitle v-if="store.includeClearedEvents">
           Cleared events are currently displayed
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
@@ -20,14 +20,14 @@
         </v-list-item-subtitle>
       </v-list-item>
 
-      <v-list-item @click="includeUpcomingEvents = !includeUpcomingEvents" value="filterUpcomingEvent">
+      <v-list-item @click="store.includeUpcomingEvents = !store.includeUpcomingEvents" value="includeUpcomingEvents">
         <template v-slot:prepend="{ isActive }">
           <v-list-item-action start>
             <v-switch density="compact" hide-details :model-value="isActive"></v-switch>
           </v-list-item-action>
         </template>
         <v-list-item-title>Show upcoming events</v-list-item-title>
-        <v-list-item-subtitle v-if="includeUpcomingEvents">
+        <v-list-item-subtitle v-if="store.includeUpcomingEvents">
           Upcoming events are currently displayed
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
@@ -51,15 +51,15 @@
   </v-navigation-drawer>
 </template>
 
-<script setup>
-import { useCalendarFilterSettingsStore } from "@/stores/CalendarFilterSettingsStore";
+<script setup lang="ts">
+import { useCalendarFilterSettingsStore } from "../stores/CalendarFilterSettingsStore";
 import {storeToRefs} from "pinia";
 import {reactive} from "vue";
 
 const store = useCalendarFilterSettingsStore()
 const sortByOptions = reactive([{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}])
 
-const { includeClearedEvents, includeUpcomingEvents, sortBy } = storeToRefs(store)
+const { sortBy } = storeToRefs(store)
 
 </script>
 
