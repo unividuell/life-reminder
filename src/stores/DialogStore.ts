@@ -9,15 +9,11 @@ interface HandleEventState {
 export const useDialogStore = defineStore('DialogStore', () => {
 
     const handleState = ref<HandleEventState | null>(null)
-    const handleDelete = ref<LifeReminderEvent | null>(null)
     const handleEdit = ref<LifeReminderEvent | null>(null)
     const handleAdd = ref<boolean | null>(null)
 
     function handleEventState(event: LifeReminderEvent, desiredState: string) {
         handleState.value = { event: event, desiredState: desiredState }
-    }
-    function handleEventDeletion(event: LifeReminderEvent) {
-        handleDelete.value = event
     }
     function handleEventEditing(event: LifeReminderEvent) {
         handleEdit.value = event
@@ -28,7 +24,6 @@ export const useDialogStore = defineStore('DialogStore', () => {
 
     return {
         handleState, handleEventState,
-        handleDelete, handleEventDeletion,
         handleEdit, handleEventEditing,
         handleAdd, handleEventAdding,
     }

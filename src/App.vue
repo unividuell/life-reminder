@@ -9,7 +9,6 @@
 
       <AddSoftEvent v-if="fullyUsable" />
       <SetEventState v-if="fullyUsable" />
-      <DeleteEvent v-if="fullyUsable" />
 
     </v-main>
   </v-app>
@@ -20,7 +19,6 @@ import Main from './components/Main.vue';
 import {mapState, storeToRefs} from "pinia";
 import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
-import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
 import {computed, ref} from "vue";
 import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
