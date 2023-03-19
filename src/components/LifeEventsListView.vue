@@ -104,7 +104,6 @@ const dialogStore = useDialogStore()
 const now = ref(new Date())
 const loading = ref(false)
 const filterTag = ref<string | null>()
-const newTodo = ref()
 const newTodoTitle = ref<string>('')
 
 
@@ -122,14 +121,14 @@ const events = computed<LifeReminderEvent[]>(() => {
         if (! calendarFilterSettingsStore.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
       })
       .filter(e => {
-        if(filterTag.value === undefined) return true
+        if(!filterTag.value) return true
         if(e.title.includes("#"+filterTag.value)) return true
         return false
       })
 })
 
-const listOfCurrentTags = computed(() => {
-  return new Set(
+const listOfCurrentTags = computed((): Set<string> => {
+  let tagList = new Set(
       googleCalendarStore
           .sortedEvents(calendarFilterSettingsStore.sortBy)
           .filter(event => !event.closed)
@@ -141,6 +140,11 @@ const listOfCurrentTags = computed(() => {
           })
           .sort()
   )
+  if (filterTag.value && !tagList.has(filterTag.value)) {
+    // selected tag is not present in tag-list anymore (eg. after deleting last filtered item)
+    filterTag.value = null
+  }
+  return tagList
 })
 
 function toggleEventState(event: LifeReminderEvent) {
