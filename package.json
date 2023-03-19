@@ -31,6 +31,7 @@
     "eslint-plugin-vue": "9.9.0",
     "happy-dom": "^8.9.0",
     "sass": "^1.59.3",
+    "typescript": "^5.0.2",
     "unplugin-vue-components": "^0.24.1",
     "vite": "^4.2.0",
     "vite-plugin-vuetify": "^1.0.2",
