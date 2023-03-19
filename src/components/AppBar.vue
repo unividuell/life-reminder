@@ -28,13 +28,13 @@
   </v-app-bar>
 </template>
 
-<script setup>
-import {mapActions, mapState, storeToRefs} from "pinia";
+<script setup lang="ts">
+import {storeToRefs} from "pinia";
 import {useDialogStore} from "../stores/DialogStore";
 import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import GoogleOneTapLogin from "./GoogleOneTapLogin.vue";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
-import {useCalendarFilterSettingsStore} from "@/stores/CalendarFilterSettingsStore";
+import {useCalendarFilterSettingsStore} from "../stores/CalendarFilterSettingsStore";
 
 const dialogStore = useDialogStore()
 const authenticationStore = useGoogleAuthenticationStore()
