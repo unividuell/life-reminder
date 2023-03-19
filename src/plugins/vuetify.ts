@@ -13,7 +13,7 @@ const myCustomLightTheme = {
     }
 }
 
-export default createVuetify({
+const vuetify = createVuetify({
     theme: {
         defaultTheme: 'myCustomLightTheme',
         themes: {
@@ -22,3 +22,4 @@ export default createVuetify({
     }
 });
 
+export default vuetify
