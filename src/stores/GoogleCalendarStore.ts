@@ -1,14 +1,14 @@
 import {defineStore} from "pinia";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import {addMonths, compareAsc, compareDesc} from "date-fns";
 
 const calendarSummary = 'Live Reminder by unividuell.org'
 
 export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
     state: () => ({
-        calendarId: null,
+        calendarId: null as String | null,
         now: new Date(),
-        events: []
+        events: [] as LifeReminderEvent[]
     }),
     actions: {
         async reload() {
@@ -22,25 +22,25 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             if (this.calendarId === null) {
                 throw Error('Did not get a valid calendar ID')
             }
-            let response = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`)
+            let response: AxiosResponse = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`)
             if (response.status !== 200) throw Error('could not load calendar-list')
 
-            this.events = response.data.items.map((gEvent) => ({
+            this.events = response.data.items.map((gEvent: GoogleEvent) => <LifeReminderEvent>{
                 googleId: gEvent.id,
                 title: gEvent.summary,
-                redZone: { start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
+                redZone: <RedZone>{ start: new Date(gEvent.start.date), end: new Date(gEvent.end.date) },
                 note: gEvent.description,
                 closed: gEvent.transparency === "transparent"
-            }))
+            })
         },
-        async addEvent(summary, notes, start, end) {
-            let event = {
+        async addEvent(summary: String, notes: String, start: Date, end: Date) {
+            let event = <GoogleEvent>{
                 summary: summary,
                 description: notes,
-                start: { date: start },
-                end: { date: end },
+                start: <GoogleEventDate>{ date: start },
+                end: <GoogleEventDate>{ date: end },
                 transparency: "opaque",
-                reminders: {
+                reminders: <GoogleEventReminders>{
                     useDefault: false,
                     overrides: [
                         { method: 'email', minutes: 6 * 60 }
@@ -53,8 +53,8 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error(`could not edit calendar event, got http status ${response.status}`)
         },
-        async editEvent(eventId, summary, notes, start, end) {
-            let event = {
+        async editEvent(eventId: String, summary: String, notes: String, start: Date, end: Date) {
+            let event = <GoogleEvent>{
                 summary: summary,
                 description: notes,
                 start: { date: start },
@@ -66,7 +66,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error('could not edit calendar event')
         },
-        async setEventState(eventId, desiredState) {
+        async setEventState(eventId: String, desiredState: String) {
             let gState = desiredState === 'close' ? "transparent" : "opaque"
             let response = await axios.patch(
                 `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${eventId}`,
@@ -74,7 +74,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error('could not edit state of calendar event')
         },
-        async deleteEvent(eventId) {
+        async deleteEvent(eventId: String) {
             let response = await axios.delete(
                 `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events/${eventId}`,
             )
@@ -86,7 +86,8 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error(`could not load calendar-list, got http status ${response.status}`)
 
-            let ourCalendar = response.data?.items?.find(candidate => candidate.summary === calendarSummary)
+            let ourCalendar = response.data?.items
+                ?.find((candidate: GoogleCalendar) => candidate.summary === calendarSummary)
             if (ourCalendar) {
                 this.calendarId = ourCalendar.id
                 console.log(`Calendar with summary ${calendarSummary} is present: ${ourCalendar.id}`)
@@ -100,21 +101,21 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             console.log("Did not found our calendar-backend - will create it..")
             let response = await axios.post(
                 'https://www.googleapis.com/calendar/v3/calendars',
-                { summary: calendarSummary },
+                <GoogleCalendar>{ summary: calendarSummary },
             )
             if (response.status !== 200) throw Error('could not create calendar')
             return response.data
         }
     },
     getters: {
-        oneMonthAhead() {
+        oneMonthAhead(): Date {
             return addMonths(this.now, 1)
         },
         sortedEvents: (state) => {
-            return (sortBy) => [...state.events]
+            return (sortBy: String) => [...state.events]
                 ?.sort((a, b) => {
                     // first criteria: the date
-                    let dateSort
+                    let dateSort: number = 0
                     if (sortBy == 'end') {
                         dateSort = compareAsc(a.redZone.end, b.redZone.end)
                     } else if (sortBy == 'start') {
@@ -122,8 +123,9 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                     }
                     if (dateSort !== 0) return dateSort
                     // second criteria: the title
-                    if (a.title > b.title) return 1;
-                    if (a.title < b.title) return -1;
+                    if (a.title > b.title) return 1
+                    if (a.title < b.title) return -1
+                    return 0
                 })
         }
     }
