@@ -2,25 +2,25 @@
   <v-btn :disabled="!loginIsPossible" @click="() => login()" prepend-icon="mdi-login">Login</v-btn>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
-import {onMounted, watch} from "vue";
+import {watch} from "vue";
 import {storeToRefs} from "pinia";
-import {useGoogleAuthorizationStore} from "@/stores/GoogleAuthorizationStore";
+import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 
 const googleAuthenticationStore = useGoogleAuthenticationStore()
 const googleAuthorizationStore = useGoogleAuthorizationStore()
 
-const {loginIsPossible, isAuthenticated, currentUser, userDidLogout} = storeToRefs(googleAuthenticationStore)
-const {isAuthorized, authorize} = storeToRefs(googleAuthorizationStore)
+const {loginIsPossible, isAuthenticated, currentUser} = storeToRefs(googleAuthenticationStore)
+const {isAuthorized} = storeToRefs(googleAuthorizationStore)
 
 async function login() {
   if (! isAuthenticated.value) {
     console.info(`need to login by one-tap as currently not authenticated`)
     await googleAuthenticationStore.authenticate()
-  } else if (! isAuthorized.value) {
+  } else if (! isAuthorized.value && currentUser.value?.email) {
     console.info(`need to authorize (we are already authorized)`)
-    await googleAuthorizationStore.authorize(currentUser.email)
+    await googleAuthorizationStore.authorize(currentUser.value.email)
   }
 }
 
@@ -33,7 +33,3 @@ watch(loginIsPossible, async (newValue) => {
 
 
 </script>
-
-<style scoped>
-
-</style>
