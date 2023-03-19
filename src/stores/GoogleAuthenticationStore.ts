@@ -1,16 +1,17 @@
 import { defineStore } from "pinia";
-import {decodeCredential, hasGrantedAllScopes, useOneTap, useTokenClient} from "vue3-google-signin";
+import {CredentialResponse, decodeCredential, hasGrantedAllScopes, useOneTap, useTokenClient} from "vue3-google-signin";
 
 import { useGoogleAuthorizationStore } from './GoogleAuthorizationStore'
 import {computed, ref, watch} from "vue";
+import {DecodedGoogleUser} from "vue3-google-signin/dist/utils/types";
 
 const currentUserKey = "google_current-user"
 
 // Authentication establishes who someone is, and is commonly referred to as user sign-up or sign-in.
 export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', () => {
 
-    const oneTapResponse = ref(null)
-    const currentUser = ref(null)
+    const oneTapResponse = ref<CredentialResponse>()
+    const currentUser = ref<DecodedGoogleUser | null>()
     const userDidLogout = ref(false)
 
     const isAuthenticated = computed(() => currentUser.value !== null)
@@ -61,7 +62,12 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
     })
 
     function restoreLastState() {
-        currentUser.value = JSON.parse(localStorage.getItem(currentUserKey))
+        let localStoredUser = localStorage.getItem(currentUserKey)
+        if (localStoredUser) {
+            currentUser.value = JSON.parse(localStoredUser)
+        } else {
+            currentUser.value = null
+        }
     }
 
     return { isAuthenticated, loginIsPossible, userDidLogout, currentUser, authenticate, logout }

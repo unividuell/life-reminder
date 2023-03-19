@@ -1,8 +1,9 @@
 import {defineStore} from "pinia";
 import {
+    AuthCodeFlowSuccessResponse,
     hasGrantedAllScopes, useTokenClient,
 } from "vue3-google-signin";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 import {DateTime, Interval} from "luxon";
 
@@ -12,11 +13,11 @@ const tokenExpiresAtKey = 'google_access_token_expires-at'
 // Authorization is the process of granting or rejecting access to data or resources.
 export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
 
-    const accessToken = ref(null)
-    const expiresAt = ref(null)
-    const expiresIn = ref(null)
-    const activeRefreshInterval = ref(null)
-    const authorizationResponse = ref(null)
+    const accessToken = ref<string | null>()
+    const expiresAt = ref<DateTime | null>(null)
+    const expiresIn = ref<number | null>()
+    const activeRefreshInterval = ref<number | null>(null)
+    const authorizationResponse = ref<AuthCodeFlowSuccessResponse | null>()
     const needsTokenRefresh = ref(false)
 
     const isAuthorized = computed(() => accessToken.value !== null)
@@ -31,14 +32,14 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
                 "email",
                 "https://www.googleapis.com/auth/calendar"
             )
-            if (result === false) {
+            if (!result) {
                 console.warn('user did not granted all scopes!', authorizationResponse.value.scope)
                 throw Error('user did not granted all scopes!')
             }
             accessToken.value = response.access_token
             needsTokenRefresh.value = false
             expiresIn.value = response.expires_in /* use to test: 120 */
-            expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value })
+            expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value ?? undefined })
 
         },
         onError: (errorResponse) => console.error(errorResponse),
@@ -53,7 +54,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
 
     const isReady = computed(() => tokenClient.isReady.value)
 
-    function authorize(email) {
+    function authorize(email: string) {
         if (!tokenClient.isReady) {
             console.warn(`cannot authorize as the client is not ready`)
         }
@@ -81,9 +82,9 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         }
         if (! newValue) return
         console.log(`starting expiration interval`)
-        activeRefreshInterval.value = setInterval(() => {
+        activeRefreshInterval.value = window.setInterval(() => {
             let now = DateTime.now()
-            let i = Interval.fromDateTimes(now, expiresAt.value)
+            let i = Interval.fromDateTimes(now, expiresAt.value!)
             expiresIn.value = i.length('seconds')
             if (expiresIn.value > 60) {
                 // console.log(`more than 1 second remaining, nothing to do..`, expiresIn.value)
@@ -91,7 +92,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             } else {
                 console.log(`detected ending session in `, expiresIn.value)
                 needsTokenRefresh.value = true
-                clearInterval(activeRefreshInterval.value)
+                window.clearInterval(activeRefreshInterval.value ?? undefined)
             }
         }, 5_000)
     })
@@ -114,8 +115,8 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
 
     function restoreLastState() {
         accessToken.value = localStorage.getItem(tokenKey)
-        if (localStorage.getItem(tokenExpiresAtKey) !== null) {
-            expiresAt.value = DateTime.fromISO(localStorage.getItem(tokenExpiresAtKey))
+        if (localStorage.getItem(tokenExpiresAtKey)) {
+            expiresAt.value = DateTime.fromISO(localStorage.getItem(tokenExpiresAtKey)!)
         }
     }
 

@@ -11,19 +11,23 @@
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
 import {useDialogStore} from "../stores/DialogStore";
 import {ref, watch} from "vue";
 
-const event = ref(null)
+const event = ref<LifeReminderEvent | null>(null)
 const showDialog = ref(false)
 const isLoading = ref(false)
-const desiredState = ref(null)
+const desiredState = ref<string | null>(null)
 
 const dialogStore = useDialogStore()
 
 async function setEventState() {
+  if (!event.value || ! desiredState.value) {
+    console.warn(`cannot set event state!`, event.value, desiredState.value)
+    return
+  }
   isLoading.value = true
   showDialog.value = false // no user interruption
   await useGoogleCalendarStore()

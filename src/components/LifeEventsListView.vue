@@ -20,7 +20,7 @@
      <v-col cols="12" md="9" class="pa-0 pa-sm-2">
        <v-card class="mx-auto" :loading="loading" :flat="$vuetify.display.xs">
          <v-list>
-          <v-list-subheader class="pa-0 pa-sm-2">Current Todos <span v-if="this.filterTag">#{{ filterTag }}</span></v-list-subheader>
+          <v-list-subheader class="pa-0 pa-sm-2">Current Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
                v-for="event in events"
                :key="event.id"
@@ -83,137 +83,144 @@
  </v-container>
 </template>
 
-<script>
-import {mapActions, mapState} from "pinia";
-import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
-import {useDialogStore} from "@/stores/DialogStore";
-import {useCalendarFilterSettingsStore} from "@/stores/CalendarFilterSettingsStore";
-import {differenceInCalendarDays, eachDayOfInterval, format, isFuture, isPast, isWithinInterval, addDays} from "date-fns";
+<script setup lang="ts">
+import {computed, ref} from "vue";
+import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
+import {useCalendarFilterSettingsStore} from "../stores/CalendarFilterSettingsStore";
+import {useDialogStore} from "../stores/DialogStore";
+import {
+  addDays,
+  differenceInCalendarDays,
+  eachDayOfInterval, format,
+  isFuture,
+  isPast,
+  isWithinInterval
+} from "date-fns";
 
-export default {
-  name: "LifeEventsListView",
-  components: {},
-  data: () => ({
-    now: new Date(),
-    loading: false,
-    filterTag: undefined,
-    newTodo: undefined,
-    newTodoTitle: ''
-  }),
-  computed: {
-    ...mapState(useGoogleCalendarStore, ['sortedEvents']),
-    ...mapState(useCalendarFilterSettingsStore, ['includeClearedEvents', 'includeUpcomingEvents', 'sortBy']),
-    events() {
-      return this
-          .sortedEvents(this.sortBy)
-          .filter(e => {
-            if (this.includeClearedEvents) return e
-            else return e.closed === false
+const googleCalendarStore = useGoogleCalendarStore()
+const calendarFilterSettingsStore = useCalendarFilterSettingsStore()
+const dialogStore = useDialogStore()
+
+const now = ref(new Date())
+const loading = ref(false)
+const filterTag = ref<string | null>()
+const newTodo = ref()
+const newTodoTitle = ref<string>('')
+
+
+const events = computed<LifeReminderEvent[]>(() => {
+  return googleCalendarStore
+      .sortedEvents(calendarFilterSettingsStore.sortBy)
+      .filter(e => {
+        if (calendarFilterSettingsStore.includeClearedEvents) return e
+        else return e.closed === false
+      })
+      .filter(e => {
+        if (calendarFilterSettingsStore.includeUpcomingEvents && isFuture(e.redZone.start)) return true
+        if (! calendarFilterSettingsStore.includeUpcomingEvents && isFuture(e.redZone.start)) return false
+        if (calendarFilterSettingsStore.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
+        if (! calendarFilterSettingsStore.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
+      })
+      .filter(e => {
+        if(filterTag.value === undefined) return true
+        if(e.title.includes("#"+filterTag.value)) return true
+        return false
+      })
+})
+
+const listOfCurrentTags = computed(() => {
+  return new Set(
+      googleCalendarStore
+          .sortedEvents(calendarFilterSettingsStore.sortBy)
+          .filter(event => !event.closed)
+          .map(event => event.title)
+          .filter(title => title?.includes('#'))
+          .flatMap(title => {
+            let splitted = title.split('#')
+            return splitted.splice(1, splitted.length - 1).map(tag => tag.trim())
           })
-          .filter(e => {
-            if (this.includeUpcomingEvents && isFuture(e.redZone.start)) return true
-            if (! this.includeUpcomingEvents && isFuture(e.redZone.start)) return false
-            if (this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
-            if (! this.includeUpcomingEvents && !isFuture(e.redZone.start)) return true
-          })
-          .filter(e => {
-            if(this.filterTag === undefined) return true
-            console.log(this.filterTag)
-            if(e.title.includes("#"+this.filterTag)) return true
-            return false
-          })
-    },
-    listOfCurrentTags() {
-      return new Set(
-          this
-            .sortedEvents(this.sortBy)
-            .filter(event => !event.closed)
-            .map(event => event.title)
-            .filter(title => title?.includes('#'))
-            .flatMap(title => {
-              let splitted = title.split('#')
-              return splitted.splice(1, splitted.length - 1).map(tag => tag.trim())
-            })
-            .sort()
-      )
+          .sort()
+  )
+})
+
+function toggleEventState(event: LifeReminderEvent) {
+  let desiredState = event.closed ? 're-open' : 'close'
+  setEventState(event, desiredState)
+}
+
+function setEventState(event: LifeReminderEvent, desiredState: string) {
+  dialogStore.handleEventState(event, desiredState)
+}
+
+function remainingTime(event: LifeReminderEvent) {
+  if (! currentlyInRedZone(event)) {
+    // we are currently not in this red-zone
+    if (isFuture(event.redZone.start)) {
+      //interval between now and start of event/365...
+      let progress = 100 - differenceInCalendarDays(event.redZone.start, now.value) / 365 * 100;
+      console.log(progress, '<- for future')
+      return progress
+    } else {
+      //past Events
+      return 100
     }
-  },
-  methods: {
-    currentlyInRedZone(event) {
-      return isWithinInterval(this.now, {start: event.redZone.start, end: event.redZone.end})
-    },
-    toggleEventState(event) {
-      let desiredState = event.closed ? 're-open' : 'close'
-      this.setEventState(event, desiredState)
-    },
-    setEventState(event, desiredState) {
-      this.handleEventState(event, desiredState)
-    },
-    remainingTime(event) {
-      if (! this.currentlyInRedZone(event)) {
-        // we are currently not in this red-zone
-        if (isFuture(event.redZone.start)) {
-          //interval between now and start of event/365...
-          let progress = 100 - differenceInCalendarDays(event.redZone.start, this.now) / 365 * 100;
-          console.log(progress, '<- for future')
-          return progress
-        } else {
-          //past Events
-          return 100
-        }
-      }
-      //in red-zone
-      return (this.redZoneDaysLeft(event) / this.redZoneDurationInDays(event)) * 100
-    },
-    getColor(event){
-      if(event.closed){
-        return 'green'
-      } else {
-        if(this.currentlyInRedZone(event)){
-          return 'pink'
-        } else {
-          return 'blue'
-        }
-      }
-    },
-    redZoneDaysLeft(event) {
-      return differenceInCalendarDays(event.redZone.end, this.now)
-    },
-    redZoneDurationInDays(event) {
-      return eachDayOfInterval({start: event.redZone.start, end: event.redZone.end}).length
-    },
-    manageEvent(event) {
-      this.handleEventEditing(event)
-    },
-    isOverdue(event) {
-      return isPast(event.redZone.end) && !event.closed
-    },
-    async saveTodo(event){
-      if (this.newTodoTitle.length <= 0) {
-        return
-      }
-      let now = new Date()
-      let startDate = format((now), "yyyy-MM-dd")
-      //Set End to five days from now
-      let endDate = format(addDays(now, 5), "yyyy-MM-dd")
+  }
+  //in red-zone
+  return (redZoneDaysLeft(event) / redZoneDurationInDays(event)) * 100
+}
 
-      await useGoogleCalendarStore()
-          .addEvent(
-              this.newTodoTitle,
-              "",
-              startDate,
-              endDate
-          )
-      
-      this.newTodoTitle = ""
-        
-      await useGoogleCalendarStore().reload()
-    },
-    ...mapActions(useDialogStore, ['handleEventState', 'handleEventDeletion', 'handleEventEditing'])
+function getColor(event: LifeReminderEvent){
+  if(event.closed){
+    return 'green'
+  } else {
+    if(currentlyInRedZone(event)){
+      return 'pink'
+    } else {
+      return 'blue'
+    }
   }
 }
+
+function redZoneDaysLeft(event: LifeReminderEvent) {
+  return differenceInCalendarDays(event.redZone.end, now.value)
+}
+
+function redZoneDurationInDays(event: LifeReminderEvent) {
+  return eachDayOfInterval({start: event.redZone.start, end: event.redZone.end}).length
+}
+
+function manageEvent(event: LifeReminderEvent) {
+  dialogStore.handleEventEditing(event)
+}
+
+function isOverdue(event: LifeReminderEvent) {
+  return isPast(event.redZone.end) && !event.closed
+}
+
+async function saveTodo(event: LifeReminderEvent) {
+  if (newTodoTitle.value.length <= 0) {
+    return
+  }
+  let now = new Date()
+  let startDate = format((now), "yyyy-MM-dd")
+  //Set End to five days from now
+  let endDate = format(addDays(now, 5), "yyyy-MM-dd")
+
+  await useGoogleCalendarStore()
+      .addEvent(
+          newTodoTitle.value,
+          "",
+          startDate,
+          endDate
+      )
+
+  newTodoTitle.value = ""
+
+  await useGoogleCalendarStore().reload()
+}
+
+function currentlyInRedZone(event: LifeReminderEvent) {
+  return isWithinInterval(now.value, {start: event.redZone.start, end: event.redZone.end})
+}
+
 </script>
-
-<style scoped>
-
-</style>

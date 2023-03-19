@@ -11,7 +11,7 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref} from "vue";
 import {storeToRefs} from "pinia";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
@@ -25,7 +25,11 @@ const { currentUser } = storeToRefs(authenticationStore)
 const showDialog = ref(false)
 
 async function refresh() {
-  await authorizationStore.authorize(currentUser.value.email)
+  if (currentUser.value?.email) {
+    await authorizationStore.authorize(currentUser.value.email)
+  } else {
+    console.warn('no currentUser.email available for refresh!')
+  }
 }
 
 </script>

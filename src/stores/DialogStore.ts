@@ -1,20 +1,21 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 
+interface HandleEventState {
+    event: LifeReminderEvent
+    desiredState: string
+}
+
 export const useDialogStore = defineStore('DialogStore', () => {
 
-    const handleState = ref(null)
-    const handleDelete = ref(null)
-    const handleEdit = ref(null)
-    const handleAdd = ref(null)
+    const handleState = ref<HandleEventState | null>(null)
+    const handleEdit = ref<LifeReminderEvent | null>(null)
+    const handleAdd = ref<boolean | null>(null)
 
-    function handleEventState(event, desiredState) {
+    function handleEventState(event: LifeReminderEvent, desiredState: string) {
         handleState.value = { event: event, desiredState: desiredState }
     }
-    function handleEventDeletion(event) {
-        handleDelete.value = event
-    }
-    function handleEventEditing(event) {
+    function handleEventEditing(event: LifeReminderEvent) {
         handleEdit.value = event
     }
     function handleEventAdding() {
@@ -23,7 +24,6 @@ export const useDialogStore = defineStore('DialogStore', () => {
 
     return {
         handleState, handleEventState,
-        handleDelete, handleEventDeletion,
         handleEdit, handleEventEditing,
         handleAdd, handleEventAdding,
     }

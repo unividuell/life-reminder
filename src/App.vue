@@ -9,23 +9,21 @@
 
       <AddSoftEvent v-if="fullyUsable" />
       <SetEventState v-if="fullyUsable" />
-      <DeleteEvent v-if="fullyUsable" />
 
     </v-main>
   </v-app>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Main from './components/Main.vue';
-import {mapState, storeToRefs} from "pinia";
+import {storeToRefs} from "pinia";
 import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
-import DeleteEvent from "./components/DeleteEvent.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
 import {computed, ref} from "vue";
 import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
 import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
-import {useGoogleAuthenticationStore} from "@/stores/GoogleAuthenticationStore";
+import {useGoogleAuthenticationStore} from "./stores/GoogleAuthenticationStore";
 import DrawerNavigation from "@/components/DrawerNavigation.vue";
 
 const authenticationStore = useGoogleAuthenticationStore()
@@ -37,7 +35,7 @@ const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authorization
 
 const remainingSession = computed(() => {
   let max = 3_600
-  let remaining = (expiresIn.value / max) * 100
+  let remaining = (expiresIn.value ?? 0 / max) * 100
   // console.info(`remaining`, remaining)
   return remaining
 })

@@ -1,9 +1,15 @@
 import axios from "axios";
-import {useGoogleAuthenticationStore} from "@/stores/GoogleAuthenticationStore";
+import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {App} from "vue";
 
+interface AxiosOptions {
+    // empty
+}
+
+// kudos: https://blog.logrocket.com/how-use-axios-vue-js/
 const axiosPlugin = {
-    install(app, options) {
+    install(app: App, options: AxiosOptions) {
         axios.defaults.headers.common['Accept'] = "application/json"
         axios.defaults.headers.common['Content-Type'] = "application/json"
         axios.interceptors.request.use(req => {
