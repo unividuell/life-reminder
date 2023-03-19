@@ -13,7 +13,7 @@ interface GoogleEvent {
 }
 
 interface GoogleEventDate {
-    date: Date
+    date: string // yyyy-MM-dd
 }
 
 interface GoogleEventReminders {

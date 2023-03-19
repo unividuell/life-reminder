@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import axios, {AxiosResponse} from "axios";
-import {addMonths, compareAsc, compareDesc} from "date-fns";
+import {addMonths, compareAsc} from "date-fns";
 
 const calendarSummary = 'Live Reminder by unividuell.org'
 
@@ -33,7 +33,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                 closed: gEvent.transparency === "transparent"
             })
         },
-        async addEvent(summary: String, notes: String, start: Date, end: Date) {
+        async addEvent(summary: String, notes: String, start: string, end: string) {
             let event = <GoogleEvent>{
                 summary: summary,
                 description: notes,
@@ -53,7 +53,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
             )
             if (response.status !== 200) throw Error(`could not edit calendar event, got http status ${response.status}`)
         },
-        async editEvent(eventId: String, summary: String, notes: String, start: Date, end: Date) {
+        async editEvent(eventId: String, summary: String, notes: String, start: string, end: string) {
             let event = <GoogleEvent>{
                 summary: summary,
                 description: notes,
@@ -126,7 +126,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", {
                     if (a.title > b.title) return 1
                     if (a.title < b.title) return -1
                     return 0
-                })
+                }) as LifeReminderEvent[]
         }
     }
 })
