@@ -2,13 +2,13 @@
   <v-navigation-drawer
       v-model="store.drawerVisible"
   >
-    <v-list lines="three" density="compact" nav>
+    <v-list lines="three" density="compact" nav select-strategy="independent" @click:select="selectItem">
       <v-list-subheader>Event Filter</v-list-subheader>
 
-      <v-list-item @click="store.includeClearedEvents = !store.includeClearedEvents" value="includeClearedEvents">
+      <v-list-item value="includeClearedEvents">
         <template v-slot:prepend="{ isActive }">
           <v-list-item-action start>
-            <v-switch density="compact" hide-details :model-value="isActive"></v-switch>
+            <v-switch density="compact" hide-details :model-value="isActive" color="light-green-darken-2"></v-switch>
           </v-list-item-action>
         </template>
         <v-list-item-title>Show cleared events</v-list-item-title>
@@ -20,7 +20,7 @@
         </v-list-item-subtitle>
       </v-list-item>
 
-      <v-list-item @click="store.includeUpcomingEvents = !store.includeUpcomingEvents" value="includeUpcomingEvents">
+      <v-list-item value="includeUpcomingEvents">
         <template v-slot:prepend="{ isActive }">
           <v-list-item-action start>
             <v-switch density="compact" hide-details :model-value="isActive"></v-switch>
@@ -60,6 +60,17 @@ const store = useCalendarFilterSettingsStore()
 const sortByOptions = reactive([{ key: 'end', text: 'end date'}, {key: 'start', text: 'start date'}])
 
 const { sortBy } = storeToRefs(store)
+
+function selectItem(item: any) {
+  switch (item.id) {
+    case 'includeClearedEvents':
+      store.includeClearedEvents = item.value
+      break
+    case 'includeUpcomingEvents':
+      store.includeUpcomingEvents = item.value
+      break
+  }
+}
 
 </script>
 
