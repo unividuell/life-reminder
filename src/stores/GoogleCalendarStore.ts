@@ -9,8 +9,8 @@ const calendarSummary = 'Live Reminder by unividuell.org'
 export const useGoogleCalendarStore = defineStore("GoogleCalendar", () =>{
 
     const calendarId = ref<String | null>(null)
-    const now = ref(new Date())
     const events = ref<LifeReminderEvent[]>([])
+    const activeHttpLoading = ref(false)
 
     async function reload() {
       await loadCalendarItems()
@@ -131,6 +131,7 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", () =>{
         sortedEvents,
         addEvent,
         deleteEvent,
-        setEventState
+        setEventState,
+        activeHttpLoading
     }
 })

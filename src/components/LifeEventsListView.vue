@@ -18,7 +18,7 @@
       </v-chip-group>
      </v-col>
      <v-col cols="12" md="9" class="pa-0 pa-sm-2">
-       <v-card class="mx-auto" :loading="loading" :flat="$vuetify.display.xs">
+       <v-card class="mx-auto" :loading="activeHttpLoading" :flat="$vuetify.display.xs">
          <v-list>
           <v-list-subheader class="pa-0 pa-sm-2">Current Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
@@ -96,16 +96,16 @@ import {
   isPast,
   isWithinInterval
 } from "date-fns";
+import {storeToRefs} from "pinia";
 
 const googleCalendarStore = useGoogleCalendarStore()
 const calendarFilterSettingsStore = useCalendarFilterSettingsStore()
 const dialogStore = useDialogStore()
 
 const now = ref(new Date())
-const loading = ref(false)
 const filterTag = ref<string | null>()
 const newTodoTitle = ref<string>('')
-
+const { activeHttpLoading } = storeToRefs(googleCalendarStore)
 
 const events = computed<LifeReminderEvent[]>(() => {
   return googleCalendarStore
