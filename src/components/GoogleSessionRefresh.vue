@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-card>
       <v-card-title>Your session expired :/</v-card-title>
-      <v-card-text>Congratulations, you are a Life Reminder 3000 power user 🚤</v-card-text>
+      <v-card-text>No worries — just do a refresh…</v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn color="primary" @click="refresh">Refresh</v-btn>
