@@ -31,7 +31,7 @@ async function setEventState() {
   isLoading.value = true
   showDialog.value = false // no user interruption
   await useGoogleCalendarStore()
-      .setEventState(event.value.googleId, desiredState.value)
+      .setEventState(event.value!.googleId, desiredState.value)
   await useGoogleCalendarStore().reload()
   isLoading.value = false
   showDialog.value = false

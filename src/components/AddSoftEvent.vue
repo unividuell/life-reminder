@@ -67,11 +67,11 @@
 </template>
 
 <script>
-import {addDays, differenceInCalendarDays, formatISO, parseISO} from 'date-fns'
+import {differenceInCalendarDays, formatISO, parseISO} from 'date-fns'
 import format from '../plugins/date-fns-format'
-import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
-import {mapState, mapWritableState} from "pinia";
-import {useDialogStore} from "../stores/DialogStore";
+import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
+import {mapWritableState} from "pinia";
+import {useDialogStore} from "@/stores/DialogStore";
 
 export default {
   name: "AddSoftEvent",
@@ -220,7 +220,7 @@ export default {
         this.showDialog = true
       }
     },
-    showDialog(newValue) {
+    showDialog() {
       // re-validate as soon as the dialog gets opened / closed
       this.$refs.eventForm?.validate()
       this.handleEdit = null
