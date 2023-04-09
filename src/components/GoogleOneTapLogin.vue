@@ -18,18 +18,15 @@ async function login() {
   if (! isAuthenticated.value) {
     console.info(`need to login by one-tap as currently not authenticated`)
     await googleAuthenticationStore.authenticate()
-  } else if (! isAuthorized.value && currentUser.value?.email) {
-    console.info(`need to authorize (we are already authorized)`)
-    await googleAuthorizationStore.authorize(currentUser.value.email)
+  } else {
+    await authorization()
   }
 }
 
-watch(loginIsPossible, async (newValue) => {
-  if (newValue && ! isAuthenticated.value) {
-    console.info(`both login clients are ready, currently not authenticated => start authentication`)
-    await login()
-  }
-})
-
-
+async function authorization() {
+    if (! isAuthorized.value && currentUser.value?.email) {
+        console.info(`need to authorize (we are already authorized)`)
+        await googleAuthorizationStore.authorize(currentUser.value.email)
+    }
+}
 </script>

@@ -1,26 +1,33 @@
 import {defineStore} from "pinia";
 import {
     AuthCodeFlowSuccessResponse,
-    hasGrantedAllScopes, useTokenClient,
+    hasGrantedAllScopes,
+    useTokenClient,
 } from "vue3-google-signin";
 import {computed, ref, watch} from "vue";
 import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 import {DateTime, Interval} from "luxon";
 
-const tokenKey = 'google_access_token'
-const tokenExpiresAtKey = 'google_access_token_expires-at'
-
 // Authorization is the process of granting or rejecting access to data or resources.
 export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
 
-    const accessToken = ref<string | null>()
-    const expiresAt = ref<DateTime | null>(null)
-    const expiresIn = ref<number | null>()
+    const accessToken = ref<string | null>(null)
+    const expiresAtIsoString = ref<string | null>(null)
+    const expiresIn = ref<number | null>(null)
     const activeRefreshInterval = ref<number | null>(null)
-    const authorizationResponse = ref<AuthCodeFlowSuccessResponse | null>()
+    const authorizationResponse = ref<AuthCodeFlowSuccessResponse | null>(null)
     const needsTokenRefresh = ref(false)
 
     const isAuthorized = computed(() => accessToken.value !== null)
+    // computed b/c date-time is not persistable out-of the box
+    const expiresAt = computed({
+        get(): DateTime | null {
+            return expiresAtIsoString.value ? DateTime.fromISO(expiresAtIsoString.value) : null
+        },
+        set(newValue: DateTime | null) {
+            expiresAtIsoString.value = newValue?.toString() || null
+        }
+    })
 
     // we can use the result from the one-tap response to get an access token
     const tokenClient = useTokenClient({
@@ -70,12 +77,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         console.info(`did reset everything`)
     }
 
-    watch(expiresAt, async(newValue) => {
-        if (newValue) {
-            localStorage.setItem(tokenExpiresAtKey, newValue?.toString())
-        } else {
-            localStorage.removeItem(tokenExpiresAtKey)
-        }
+    watch(expiresAt, (newValue) => {
         if (activeRefreshInterval.value) {
             clearInterval(activeRefreshInterval.value)
             console.log(`cleared interval `, activeRefreshInterval.value)
@@ -99,26 +101,13 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
 
     watch(accessToken, async (newValue) => {
         if (newValue) {
-            localStorage.setItem(tokenKey, newValue)
-        } else {
-            localStorage.removeItem(tokenKey)
-        }
-        if (newValue) {
             console.info(`detected changed google access token ${newValue}, will load everything..`)
             await useGoogleCalendarStore().loadCalendarItems()
         }
     })
 
-    // watch for initial change via workaround.
-    // kudos: https://github.com/vuejs/pinia/issues/309#issuecomment-1291213101
-    restoreLastState()
-
-    function restoreLastState() {
-        accessToken.value = localStorage.getItem(tokenKey)
-        if (localStorage.getItem(tokenExpiresAtKey)) {
-            expiresAt.value = DateTime.fromISO(localStorage.getItem(tokenExpiresAtKey)!)
-        }
-    }
-
-    return { isReady, isAuthorized, accessToken, expiresAt, expiresIn, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
+    return { isReady, isAuthorized, accessToken, expiresAtIsoString, expiresIn, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
+},
+{
+    persist: true
 })
