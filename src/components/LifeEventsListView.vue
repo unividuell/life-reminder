@@ -23,7 +23,7 @@
           <v-list-subheader class="pa-0 pa-sm-2">Current Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>
            <v-list-item
                v-for="event in events"
-               :key="event.id"
+               :key="event.googleId"
                :class="isOverdue(event)?'text-red':''"
                @click="manageEvent(event)"
                class="pa-0 pa-sm-2"
@@ -109,7 +109,7 @@ const newTodoTitle = ref<string>('')
 
 const events = computed<LifeReminderEvent[]>(() => {
   return googleCalendarStore
-      .sortedEvents(calendarFilterSettingsStore.sortBy)
+      .sortedEvents
       .filter(e => {
         if (calendarFilterSettingsStore.includeClearedEvents) return e
         else return e.closed === false
@@ -128,19 +128,19 @@ const events = computed<LifeReminderEvent[]>(() => {
 })
 
 const listOfCurrentTags = computed((): Set<string> => {
-  let tagList = new Set(
+  let tagList = new Set<string>(
       googleCalendarStore
-          .sortedEvents(calendarFilterSettingsStore.sortBy)
+          .sortedEvents
           .filter(event => !event.closed)
           .map(event => event.title)
           .filter(title => title?.includes('#'))
           .flatMap(title => {
-            let splitted = title.split('#')
-            return splitted.splice(1, splitted.length - 1).map(tag => tag.trim())
+            let split: string[] = title.split('#')
+            return split.splice(1, split.length - 1).map(tag => tag.trim())
           })
           .sort()
   )
-  if (filterTag.value && !tagList.has(filterTag.value)) {
+  if (filterTag.value && !tagList.has(filterTag.value!)) {
     // selected tag is not present in tag-list anymore (eg. after deleting last filtered item)
     filterTag.value = null
   }
@@ -201,7 +201,7 @@ function isOverdue(event: LifeReminderEvent) {
   return isPast(event.redZone.end) && !event.closed
 }
 
-async function saveTodo(event: LifeReminderEvent) {
+async function saveTodo() {
   if (newTodoTitle.value.length <= 0) {
     return
   }

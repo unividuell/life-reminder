@@ -7,11 +7,11 @@
     <v-app-bar-nav-icon @click.stop="toggleDrawer" varian="text" />
     <v-app-bar-title class="d-none d-sm-block">Life Reminder 3000</v-app-bar-title>
 
-    <template v-slot:append v-if="isAuthenticated && isAuthorized">
+    <template v-slot:append v-if="isAuthenticated && isAuthorized && currentUser">
       <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
       <v-avatar>
         <img
-            :src="currentUser.picture"
+            :src="currentUser!.picture"
             alt="Profile Picture"
             :height="42"
             :width="42"
