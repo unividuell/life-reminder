@@ -34,9 +34,9 @@ const loading = ref(false)
 const { isAuthenticated } = storeToRefs(authenticationStore)
 const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authorizationStore)
 
-const remainingSession = computed(() => {
+const remainingSession = computed((): number => {
   let max = 3_600
-  let remaining = (expiresIn.value ?? 0 / max) * 100
+  let remaining = ((expiresIn.value || 0) / max) * 100
   // console.info(`remaining`, remaining)
   return remaining
 })

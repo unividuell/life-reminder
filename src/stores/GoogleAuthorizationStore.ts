@@ -47,7 +47,6 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             needsTokenRefresh.value = false
             expiresIn.value = response.expires_in /* use to test: 120 */
             expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value ?? undefined })
-
         },
         onError: (errorResponse) => console.error(errorResponse),
         // client_id: oneTapStore.oneTapResponse?.clientId,
@@ -87,7 +86,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         activeRefreshInterval.value = window.setInterval(() => {
             let now = DateTime.now()
             let i = Interval.fromDateTimes(now, expiresAt.value!)
-            expiresIn.value = i.length('seconds')
+            expiresIn.value = Math.round(i.length('seconds'))
             if (expiresIn.value > 60) {
                 // console.log(`more than 1 second remaining, nothing to do..`, expiresIn.value)
                 needsTokenRefresh.value = false
