@@ -26,9 +26,11 @@ import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
 import {useGoogleAuthenticationStore} from "./stores/GoogleAuthenticationStore";
 import DrawerNavigation from "@/components/DrawerNavigation.vue";
 import {useGoogleCalendarStore} from "./stores/GoogleCalendarStore";
+import {useTheme} from "vuetify";
 
 const authenticationStore = useGoogleAuthenticationStore()
 const authorizationStore = useGoogleAuthorizationStore()
+const theme = useTheme()
 
 const loading = ref(false)
 const { isAuthenticated } = storeToRefs(authenticationStore)
@@ -48,4 +50,9 @@ onMounted(() => {
         useGoogleCalendarStore().loadCalendarItems()
     }
 })
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    // kudos: https://stackoverflow.com/a/57795518/810944
+    theme.global.name.value = e.matches ? "darkTheme" : "lightTheme"
+});
 </script>
