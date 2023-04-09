@@ -18,16 +18,25 @@ describe('Google Calendar Store', () => {
             const sut = useGoogleCalendarStore()
 
             const googleCalendars = [{summary: 'noise'},{id: 'expected', summary: 'Live Reminder by unividuell.org'}]
-            axios.get.mockResolvedValue({
-                status: 200,
-                data: { items: googleCalendars }
+            axios.get.mockImplementation((url) => {
+                switch (url) {
+                    case 'https://www.googleapis.com/calendar/v3/users/me/calendarList':
+                        return Promise.resolve({
+                            status: 200,
+                            data: { items: googleCalendars }
+                        })
+                    default:
+                        return Promise.resolve({
+                            status: 200,
+                            data: { items: [] }
+                        })
+                }
             })
 
             // execute
-            await sut.setCalendarId()
+            await sut.loadCalendarItems()
 
             // verify
-            expect(sut.calendarId).is.eq('expected')
             // assert to NOT created a new calendar at google
             expect(axios.post).not.toHaveBeenCalled()
         })
@@ -35,9 +44,19 @@ describe('Google Calendar Store', () => {
             // prepare
             const sut = useGoogleCalendarStore()
 
-            axios.get.mockResolvedValue({
-                status: 200,
-                data: { items: [{summary: 'noise'}]}
+            axios.get.mockImplementation((url) => {
+                switch (url) {
+                    case 'https://www.googleapis.com/calendar/v3/users/me/calendarList':
+                        return Promise.resolve({
+                            status: 200,
+                            data: { items: [{summary: 'noise'}]}
+                        })
+                    default:
+                        return Promise.resolve({
+                            status: 200,
+                            data: { items: [] }
+                        })
+                }
             })
             axios.post.mockResolvedValue({
                 status: 200,
@@ -45,10 +64,9 @@ describe('Google Calendar Store', () => {
             })
 
             // execute
-            await sut.setCalendarId()
+            await sut.loadCalendarItems()
 
             // verify
-            expect(sut.calendarId).is.eq('expected')
             expect(axios.post).toHaveBeenCalledWith(
                 `https://www.googleapis.com/calendar/v3/calendars`,
                 { summary: 'Live Reminder by unividuell.org' }
@@ -60,7 +78,22 @@ describe('Google Calendar Store', () => {
         it('makes a POST request to google', async () => {
             // prepare
             const sut = useGoogleCalendarStore()
-            sut.calendarId = 'calendar-id'
+            const googleCalendars = [{id: 'calendar-id', summary: 'Live Reminder by unividuell.org'}]
+            axios.get.mockImplementation((url) => {
+                switch (url) {
+                    case 'https://www.googleapis.com/calendar/v3/users/me/calendarList':
+                        return Promise.resolve({
+                            status: 200,
+                            data: { items: googleCalendars }
+                        })
+                    default:
+                        return Promise.resolve({
+                            status: 200,
+                            data: { items: [] }
+                        })
+                }
+            })
+            await sut.loadCalendarItems()
 
             const payload = {
                 summary: 'summary',
