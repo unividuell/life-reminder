@@ -2,11 +2,11 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@vuepic/vue-datepicker':
-    specifier: ^4.2.1
-    version: 4.2.1(vue@3.2.47)
+    specifier: ^4.3.0
+    version: 4.3.0(vue@3.2.47)
   axios:
-    specifier: ^1.3.4
-    version: 1.3.4
+    specifier: ^1.3.5
+    version: 1.3.5
   date-fns:
     specifier: ^2.29.3
     version: 2.29.3
@@ -14,23 +14,20 @@ dependencies:
     specifier: ^3.3.0
     version: 3.3.0
   pinia:
-    specifier: ^2.0.33
-    version: 2.0.33(typescript@5.0.4)(vue@3.2.47)
+    specifier: ^2.0.34
+    version: 2.0.34(typescript@5.0.4)(vue@3.2.47)
   vue:
     specifier: ^3.2.47
     version: 3.2.47
   vue-axios:
     specifier: ^3.5.2
-    version: 3.5.2(axios@1.3.4)(vue@3.2.47)
+    version: 3.5.2(axios@1.3.5)(vue@3.2.47)
   vue3-google-signin:
     specifier: ^1.3.0
     version: 1.3.0(vue@3.2.47)
-  vuelidate:
-    specifier: ^0.7.7
-    version: 0.7.7
   vuetify:
-    specifier: ^3.1.10
-    version: 3.1.10(vite-plugin-vuetify@1.0.2)(vue@3.2.47)
+    specifier: ^3.1.13
+    version: 3.1.13(vite-plugin-vuetify@1.0.2)(vue@3.2.47)
 
 devDependencies:
   '@mdi/font':
@@ -74,7 +71,7 @@ devDependencies:
     version: 4.2.1(@types/node@18.14.6)(sass@1.61.0)
   vite-plugin-vuetify:
     specifier: ^1.0.2
-    version: 1.0.2(vite@4.2.1)(vue@3.2.47)(vuetify@3.1.10)
+    version: 1.0.2(vite@4.2.1)(vue@3.2.47)(vuetify@3.1.13)
   vitest:
     specifier: ^0.29.8
     version: 0.29.8(happy-dom@9.1.9)(sass@1.61.0)
@@ -601,8 +598,8 @@ packages:
       '@vue/server-renderer': 3.2.47(vue@3.2.47)
     dev: true
 
-  /@vuepic/vue-datepicker@4.2.1(vue@3.2.47):
-    resolution: {integrity: sha512-O8hy0o9jQkv/Et7G0mUFDR94NTcHHouy70ELfrTmaWOIBamS/8cRWAwwb/reOvKPX+eo1XKs/v2mj+i5WA14kw==}
+  /@vuepic/vue-datepicker@4.3.0(vue@3.2.47):
+    resolution: {integrity: sha512-zERFSBNz0h5W/mNKsXSG5QggKw8eh0v24rs2T4JSPirRSPLFq67msgjDgHsbRshcPmer7ZBVlBGev9on5KYVnw==}
     engines: {node: '>=14'}
     peerDependencies:
       vue: '>=3.2.0'
@@ -612,7 +609,7 @@ packages:
       vue: 3.2.47
     dev: false
 
-  /@vuetify/loader-shared@1.7.1(vue@3.2.47)(vuetify@3.1.10):
+  /@vuetify/loader-shared@1.7.1(vue@3.2.47)(vuetify@3.1.13):
     resolution: {integrity: sha512-kLUvuAed6RCvkeeTNJzuy14pqnkur8lTuner7v7pNE/kVhPR97TuyXwBSBMR1cJeiLiOfu6SF5XlCYbXByEx1g==}
     peerDependencies:
       vue: ^3.0.0
@@ -621,7 +618,7 @@ packages:
       find-cache-dir: 3.3.2
       upath: 2.0.1
       vue: 3.2.47
-      vuetify: 3.1.10(vite-plugin-vuetify@1.0.2)(vue@3.2.47)
+      vuetify: 3.1.13(vite-plugin-vuetify@1.0.2)(vue@3.2.47)
 
   /abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -719,8 +716,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios@1.3.4:
-    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
+  /axios@1.3.5:
+    resolution: {integrity: sha512-glL/PvG/E+xCWwV8S6nCHcrfg1exGx7vxyUIivIA1iL7BIh6bePylCfVHwp6k13ao7SATxB6imau2kqY+I67kw==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
@@ -1939,8 +1936,8 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  /pinia@2.0.33(typescript@5.0.4)(vue@3.2.47):
-    resolution: {integrity: sha512-HOj1yVV2itw6rNIrR2f7+MirGNxhORjrULL8GWgRwXsGSvEqIQ+SE0MYt6cwtpegzCda3i+rVTZM+AM7CG+kRg==}
+  /pinia@2.0.34(typescript@5.0.4)(vue@3.2.47):
+    resolution: {integrity: sha512-cgOoGUiyqX0SSgX8XelK9+Ri4XA2/YyNtgjogwfzIx1g7iZTaZPxm7/bZYMCLU2qHRiHhxG7SuQO0eBacFNc2Q==}
     peerDependencies:
       '@vue/composition-api': ^1.4.0
       typescript: '>=4.4.4'
@@ -2355,18 +2352,18 @@ packages:
       - terser
     dev: true
 
-  /vite-plugin-vuetify@1.0.2(vite@4.2.1)(vue@3.2.47)(vuetify@3.1.10):
+  /vite-plugin-vuetify@1.0.2(vite@4.2.1)(vue@3.2.47)(vuetify@3.1.13):
     resolution: {integrity: sha512-MubIcKD33O8wtgQXlbEXE7ccTEpHZ8nPpe77y9Wy3my2MWw/PgehP9VqTp92BLqr0R1dSL970Lynvisx3UxBFw==}
     engines: {node: '>=12'}
     peerDependencies:
       vite: ^2.7.0 || ^3.0.0 || ^4.0.0
       vuetify: ^3.0.0-beta.4
     dependencies:
-      '@vuetify/loader-shared': 1.7.1(vue@3.2.47)(vuetify@3.1.10)
+      '@vuetify/loader-shared': 1.7.1(vue@3.2.47)(vuetify@3.1.13)
       debug: 4.3.4
       upath: 2.0.1
       vite: 4.2.1(@types/node@18.14.6)(sass@1.61.0)
-      vuetify: 3.1.10(vite-plugin-vuetify@1.0.2)(vue@3.2.47)
+      vuetify: 3.1.13(vite-plugin-vuetify@1.0.2)(vue@3.2.47)
     transitivePeerDependencies:
       - supports-color
       - vue
@@ -2470,13 +2467,13 @@ packages:
       - terser
     dev: true
 
-  /vue-axios@3.5.2(axios@1.3.4)(vue@3.2.47):
+  /vue-axios@3.5.2(axios@1.3.5)(vue@3.2.47):
     resolution: {integrity: sha512-GP+dct7UlAWkl1qoP3ppw0z6jcSua5/IrMpjB5O8bh089iIiJ+hdxPYH2NPEpajlYgkW5EVMP95ttXWdas1O0g==}
     peerDependencies:
       axios: '*'
       vue: ^3.0.0 || ^2.0.0
     dependencies:
-      axios: 1.3.4
+      axios: 1.3.5
       vue: 3.2.47
     dev: false
 
@@ -2530,13 +2527,8 @@ packages:
       '@vue/server-renderer': 3.2.47(vue@3.2.47)
       '@vue/shared': 3.2.47
 
-  /vuelidate@0.7.7:
-    resolution: {integrity: sha512-pT/U2lDI67wkIqI4tum7cMSIfGcAMfB+Phtqh2ttdXURwvHRBJEAQ0tVbUsW9Upg83Q5QH59bnCoXI7A9JDGnA==}
-    engines: {node: '>= 4.0.0', npm: '>= 3.0.0'}
-    dev: false
-
-  /vuetify@3.1.10(vite-plugin-vuetify@1.0.2)(vue@3.2.47):
-    resolution: {integrity: sha512-TFugKhjYO+xktnexHcs/vdsqtq+MZk8MDLbSJX9vMsA58LPwO4atdBbWhQ1Pf8q1jPISpxDF6njjsZHPQQsHCA==}
+  /vuetify@3.1.13(vite-plugin-vuetify@1.0.2)(vue@3.2.47):
+    resolution: {integrity: sha512-mC2UvWqS3Ne/aZ6Q+79kiL36xSe5jGxm0KWWq2e4SRxuqIE14IbyzqfXvU0bEqns0dHU5dOiKCMM9jHZFDLKgQ==}
     engines: {node: ^12.20 || >=14.13}
     peerDependencies:
       vite-plugin-vuetify: ^1.0.0-alpha.12
@@ -2551,7 +2543,7 @@ packages:
       webpack-plugin-vuetify:
         optional: true
     dependencies:
-      vite-plugin-vuetify: 1.0.2(vite@4.2.1)(vue@3.2.47)(vuetify@3.1.10)
+      vite-plugin-vuetify: 1.0.2(vite@4.2.1)(vue@3.2.47)(vuetify@3.1.13)
       vue: 3.2.47
 
   /webidl-conversions@7.0.0:
