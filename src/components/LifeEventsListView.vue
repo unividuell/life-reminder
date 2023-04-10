@@ -34,21 +34,17 @@
                   <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @click.stop="toggleEventState(event)" />
                 </v-list-item-action>
               </template>
-              <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''" v-if="event.googleId">
+              <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
                 <div class="d-flex justify-space-between">
-                  <span class="me-1">{{event.title}}</span>
-                  <div>
-                    <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
-                      <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light"></v-icon>
-                      <span class="d-none d-sm-block">OVERDUE</span>
-                    </v-chip>
-                    <v-chip
-                        v-if="currentlyInRedZone(event) && !event.closed"
-                        class="bg-light-blue lighten-3"
-                        color="black"
-                        size="x-small">-{{ redZoneDaysLeft(event) }}d
-                    </v-chip>
-                  </div>
+                  <span class="text-truncate">{{event.title}}</span>
+                  <v-chip
+                      v-if="currentlyInRedZone(event) && !event.closed"
+                      class="bg-light-blue lighten-3"
+                      color="black"
+                      size="x-small"
+                  >
+                    -{{ redZoneDaysLeft(event) }}d
+                  </v-chip>
                 </div>
               </v-list-item-title>
               <v-progress-linear
@@ -60,6 +56,12 @@
                   :height="6"
                   class="mt-2"
               />
+              <template v-slot:append>
+                <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
+                  <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light" size="14"></v-icon>
+                  <span class="d-none d-sm-block">OVERDUE</span>
+                </v-chip>
+              </template>
              </v-list-item>
              <v-list-item
                  v-else-if="type === 'add-event'"
