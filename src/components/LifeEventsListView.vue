@@ -19,63 +19,67 @@
      </v-col>
      <v-col cols="12" md="9" class="pa-0 pa-sm-2">
        <v-card class="mx-auto" :loading="activeHttpLoading" :flat="$vuetify.display.xs">
-         <v-list>
-          <v-list-subheader class="pa-0 pa-sm-2">Current Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>
-           <v-list-item
-               v-for="event in events"
-               :key="event.googleId"
-               :class="isOverdue(event)?'text-red':''"
-               @click="manageEvent(event)"
-               class="pa-0 pa-sm-2"
-           >
-             <template v-slot:prepend>
-               <v-list-item-action start>
-                  <!-- kudos: https://github.com/vuetifyjs/vuetify/issues/13026#issuecomment-977035686 -->
-                 <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @click.stop="toggleEventState(event)" />
-               </v-list-item-action>
-             </template>
-             <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
-               <div class="d-flex justify-space-between">
-                 <span class="me-1">{{event.title}}</span>
-                 <div>
-                   <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
-                     <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light"></v-icon>
-                     <span class="d-none d-sm-block">OVERDUE</span>
-                   </v-chip>
-                   <v-chip
-                       v-if="currentlyInRedZone(event) && !event.closed"
-                       class="bg-light-blue lighten-3"
-                       color="black"
-                       size="x-small">-{{ redZoneDaysLeft(event) }}d
-                   </v-chip>
-                 </div>
-               </div>
-             </v-list-item-title>
-             <v-progress-linear
-                 v-if="currentlyInRedZone(event) && !event.closed"
-                 :model-value="remainingTime(event)"
-                 color="light-blue lighten-3"
-                 :striped="event.closed ? false : true"
-                 :reverse="true"
-                 :height="6"
-                 class="mt-2"
-             />
-           </v-list-item>
-           <v-list-item class="pa-0 pa-sm-2">
-            <div class="d-flex">
-              <v-checkbox-btn
-                class="pr-2"
-                disabled
-              ></v-checkbox-btn>
-              <v-text-field
-                @keyup.enter="saveTodo"
-                @blur="saveTodo"
-                v-model="newTodoTitle"
-                label="New Todo"
-                hide-details
-              ></v-text-field>
-            </div>
-           </v-list-item>
+<!--         <v-list-subheader class="pa-0 pa-sm-2">My Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>-->
+         <v-list :items="events" :item-props="true" density="compact">
+           <template v-slot:item="{ type: type, value: event }">
+             <v-list-item
+                 v-if="type === 'event'"
+                 :class="isOverdue(event) ? 'text-red':''"
+                 @click="manageEvent(event)"
+                 class="mx-1 pa-0"
+             >
+              <template v-slot:prepend>
+                <v-list-item-action start>
+                   <!-- kudos: https://github.com/vuetifyjs/vuetify/issues/13026#issuecomment-977035686 -->
+                  <v-checkbox-btn :model-value="event.closed" @update:model-value="(changed) => value = changed" @click.stop="toggleEventState(event)" />
+                </v-list-item-action>
+              </template>
+              <v-list-item-title :class="event.closed ? 'text-decoration-line-through' : ''">
+                <div class="d-flex justify-space-between">
+                  <span class="text-truncate">{{event.title}}</span>
+                  <v-chip
+                      v-if="currentlyInRedZone(event) && !event.closed"
+                      class="bg-light-blue lighten-3"
+                      color="black"
+                      size="x-small"
+                  >
+                    -{{ redZoneDaysLeft(event) }}d
+                  </v-chip>
+                </div>
+              </v-list-item-title>
+              <v-progress-linear
+                  v-if="event.googleId && currentlyInRedZone(event) && !event.closed"
+                  :model-value="remainingTime(event)"
+                  color="light-blue lighten-3"
+                  :striped="event.closed ? false : true"
+                  :reverse="true"
+                  :height="6"
+                  class="mt-2"
+              />
+              <template v-slot:append>
+                <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
+                  <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light" size="14"></v-icon>
+                  <span class="d-none d-sm-block">OVERDUE</span>
+                </v-chip>
+              </template>
+             </v-list-item>
+             <v-list-item
+                 v-else-if="type === 'add-event'"
+                 class="mx-1 pa-0">
+               <template v-slot:prepend>
+                 <v-list-item-action start>
+                   <v-checkbox-btn disabled />
+                 </v-list-item-action>
+               </template>
+               <v-text-field
+                   @keyup.enter="saveTodo"
+                   @blur="saveTodo"
+                   v-model="newTodoTitle"
+                   label="New reminder"
+                   hide-details
+               />
+             </v-list-item>
+           </template>
          </v-list>
        </v-card>
      </v-col>
@@ -97,6 +101,7 @@ import {
   isWithinInterval
 } from "date-fns";
 import {storeToRefs} from "pinia";
+import {DateTime} from "luxon";
 
 const googleCalendarStore = useGoogleCalendarStore()
 const calendarFilterSettingsStore = useCalendarFilterSettingsStore()
@@ -107,8 +112,10 @@ const filterTag = ref<string | null>()
 const newTodoTitle = ref<string>('')
 const { activeHttpLoading } = storeToRefs(googleCalendarStore)
 
-const events = computed<LifeReminderEvent[]>(() => {
-  return googleCalendarStore
+const events = computed<any>(() => {
+  const alreadyHandledMonths = []
+  const dividerItem = {type: 'divider'}
+  const events =  googleCalendarStore
       .sortedEvents
       .filter(e => {
         if (calendarFilterSettingsStore.includeClearedEvents) return e
@@ -125,6 +132,28 @@ const events = computed<LifeReminderEvent[]>(() => {
         if(e.title.includes("#"+filterTag.value)) return true
         return false
       })
+      .flatMap(e => {
+          // handle sub-title and dividers
+          let date = calendarFilterSettingsStore.sortBy === 'end'
+              ? DateTime.fromJSDate(e.redZone.end)
+              : DateTime.fromJSDate(e.redZone.start)
+          let divider = date.toFormat('yyyy-MM')
+          if (alreadyHandledMonths.includes(divider)) {
+              return ({type: 'event', value: e})
+          } else {
+              alreadyHandledMonths.push(divider)
+              if (alreadyHandledMonths.length === 1) {
+                  // first one - w/o divider
+                  return [{type: 'subheader', title: divider}, {type: 'event', value: e}]
+              } else {
+                  // new month (w/ divider)
+                  return [dividerItem, {type: 'subheader', title: divider}, {type: 'event', value: e}]
+              }
+          }
+      })
+    // add quick-add-event action
+    events.splice(events.length, 0, dividerItem, {type: 'subheader', title: 'Add new reminder'}, {type: 'add-event', value: null})
+    return events
 })
 
 const listOfCurrentTags = computed((): Set<string> => {
