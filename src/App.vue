@@ -45,12 +45,6 @@ const remainingSession = computed((): number => {
 
 const fullyUsable = computed(() => isAuthenticated.value && isAuthorized.value)
 
-onMounted(() => {
-    if (useGoogleAuthorizationStore().isAuthorized) {
-        useGoogleCalendarStore().loadCalendarItems()
-    }
-})
-
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     // kudos: https://stackoverflow.com/a/57795518/810944
     theme.global.name.value = e.matches ? "darkTheme" : "lightTheme"
