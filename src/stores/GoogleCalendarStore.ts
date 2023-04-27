@@ -23,7 +23,11 @@ export const useGoogleCalendarStore = defineStore("GoogleCalendar", () =>{
         if (calendarId.value === null) {
             throw Error('Did not get a valid calendar ID')
         }
-        let response: AxiosResponse = await axios.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId.value}/events`)
+        let response: AxiosResponse = await axios
+            .get(
+                `https://www.googleapis.com/calendar/v3/calendars/${calendarId.value}/events`,
+                { params: { maxResults: 2500 }}
+            )
         if (response.status !== 200) throw Error('could not load calendar-list')
 
         events.value = response.data.items.map((gEvent: GoogleEvent) => <LifeReminderEvent>{
