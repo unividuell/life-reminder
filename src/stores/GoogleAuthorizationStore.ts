@@ -45,14 +45,14 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
             }
             accessToken.value = response.access_token
             needsTokenRefresh.value = false
-            expiresIn.value = response.expires_in /* use to test: 120 */
+            expiresIn.value = Number.parseInt(response.expires_in) /* use to test: 120 */
             expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value ?? undefined })
         },
         onError: (errorResponse) => console.error(errorResponse),
         // client_id: oneTapStore.oneTapResponse?.clientId,
         // with this hint we connect the one-tap-result to the token-client
         // kudos: https://stackoverflow.com/a/73385352/810944
-        hint: null,
+        hint: undefined,
         // Specified as an empty string to auto select the account which we have already consented for use.
         prompt: '',
         scope: 'https://www.googleapis.com/auth/calendar'

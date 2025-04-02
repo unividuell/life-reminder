@@ -29,25 +29,25 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
     const isReady = computed(() => oneTap.isReady.value)
     const loginIsPossible = computed(() => isReady && useGoogleAuthorizationStore().isReady)
 
-    async function authenticate() {
+    function authenticate() {
         if (!oneTap.isReady.value) {
             console.warn(`cannot authenticate as the client is not ready`)
             return
         }
         console.info(`starting google one-tap login. isReady: ${oneTap.isReady.value}, userDidLogout: ${userDidLogout.value}, isAuthenticated: ${isAuthenticated.value}`)
-        await oneTap.login()
+        oneTap.login()
     }
 
-    async function logout() {
+    function logout() {
         currentUser.value = null
-        await useGoogleAuthorizationStore().reset()
+        useGoogleAuthorizationStore().reset()
         userDidLogout.value = true
     }
 
-    watch(currentUser, async (newValue) => {
+    watch(currentUser, (newValue) => {
         if (newValue) {
             console.info(`got different email ${newValue.email}. Will start authorization`)
-            await useGoogleAuthorizationStore().authorize(newValue.email)
+            useGoogleAuthorizationStore().authorize(newValue.email)
         }
     })
 
