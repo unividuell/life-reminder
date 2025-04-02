@@ -18,7 +18,6 @@
     "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.25",
     "vue-axios": "^3.5.2",
-    "vue3-google-signin": "^2.1.1",
     "vuetify": "^3.5.17"
   },
   "devDependencies": {

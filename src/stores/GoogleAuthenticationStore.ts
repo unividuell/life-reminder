@@ -1,41 +1,39 @@
 import { defineStore } from "pinia";
-import {CredentialResponse, decodeCredential, hasGrantedAllScopes, useOneTap, useTokenClient} from "vue3-google-signin";
 
 import { useGoogleAuthorizationStore } from './GoogleAuthorizationStore'
 import {computed, ref, watch} from "vue";
-import {DecodedGoogleUser} from "vue3-google-signin/dist/utils/types";
 
 // Authentication establishes who someone is, and is commonly referred to as user sign-up or sign-in.
 export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', () => {
 
-    const oneTapResponse = ref<CredentialResponse>()
-    const currentUser = ref<DecodedGoogleUser | null>(null)
+    const oneTapResponse = ref<unknown>()
+    const currentUser = ref<unknown | null>(null)
     const userDidLogout = ref(false)
 
     const isAuthenticated = computed(() => currentUser.value !== null)
 
     // init one-tap after restoring last state
-    const oneTap = useOneTap({
-        onSuccess: (response) => {
-            oneTapResponse.value = response
-            currentUser.value = decodeCredential(response.credential)
-        },
-        onError: () => console.error("Error with One Tap Login"),
-        disableAutomaticPrompt: true, // userDidLogout.value || isAuthenticated.value,
-        autoSelect: true,
-        cancelOnTapOutside: false,
-    });
+    // const oneTap = useOneTap({
+    //     onSuccess: (response) => {
+    //         oneTapResponse.value = response
+    //         currentUser.value = decodeCredential(response.credential)
+    //     },
+    //     onError: () => console.error("Error with One Tap Login"),
+    //     disableAutomaticPrompt: true, // userDidLogout.value || isAuthenticated.value,
+    //     autoSelect: true,
+    //     cancelOnTapOutside: false,
+    // });
 
-    const isReady = computed(() => oneTap.isReady.value)
+    const isReady = computed(() => true)
     const loginIsPossible = computed(() => isReady && useGoogleAuthorizationStore().isReady)
 
-    function authenticate() {
-        if (!oneTap.isReady.value) {
+    async function authenticate() {
+        if (!isReady.value) {
             console.warn(`cannot authenticate as the client is not ready`)
             return
         }
-        console.info(`starting google one-tap login. isReady: ${oneTap.isReady.value}, userDidLogout: ${userDidLogout.value}, isAuthenticated: ${isAuthenticated.value}`)
-        oneTap.login()
+        console.info(`starting google one-tap login. isReady: ${isReady.value}, userDidLogout: ${userDidLogout.value}, isAuthenticated: ${isAuthenticated.value}`)
+        throw Error(`WIP`)
     }
 
     function logout() {
@@ -46,8 +44,9 @@ export const useGoogleAuthenticationStore = defineStore('GoogleAuthentication', 
 
     watch(currentUser, (newValue) => {
         if (newValue) {
-            console.info(`got different email ${newValue.email}. Will start authorization`)
-            useGoogleAuthorizationStore().authorize(newValue.email)
+            console.info(`got different email ${newValue}. Will start authorization`)
+            throw Error(`WIP`)
+            // useGoogleAuthorizationStore().authorize(newValue.email)
         }
     })
 

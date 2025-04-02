@@ -1,9 +1,4 @@
 import {defineStore} from "pinia";
-import {
-    AuthCodeFlowSuccessResponse,
-    hasGrantedAllScopes,
-    useTokenClient,
-} from "vue3-google-signin";
 import {computed, ref, watch} from "vue";
 import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 import {DateTime, Interval} from "luxon";
@@ -15,7 +10,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     const expiresAtIsoString = ref<string | null>(null)
     const expiresIn = ref<number | null>(null)
     const activeRefreshInterval = ref<number | null>(null)
-    const authorizationResponse = ref<AuthCodeFlowSuccessResponse | null>(null)
+    const authorizationResponse = ref<unknown | null>(null)
     const needsTokenRefresh = ref(false)
 
     const isAuthorized = computed(() => accessToken.value !== null)
@@ -29,42 +24,13 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         }
     })
 
-    // we can use the result from the one-tap response to get an access token
-    const tokenClient = useTokenClient({
-        onSuccess: (response) => {
-            authorizationResponse.value = response
-            const result = hasGrantedAllScopes(
-                response,
-                "profile",
-                "email",
-                "https://www.googleapis.com/auth/calendar"
-            )
-            if (!result) {
-                console.warn('user did not granted all scopes!', authorizationResponse.value.scope)
-                throw Error('user did not granted all scopes!')
-            }
-            accessToken.value = response.access_token
-            needsTokenRefresh.value = false
-            expiresIn.value = Number.parseInt(response.expires_in) /* use to test: 120 */
-            expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value ?? undefined })
-        },
-        onError: (errorResponse) => console.error(errorResponse),
-        // client_id: oneTapStore.oneTapResponse?.clientId,
-        // with this hint we connect the one-tap-result to the token-client
-        // kudos: https://stackoverflow.com/a/73385352/810944
-        hint: undefined,
-        // Specified as an empty string to auto select the account which we have already consented for use.
-        prompt: '',
-        scope: 'https://www.googleapis.com/auth/calendar'
-    })
-
-    const isReady = computed(() => tokenClient.isReady.value)
+    const isReady = computed(() => true)
 
     function authorize(email: string) {
-        if (!tokenClient.isReady) {
+        if (!isReady.value) {
             console.warn(`cannot authorize as the client is not ready`)
         }
-        tokenClient.login({hint: email})
+        // tokenClient.login({hint: email})
     }
 
     function reset() {
@@ -105,7 +71,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
         }
     })
 
-    return { isReady, isAuthorized, accessToken, expiresAtIsoString, expiresIn, needsTokenRefresh, authorizationResponse, tokenClient, authorize, reset }
+    return { isReady, isAuthorized, accessToken, expiresAtIsoString, expiresIn, needsTokenRefresh, authorizationResponse, authorize, reset }
 },
 {
     persist: true
