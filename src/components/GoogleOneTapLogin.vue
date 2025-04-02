@@ -1,5 +1,6 @@
 <template>
-  <v-btn :disabled="!loginIsPossible" @click="() => login()" prepend-icon="mdi-login">Login</v-btn>
+  <!-- <v-btn :disabled="!loginIsPossible" @click="() => login()" prepend-icon="mdi-login">Login</v-btn> -->
+  <div id="buttonDiv"></div>
 </template>
 
 <script setup lang="ts">
