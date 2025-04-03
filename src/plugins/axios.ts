@@ -1,5 +1,5 @@
 import axios from "axios";
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {useGoogleAuthStore} from "../stores/GoogleAuthStore";
 import {App} from "vue";
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
 
@@ -14,7 +14,7 @@ const axiosPlugin = {
         axios.defaults.headers.common['Content-Type'] = "application/json"
         axios.interceptors.request.use(req => {
             useGoogleCalendarStore().activeHttpLoading = true
-            let token = useGoogleAuthorizationStore().accessToken
+            let token = useGoogleAuthStore().accessToken
             if (token) {
                 req.headers['Authorization'] = `Bearer ${token}`
             }
@@ -26,7 +26,7 @@ const axiosPlugin = {
         }, async error => {
             if (error.response.status === 401) {
                 console.warn(`init resetting token`)
-                useGoogleAuthorizationStore().reset()
+                useGoogleAuthStore().reset()
             }
             useGoogleCalendarStore().activeHttpLoading = false
             return Promise.reject(error);

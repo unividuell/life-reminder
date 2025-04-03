@@ -21,15 +21,15 @@ import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
 import {computed, onMounted, ref} from "vue";
-import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
+import {useGoogleAuthStore} from "./stores/GoogleAuthStore";
 import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
 import DrawerNavigation from "@/components/DrawerNavigation.vue";
 import {useTheme} from "vuetify";
 
-const authorizationStore = useGoogleAuthorizationStore()
+const authStore = useGoogleAuthStore()
 const theme = useTheme()
 
-const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authorizationStore)
+const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authStore)
 
 const remainingSession = computed((): number => {
   let max = 3_600

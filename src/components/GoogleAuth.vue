@@ -5,19 +5,19 @@
 
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {useGoogleAuthStore} from "../stores/GoogleAuthStore";
 import {useGoogleClient} from "@/composables/useGoogleClient";
 
 const { oauth2Client } = useGoogleClient()
-const googleAuthorizationStore = useGoogleAuthorizationStore()
+const googleAuthStore = useGoogleAuthStore()
 
-const {isAuthorized} = storeToRefs(googleAuthorizationStore)
+const {isAuthorized} = storeToRefs(googleAuthStore)
 
 async function login() {
   // kudos: https://developers.google.com/identity/oauth2/web/guides/use-token-model
   oauth2Client.requestAccessToken()
 }
 function logout() {
-  googleAuthorizationStore.reset()
+  googleAuthStore.reset()
 }
 </script>

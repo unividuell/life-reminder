@@ -6,7 +6,7 @@ import {AccessTokenResponse} from "../composables/useGoogleClient";
 import {GoogleProfile, useGoogleProfile} from "../composables/useGoogleProfile";
 
 // Authorization is the process of granting or rejecting access to data or resources.
-export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
+export const useGoogleAuthStore = defineStore("GoogleAuth", () => {
 
     const accessToken = ref<string | null>(null)
     const expiresAtIsoString = ref<string | null>(null)

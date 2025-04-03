@@ -31,15 +31,15 @@
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
 import {useDialogStore} from "../stores/DialogStore";
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {useGoogleAuthStore} from "../stores/GoogleAuthStore";
 import {useCalendarFilterSettingsStore} from "../stores/CalendarFilterSettingsStore";
 import GoogleAuth from "@/components/GoogleAuth.vue";
 
 const dialogStore = useDialogStore()
-const authorizationStore = useGoogleAuthorizationStore()
+const authStore = useGoogleAuthStore()
 const calendarSettingsStore = useCalendarFilterSettingsStore()
 
-const { isAuthorized, currentUser } = storeToRefs(authorizationStore)
+const { isAuthorized, currentUser } = storeToRefs(authStore)
 const { toggleDrawer } = calendarSettingsStore
 
 function addEvent() {
@@ -47,7 +47,7 @@ function addEvent() {
 }
 
 function logout() {
-  authorizationStore.reset()
+  authStore.reset()
 }
 
 </script>

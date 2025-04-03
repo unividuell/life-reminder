@@ -1,4 +1,4 @@
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {useGoogleAuthStore} from "../stores/GoogleAuthStore";
 
 export type AccessTokenResponse = {
     access_token: string;
@@ -10,7 +10,7 @@ export type AccessTokenResponse = {
 }
 
 export const useGoogleClient = () => {
-    const store = useGoogleAuthorizationStore()
+    const store = useGoogleAuthStore()
     // this uses the loaded script from index.html (https://accounts.google.com/gsi/client)
     const oauth2Client = google.accounts.oauth2.initTokenClient({
         client_id: import.meta.env.VITE_GAPI_CLIENT_ID,
