@@ -18,7 +18,7 @@
       </v-chip-group>
      </v-col>
      <v-col cols="12" md="9" class="pa-0 pa-sm-2">
-       <v-card class="mx-auto" :loading="activeHttpLoading" :flat="$vuetify.display.xs">
+       <v-card class="mx-auto" :loading="activeHttpLoading" :flat="display.xs.value">
 <!--         <v-list-subheader class="pa-0 pa-sm-2">My Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>-->
          <v-list :items="events" :item-props="true" density="compact">
            <template v-slot:item="{ props: { type, value: event } }">
@@ -58,7 +58,7 @@
               />
               <template v-slot:append>
                 <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
-                  <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light" size="14"></v-icon>
+                  <v-icon :start="display.smAndUp.value" icon="mdi-alarm-light" size="14"></v-icon>
                   <span class="d-none d-sm-block">OVERDUE</span>
                 </v-chip>
               </template>
@@ -102,7 +102,9 @@ import {
 } from "date-fns";
 import {storeToRefs} from "pinia";
 import {DateTime} from "luxon";
+import {useDisplay} from "vuetify";
 
+const display = useDisplay()
 const googleCalendarStore = useGoogleCalendarStore()
 const calendarFilterSettingsStore = useCalendarFilterSettingsStore()
 const dialogStore = useDialogStore()

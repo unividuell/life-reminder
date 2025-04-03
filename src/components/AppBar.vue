@@ -7,22 +7,18 @@
     <v-app-bar-nav-icon @click.stop="toggleDrawer" varian="text" />
     <v-app-bar-title class="d-none d-sm-block">Life Reminder 3000</v-app-bar-title>
 
-    <template v-slot:append v-if="isAuthorized && currentUser">
-      <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
-      <v-avatar>
-        <img
-            :src="currentUser!.picture"
-            alt="Profile Picture"
-            :height="42"
-            :width="42"
-        >
-      </v-avatar>
-      <v-btn @click="logout" text>
-        <span class="mr-2">Logout</span>
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </template>
-    <template v-slot:append v-if="!isAuthorized">
+    <template v-slot:append>
+      <template  v-if="isAuthorized && currentUser">
+        <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
+        <v-avatar>
+          <img
+              :src="currentUser!.picture"
+              alt="Profile Picture"
+              :height="42"
+              :width="42"
+          >
+        </v-avatar>
+      </template>
       <GoogleAuth />
     </template>
   </v-app-bar>
@@ -44,10 +40,6 @@ const { toggleDrawer } = calendarSettingsStore
 
 function addEvent() {
   dialogStore.handleEventAdding()
-}
-
-function logout() {
-  authStore.reset()
 }
 
 </script>
