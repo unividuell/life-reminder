@@ -2,6 +2,7 @@
  <v-container fluid>
    <v-row>
      <v-col cols="12" md="3" class="pb-0">
+      <div v-if="listOfCurrentTags.size < 1" class="text-disabled">No Tags present. You can create tags by adding "hashtags" to your event titles (#)</div>
       <v-chip-group
         v-model="filterTag"
         column
