@@ -12,24 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import {storeToRefs} from "pinia";
-import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
-import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
+import {useGoogleClient} from "@/composables/useGoogleClient";
 
-const authenticationStore = useGoogleAuthenticationStore()
-const authorizationStore = useGoogleAuthorizationStore()
-
-const { currentUser } = storeToRefs(authenticationStore)
-
-const showDialog = ref(false)
+const {oauth2Client} = useGoogleClient()
 
 async function refresh() {
-  if (currentUser.value?.email) {
-    await authorizationStore.authorize(currentUser.value.email)
-  } else {
-    console.warn('no currentUser.email available for refresh!')
-  }
+  oauth2Client.requestAccessToken()
 }
 
 </script>

@@ -2,6 +2,8 @@ import {defineStore} from "pinia";
 import {computed, ref, watch} from "vue";
 import {useGoogleCalendarStore} from "./GoogleCalendarStore";
 import {DateTime, Interval} from "luxon";
+import {AccessTokenResponse} from "../composables/useGoogleClient";
+import {GoogleProfile, useGoogleProfile} from "../composables/useGoogleProfile";
 
 // Authorization is the process of granting or rejecting access to data or resources.
 export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", () => {
@@ -12,6 +14,7 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     const activeRefreshInterval = ref<number | null>(null)
     const authorizationResponse = ref<unknown | null>(null)
     const needsTokenRefresh = ref(false)
+    const currentUser = ref<GoogleProfile | null>(null)
 
     const isAuthorized = computed(() => accessToken.value !== null)
     // computed b/c date-time is not persistable out-of the box
@@ -26,11 +29,10 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
 
     const isReady = computed(() => true)
 
-    function authorize(email: string) {
-        if (!isReady.value) {
-            console.warn(`cannot authorize as the client is not ready`)
-        }
-        // tokenClient.login({hint: email})
+    function authorize(token: AccessTokenResponse) {
+        accessToken.value = token.access_token
+        expiresIn.value = token.expires_in
+        expiresAt.value = DateTime.now().plus({ seconds: expiresIn.value ?? undefined })
     }
 
     function reset() {
@@ -67,11 +69,12 @@ export const useGoogleAuthorizationStore = defineStore("GoogleAuthorization", ()
     watch(accessToken, async (newValue) => {
         if (newValue) {
             console.info(`detected changed google access token ${newValue}, will load everything..`)
+            currentUser.value = await useGoogleProfile().loadProfile()
             await useGoogleCalendarStore().loadCalendarItems()
         }
     })
 
-    return { isReady, isAuthorized, accessToken, expiresAtIsoString, expiresIn, needsTokenRefresh, authorizationResponse, authorize, reset }
+    return { isReady, isAuthorized, accessToken, expiresAtIsoString, expiresIn, needsTokenRefresh, authorizationResponse, authorize, reset, currentUser }
 },
 {
     persist: true

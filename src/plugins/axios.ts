@@ -1,5 +1,4 @@
 import axios from "axios";
-import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 import {App} from "vue";
 import {useGoogleCalendarStore} from "../stores/GoogleCalendarStore";
@@ -27,7 +26,7 @@ const axiosPlugin = {
         }, async error => {
             if (error.response.status === 401) {
                 console.warn(`init resetting token`)
-                await useGoogleAuthenticationStore().logout()
+                useGoogleAuthorizationStore().reset()
             }
             useGoogleCalendarStore().activeHttpLoading = false
             return Promise.reject(error);

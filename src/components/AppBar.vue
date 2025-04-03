@@ -7,7 +7,7 @@
     <v-app-bar-nav-icon @click.stop="toggleDrawer" varian="text" />
     <v-app-bar-title class="d-none d-sm-block">Life Reminder 3000</v-app-bar-title>
 
-    <template v-slot:append v-if="isAuthenticated && isAuthorized && currentUser">
+    <template v-slot:append v-if="isAuthorized && currentUser">
       <v-btn @click="addEvent" text><span class="mr-3">New Event</span><v-icon>mdi-calendar-plus</v-icon></v-btn>
       <v-avatar>
         <img
@@ -22,7 +22,7 @@
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </template>
-    <template v-slot:append v-if="!isAuthenticated || !isAuthorized">
+    <template v-slot:append v-if="!isAuthorized">
       <GoogleOneTapLogin />
     </template>
   </v-app-bar>
@@ -31,18 +31,15 @@
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
 import {useDialogStore} from "../stores/DialogStore";
-import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
 import GoogleOneTapLogin from "./GoogleOneTapLogin.vue";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 import {useCalendarFilterSettingsStore} from "../stores/CalendarFilterSettingsStore";
 
 const dialogStore = useDialogStore()
-const authenticationStore = useGoogleAuthenticationStore()
 const authorizationStore = useGoogleAuthorizationStore()
 const calendarSettingsStore = useCalendarFilterSettingsStore()
 
-const { isAuthenticated, currentUser } = storeToRefs(authenticationStore)
-const { isAuthorized } = storeToRefs(authorizationStore)
+const { isAuthorized, currentUser } = storeToRefs(authorizationStore)
 const { toggleDrawer } = calendarSettingsStore
 
 function addEvent() {
@@ -50,7 +47,7 @@ function addEvent() {
 }
 
 function logout() {
-  authenticationStore.logout()
+  authorizationStore.reset()
 }
 
 </script>

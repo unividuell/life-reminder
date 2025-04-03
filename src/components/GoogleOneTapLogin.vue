@@ -1,33 +1,23 @@
 <template>
-  <!-- <v-btn :disabled="!loginIsPossible" @click="() => login()" prepend-icon="mdi-login">Login</v-btn> -->
-  <div id="buttonDiv"></div>
+  <v-btn v-if="!isAuthorized" @click="() => login()" prepend-icon="mdi-login">Login</v-btn>
+  <v-btn v-else @click="() => logout()" prepend-icon="mdi-logout">Logout</v-btn>
 </template>
 
 <script setup lang="ts">
-import {useGoogleAuthenticationStore} from "../stores/GoogleAuthenticationStore";
-import {watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
+import {useGoogleClient} from "@/composables/useGoogleClient";
 
-const googleAuthenticationStore = useGoogleAuthenticationStore()
+const { oauth2Client } = useGoogleClient()
 const googleAuthorizationStore = useGoogleAuthorizationStore()
 
-const {loginIsPossible, isAuthenticated, currentUser} = storeToRefs(googleAuthenticationStore)
 const {isAuthorized} = storeToRefs(googleAuthorizationStore)
 
 async function login() {
-  if (! isAuthenticated.value) {
-    console.info(`need to login by one-tap as currently not authenticated`)
-    await googleAuthenticationStore.authenticate()
-  } else {
-    await authorization()
-  }
+  // kudos: https://developers.google.com/identity/oauth2/web/guides/use-token-model
+  oauth2Client.requestAccessToken()
 }
-
-async function authorization() {
-    if (! isAuthorized.value && currentUser.value?.email) {
-        console.info(`need to authorize (we are already authorized)`)
-        await googleAuthorizationStore.authorize(currentUser.value.email)
-    }
+function logout() {
+  googleAuthorizationStore.reset()
 }
 </script>
