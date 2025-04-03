@@ -2,6 +2,7 @@
  <v-container fluid>
    <v-row>
      <v-col cols="12" md="3" class="pb-0">
+      <div v-if="listOfCurrentTags.size < 1" class="text-disabled">No Tags present. You can create tags by adding "hashtags" to your event titles (#)</div>
       <v-chip-group
         v-model="filterTag"
         column
@@ -18,10 +19,10 @@
       </v-chip-group>
      </v-col>
      <v-col cols="12" md="9" class="pa-0 pa-sm-2">
-       <v-card class="mx-auto" :loading="activeHttpLoading" :flat="$vuetify.display.xs">
+       <v-card class="mx-auto" :loading="activeHttpLoading" :flat="display.xs.value">
 <!--         <v-list-subheader class="pa-0 pa-sm-2">My Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>-->
          <v-list :items="events" :item-props="true" density="compact">
-           <template v-slot:item="{ type: type, value: event }">
+           <template v-slot:item="{ props: { type, value: event } }">
              <v-list-item
                  v-if="type === 'event'"
                  :class="isOverdue(event) ? 'text-red':''"
@@ -58,7 +59,7 @@
               />
               <template v-slot:append>
                 <v-chip v-if="isOverdue(event)" size="small" variant="outlined">
-                  <v-icon :start="$vuetify.display.smAndUp" icon="mdi-alarm-light" size="14"></v-icon>
+                  <v-icon :start="display.smAndUp.value" icon="mdi-alarm-light" size="14"></v-icon>
                   <span class="d-none d-sm-block">OVERDUE</span>
                 </v-chip>
               </template>
@@ -102,7 +103,9 @@ import {
 } from "date-fns";
 import {storeToRefs} from "pinia";
 import {DateTime} from "luxon";
+import {useDisplay} from "vuetify";
 
+const display = useDisplay()
 const googleCalendarStore = useGoogleCalendarStore()
 const calendarFilterSettingsStore = useCalendarFilterSettingsStore()
 const dialogStore = useDialogStore()

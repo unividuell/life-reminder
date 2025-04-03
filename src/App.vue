@@ -5,7 +5,7 @@
     <v-main>
       <v-progress-linear :model-value="remainingSession" :height="2" />
       <Main v-if="fullyUsable && !needsTokenRefresh" />
-      <GoogleSessionRefresh v-if="needsTokenRefresh && isAuthenticated" />
+      <GoogleSessionRefresh v-if="needsTokenRefresh" />
 
       <AddSoftEvent v-if="fullyUsable" />
       <SetEventState v-if="fullyUsable" />
@@ -21,20 +21,15 @@ import AppBar from "./components/AppBar.vue";
 import SetEventState from "./components/SetEventState.vue";
 import AddSoftEvent from "./components/AddSoftEvent.vue";
 import {computed, onMounted, ref} from "vue";
-import {useGoogleAuthorizationStore} from "./stores/GoogleAuthorizationStore";
+import {useGoogleAuthStore} from "./stores/GoogleAuthStore";
 import GoogleSessionRefresh from "./components/GoogleSessionRefresh.vue";
-import {useGoogleAuthenticationStore} from "./stores/GoogleAuthenticationStore";
 import DrawerNavigation from "@/components/DrawerNavigation.vue";
-import {useGoogleCalendarStore} from "./stores/GoogleCalendarStore";
 import {useTheme} from "vuetify";
 
-const authenticationStore = useGoogleAuthenticationStore()
-const authorizationStore = useGoogleAuthorizationStore()
+const authStore = useGoogleAuthStore()
 const theme = useTheme()
 
-const loading = ref(false)
-const { isAuthenticated } = storeToRefs(authenticationStore)
-const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authorizationStore)
+const { isAuthorized, needsTokenRefresh, expiresIn } = storeToRefs(authStore)
 
 const remainingSession = computed((): number => {
   let max = 3_600
@@ -43,7 +38,7 @@ const remainingSession = computed((): number => {
   return remaining
 })
 
-const fullyUsable = computed(() => isAuthenticated.value && isAuthorized.value)
+const fullyUsable = computed(() => isAuthorized.value)
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     // kudos: https://stackoverflow.com/a/57795518/810944
