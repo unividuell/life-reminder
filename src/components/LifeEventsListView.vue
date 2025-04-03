@@ -21,7 +21,7 @@
        <v-card class="mx-auto" :loading="activeHttpLoading" :flat="$vuetify.display.xs">
 <!--         <v-list-subheader class="pa-0 pa-sm-2">My Todos <span v-if="filterTag">#{{ filterTag }}</span></v-list-subheader>-->
          <v-list :items="events" :item-props="true" density="compact">
-           <template v-slot:item="{ type: type, value: event }">
+           <template v-slot:item="{ props: { type, value: event } }">
              <v-list-item
                  v-if="type === 'event'"
                  :class="isOverdue(event) ? 'text-red':''"
