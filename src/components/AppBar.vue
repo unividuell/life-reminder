@@ -23,7 +23,7 @@
       </v-btn>
     </template>
     <template v-slot:append v-if="!isAuthorized">
-      <GoogleOneTapLogin />
+      <GoogleAuth />
     </template>
   </v-app-bar>
 </template>
@@ -31,9 +31,9 @@
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
 import {useDialogStore} from "../stores/DialogStore";
-import GoogleOneTapLogin from "./GoogleOneTapLogin.vue";
 import {useGoogleAuthorizationStore} from "../stores/GoogleAuthorizationStore";
 import {useCalendarFilterSettingsStore} from "../stores/CalendarFilterSettingsStore";
+import GoogleAuth from "@/components/GoogleAuth.vue";
 
 const dialogStore = useDialogStore()
 const authorizationStore = useGoogleAuthorizationStore()
