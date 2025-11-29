@@ -66,169 +66,186 @@
    </v-dialog>
 </template>
 
-<script>
-import {differenceInCalendarDays, formatISO, parseISO} from 'date-fns'
-import format from '../plugins/date-fns-format'
-import {useGoogleCalendarStore} from "@/stores/GoogleCalendarStore";
-import {mapWritableState} from "pinia";
-import {useDialogStore} from "@/stores/DialogStore";
+<script setup lang="ts">
+import { ref, computed, watch, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
+import { differenceInCalendarDays, formatISO, parseISO } from 'date-fns'
+import format from '@/plugins/date-fns-format'
+import { useGoogleCalendarStore } from "@/stores/GoogleCalendarStore"
+import { useDialogStore } from "@/stores/DialogStore"
 
-export default {
-  name: "AddSoftEvent",
-  data: () => ({
-    showDialog: false,
-    event: null,
-    valid: false,
-    isLoading: false,
-    googleId: null,
-    summary: null,
-    redZone: [ ],
-    notes: '',
-    edit: false,
-    initStartDate: new Date(),
-    inDeleteConfirmation: false
-  }),
-  methods: {
-    init() {
-      this.clear()
-      this.inDeleteConfirmation = false
-      if (this.event) {
-        this.googleId = this.event.googleId
-        this.summary = this.event.title
-        this.redZone = [
-          formatISO(this.event.redZone.start, { representation: 'date' }),
-          formatISO(this.event.redZone.end, { representation: 'date' })
-        ]
-        this.notes = this.event.note
-        this.edit = true
-      } else {
-        this.edit = false
-      }
-    },
-    clear() {
-      this.googleId = null
-      this.summary = null
-      this.redZone = []
-      this.notes = null
-      this.inDeleteConfirmation = false
-      this.$refs.eventForm?.reset()
-    },
-    async handleEvent() {
-      if (this.edit) {
-        await this.editSimpleEvent()
-      } else {
-        await this.addSimpleEvent()
-      }
-    },
-    async editSimpleEvent() {
-      if (!await this.$refs.eventForm.validate()) {
-        return
-      }
-      this.isLoading = true
-      await useGoogleCalendarStore()
-          .editEvent(
-              this.event.googleId,
-              this.summary,
-              this.notes,
-              this.redZone[0],
-              this.redZone[1]
-          )
+defineOptions({
+  name: "AddSoftEvent"
+})
 
-      this.isLoading = false
-      this.showDialog = false
-      await useGoogleCalendarStore().reload()
-    },
-    async addSimpleEvent() {
-      if (!await this.$refs.eventForm.validate()) {
-        return
-      }
-      this.isLoading = true
-      if(this.redZone[0] > this.redZone[1]){
-        let temp = this.redZone[0]
-        this.redZone[0] = this.redZone[1]
-        this.redZone[1] = temp
-      }
-      await useGoogleCalendarStore()
-          .addEvent(
-              this.summary,
-              this.notes,
-              this.startDateForGoogle,
-              this.endDateForGoogle
-          )
-      this.clear()
-      this.isLoading = false
-      this.showDialog = false
-      await useGoogleCalendarStore().reload()
-    },
-    async onDelete() {
-      this.isLoading = true
-      await useGoogleCalendarStore().deleteEvent(this.event.googleId)
-      await useGoogleCalendarStore().reload()
-      this.isLoading = false
-      this.showDialog = false
-    }
-  },
-  computed: {
-    ...mapWritableState(useDialogStore, ['handleEdit', 'handleAdd']),
-    formId() {
-      return this.event ? this.event.googleId : 'add'
-    },
-    redZoneText() {
-      try {
+const googleCalendarStore = useGoogleCalendarStore()
+const dialogStore = useDialogStore()
+const { handleEdit, handleAdd } = storeToRefs(dialogStore)
 
-        let period = (format(parseISO(this.startDateForGoogle), "dd.MM.yyyy") ?? 'tbd') + ' - ' + (format(parseISO(this.endDateForGoogle),"dd.MM.yyyy") ?? 'tbd')
-        let duration = differenceInCalendarDays(parseISO(this.endDateForGoogle), parseISO(this.startDateForGoogle))
+const showDialog = ref(false)
+const event = ref<any>(null)
+const valid = ref(false)
+const isLoading = ref(false)
+const googleId = ref<string | null>(null)
+const summary = ref<string | null>(null)
+const redZone = ref<string[]>([])
+const notes = ref<string | null>('')
+const edit = ref(false)
+const initStartDate = ref(new Date())
+const inDeleteConfirmation = ref(false)
+const eventForm = ref<any>(null)
 
-        return "Period: " + period + " (" + duration + "d)"
-      } catch (e) {
-        return null
-      }
-    },
-    startDateForGoogle() {
-      return format(parseISO(this.redZone[0]), "yyyy-MM-dd")
-    },
-    endDateForGoogle() {
-      if (this.redZone.length >= 2) {
-        return format(parseISO(this.redZone[1]), "yyyy-MM-dd")
-      }
-      return null
-    },
-    actionLabel() {
-      return this.edit ? "Edit Event" : "Add Event"
-    }
-  },
-  watch: {
-    redZone() {
-      // re-validate as soon as the clearance periode gets adjusted
-      this.$refs.eventForm?.validate()
-    },
-    notes() {
-      // re-validate as soon as the summary gets adjusted
-      this.$refs.eventForm?.validate()
-    },
-    handleEdit(newValue) {
-      if (newValue) {
-        this.event = newValue
-        this.init()
-        this.showDialog = true
-      }
-    },
-    handleAdd(newValue) {
-      if (newValue) {
-        this.event = null
-        this.init()
-        this.showDialog = true
-      }
-    },
-    showDialog() {
-      // re-validate as soon as the dialog gets opened / closed
-      this.$refs.eventForm?.validate()
-      this.handleEdit = null
-      this.handleAdd = null
-      this.init()
-    }
+const formId = computed(() => event.value ? event.value.googleId : 'add')
+
+const startDateForGoogle = computed(() => {
+  if (redZone.value.length > 0 && redZone.value[0]) {
+    return format(parseISO(redZone.value[0]), "yyyy-MM-dd")
+  }
+  return null
+})
+
+const endDateForGoogle = computed(() => {
+  if (redZone.value.length >= 2 && redZone.value[1]) {
+    return format(parseISO(redZone.value[1]), "yyyy-MM-dd")
+  }
+  return null
+})
+
+const redZoneText = computed(() => {
+  try {
+    if (!startDateForGoogle.value || !endDateForGoogle.value) return null
+    const period = (format(parseISO(startDateForGoogle.value), "dd.MM.yyyy") ?? 'tbd') + ' - ' + (format(parseISO(endDateForGoogle.value),"dd.MM.yyyy") ?? 'tbd')
+    const duration = differenceInCalendarDays(parseISO(endDateForGoogle.value), parseISO(startDateForGoogle.value))
+
+    return "Period: " + period + " (" + duration + "d)"
+  } catch (e) {
+    return null
+  }
+})
+
+const actionLabel = computed(() => edit.value ? "Edit Event" : "Add Event")
+
+function clear() {
+  googleId.value = null
+  summary.value = null
+  redZone.value = []
+  notes.value = null
+  inDeleteConfirmation.value = false
+  eventForm.value?.reset()
+}
+
+function init() {
+  clear()
+  inDeleteConfirmation.value = false
+  if (event.value) {
+    googleId.value = event.value.googleId
+    summary.value = event.value.title
+    redZone.value = [
+      formatISO(event.value.redZone.start, { representation: 'date' }),
+      formatISO(event.value.redZone.end, { representation: 'date' })
+    ]
+    notes.value = event.value.note
+    edit.value = true
+  } else {
+    edit.value = false
   }
 }
+
+async function handleEvent() {
+  if (edit.value) {
+    await editSimpleEvent()
+  } else {
+    await addSimpleEvent()
+  }
+}
+
+async function editSimpleEvent() {
+  const validation = await eventForm.value?.validate()
+  if (!validation?.valid) {
+    return
+  }
+  isLoading.value = true
+  await googleCalendarStore.editEvent(
+      event.value.googleId,
+      summary.value,
+      notes.value,
+      redZone.value[0],
+      redZone.value[1]
+  )
+
+  isLoading.value = false
+  showDialog.value = false
+  await googleCalendarStore.reload()
+}
+
+async function addSimpleEvent() {
+  const validation = await eventForm.value?.validate()
+  if (!validation?.valid) {
+    return
+  }
+  isLoading.value = true
+  if (redZone.value[0] > redZone.value[1]) {
+    const temp = redZone.value[0]
+    redZone.value[0] = redZone.value[1]
+    redZone.value[1] = temp
+  }
+  
+  if (startDateForGoogle.value && endDateForGoogle.value) {
+    await googleCalendarStore.addEvent(
+        summary.value,
+        notes.value,
+        startDateForGoogle.value,
+        endDateForGoogle.value
+    )
+  }
+  clear()
+  isLoading.value = false
+  showDialog.value = false
+  await googleCalendarStore.reload()
+}
+
+async function onDelete() {
+  isLoading.value = true
+  await googleCalendarStore.deleteEvent(event.value.googleId)
+  await googleCalendarStore.reload()
+  isLoading.value = false
+  showDialog.value = false
+}
+
+watch(redZone, () => {
+  // re-validate as soon as the clearance periode gets adjusted
+  eventForm.value?.validate()
+})
+
+watch(notes, () => {
+  // re-validate as soon as the summary gets adjusted
+  eventForm.value?.validate()
+})
+
+watch(handleEdit, (newValue) => {
+  if (newValue) {
+    event.value = newValue
+    init()
+    showDialog.value = true
+  }
+})
+
+watch(handleAdd, (newValue) => {
+  if (newValue) {
+    event.value = null
+    init()
+    showDialog.value = true
+  }
+})
+
+watch(showDialog, async (newVal) => {
+  // re-validate as soon as the dialog gets opened / closed
+  await nextTick()
+  eventForm.value?.validate()
+  handleEdit.value = null
+  handleAdd.value = null
+  init()
+})
 </script>
 
 <style scoped>
