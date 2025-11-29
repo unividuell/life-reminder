@@ -1,6 +1,6 @@
 # kudos: https://v2.vuejs.org/v2/cookbook/dockerize-vuejs-app.html
 
-FROM node:lts-alpine
+FROM node:24-alpine
 
 # install simple http server for serving static content
 RUN npm install -g http-server
